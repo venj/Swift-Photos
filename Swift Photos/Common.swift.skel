@@ -1,0 +1,11 @@
+//
+//  Common.swift
+//  Swift Photos
+//
+//  Created by Venj Chu on 14/8/6.
+//  Copyright (c) 2014年 Venj Chu. All rights reserved.
+//
+
+import UIKit
+
+let baseLink = "This is a secret."
