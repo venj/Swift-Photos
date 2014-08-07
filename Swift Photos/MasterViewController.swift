@@ -13,9 +13,9 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     var posts:Array<Post> = []
     var images:Array<String> = []
     var page = 1
-    var forumID = 53
+    var forumID = 16
     
-    let categories = [NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图"): 53,
+    let categories = [NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图"): 16,
                       NSLocalizedString("Sexy Beauty", tableName: nil, value: "Sexy Beauty", comment: "激情贴图"): 70,
                       NSLocalizedString("Cam Shot", tableName: nil, value: "Cam Shot", comment: "走光偷拍"): 81,
                       NSLocalizedString("Selfies", tableName: nil, value: "Selfies", comment: "网友自拍"): 59,
@@ -41,7 +41,13 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     
     func loatPostListForPage(page:Int) {
         let hud = MBProgressHUD.showHUDAddedTo(navigationController.view, animated: true)
-        var request = Alamofire.request(.GET, baseLink + "forumdisplay.php?fid=\(forumID)&page=\(page)")
+        
+        var date = NSDate(timeIntervalSinceNow: -24 * 60 * 60)
+        var formatter = NSDateFormatter()
+        formatter.dateFormat = "MMdd"
+        let dateString = formatter.stringFromDate(date)
+        
+        var request = Alamofire.request(.GET, baseLink + "thread\(dateString).php?fid=\(forumID)&page=\(page)")
         request.response { [weak self] (request, response, data, error) in
             var strongSelf = self!
             if data == nil {
@@ -55,15 +61,15 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
             if error == nil {
                 let d = data as NSData
                 var str:NSString = d.stringFromGBKData()
-                var error:NSError?
-                var regex = NSRegularExpression(pattern: "<a href=\"(viewthread\\.php[^\"]+?)\">([^\\d<]+?\\d+[^\\d]+?)</a>", options: .CaseInsensitive, error: &error)
+                var err:NSError?
+                var regex = NSRegularExpression(pattern: "<a href=\"([^\"]+?)\"[^>]+?>(<font [^>]+?>)?([^\\d<]+?\\[\\d+[^\\d]+?)(</font>)?</a>", options: .CaseInsensitive, error: &err)
                 let matches = regex.matchesInString(str, options: nil, range: NSMakeRange(0, str.length))
                 var indexPathes:Array<NSIndexPath> = []
                 var cellCount = strongSelf.posts.count
                 for var i = 0; i < matches.count; ++i {
                     let match: AnyObject = matches[i]
                     let link = baseLink + str.substringWithRange(match.rangeAtIndex(1))
-                    let title = str.substringWithRange(match.rangeAtIndex(2))
+                    let title = str.substringWithRange(match.rangeAtIndex(3))
                     strongSelf.posts.append(Post(title: title, link: link))
                     indexPathes.append(NSIndexPath(forRow:cellCount + i, inSection: 0))
                 }
@@ -103,11 +109,11 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
             var strongSelf = self!
             strongSelf.images = []
             if error == nil {
-                let cp936 = CFStringConvertWindowsCodepageToEncoding(936)
-                let gbkEncoding:NSStringEncoding = CFStringConvertEncodingToNSStringEncoding(cp936);
-                var str = NSString(data: data as NSData, encoding: gbkEncoding)
+                let d = data as NSData
+                var str:NSString = d.stringFromGBKData()
+                println(str)
                 var error:NSError?
-                var regex = NSRegularExpression(pattern: "img src=\"([^\"]+)\" .+? onload", options: .CaseInsensitive, error: &error)
+                var regex = NSRegularExpression(pattern: "input type='image' src='([^\"]+?)'", options: .CaseInsensitive, error: &error)
                 let matches = regex.matchesInString(str, options: nil, range: NSMakeRange(0, str.length))
                 for match in matches {
                     let imageLink = str.substringWithRange(match.rangeAtIndex(1))
