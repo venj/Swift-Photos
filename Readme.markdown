@@ -21,7 +21,7 @@ $ pod install
 已知问题
 --------
 
-- 因为程序依赖的库Alamofire的bug，暂时不能在iOS 7上运行。
+- 因为程序依赖的库Alamofire的[bug](https://github.com/Alamofire/Alamofire/issues/17)，暂时不能在iOS 7上运行。
 - **Fixed** <del>帖子列表的解析有时会出现问题。</del>
 - **Fixed** <del>部分帖子无法获取全部图片。</del>
 - 照片滑动切换在竖屏时有问题，出现问题时，请使用横屏浏览。
