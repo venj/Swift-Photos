@@ -153,29 +153,11 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     @IBAction func showSections(sender:AnyObject?) {
         let ver:NSString = UIDevice.currentDevice().systemVersion as NSString
         let majorVersion = ver.componentsSeparatedByString(".")[0] as String
-        if majorVersion.toInt() >= 8 && UIDevice.currentDevice().userInterfaceIdiom == .Pad {
-            var alertController = UIAlertController(title: NSLocalizedString("Please select a category", tableName: nil, value: "Please select a category", comment: "ActionSheet title."), message: "", preferredStyle: .Alert)
-            for key in categories.keys {
-                let action = UIAlertAction(title: key, style: .Default, handler: { [weak self] (act) in
-                    var strongSelf = self!
-                    strongSelf.title = key
-                    strongSelf.loadFirstPageForKey(key)
-                })
-                alertController.addAction(action)
-            }
-            let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", tableName: nil, value: "Cancel", comment: "Cancel button. (General)"), style: .Default) { [weak self] (action) in
-                self!.dismissViewControllerAnimated(true, completion: nil)
-            }
-            alertController.addAction(cancelAction)
-            self.presentViewController(alertController, animated: true, completion: nil)
+        var sheet = UIActionSheet(title: NSLocalizedString("Please select a category", tableName: nil, value: "Please select a category", comment: "ActionSheet title."), delegate: self, cancelButtonTitle: NSLocalizedString("Cancel", tableName: nil, value: "Cancel", comment: "Cancel button. (General)"), destructiveButtonTitle: nil)
+        for key in categories.keys {
+            sheet.addButtonWithTitle(key)
         }
-        else {
-            var sheet = UIActionSheet(title: NSLocalizedString("Please select a category", tableName: nil, value: "Please select a category", comment: "ActionSheet title."), delegate: self, cancelButtonTitle: NSLocalizedString("Cancel", tableName: nil, value: "Cancel", comment: "Cancel button. (General)"), destructiveButtonTitle: nil)
-            for key in categories.keys {
-                sheet.addButtonWithTitle(key)
-            }
-            sheet.showInView(navigationController.view)
-        }
+        sheet.showFromBarButtonItem(navigationItem.rightBarButtonItem, animated: true)
     }
     
     @IBAction func refresh(sender:AnyObject?) {

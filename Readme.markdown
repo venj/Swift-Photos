@@ -25,7 +25,7 @@ $ pod install
 - **Fixed** <del>帖子列表的解析有时会出现问题。</del>
 - **Fixed** <del>部分帖子无法获取全部图片。</del>
 - 照片滑动切换在竖屏时有问题，出现问题时，请使用横屏浏览。
-- iPad，iOS 8上的`UIActionSheet`的Autolayout有bug，暂时用`UIAlertController`的Alert模式作为选择类别的方法。
+- **Fixed** <del>iPad，iOS 8上的`UIActionSheet`的Autolayout有bug，暂时用`UIAlertController`的Alert模式作为选择类别的方法。</del>
 - 网络状况不好的时候，由于网络超时时间过长，HUD有时无法自动消失，需要杀掉程序后重新打开。
 
 计划
