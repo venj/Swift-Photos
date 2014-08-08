@@ -68,7 +68,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
                 }
                 else {
                     let dateString = "0806"
-                    strongSelf.daguerreLink = baseLink(strongSelf.forumID) + "thread\(dateString).php?fid=\(strongSelf.forumID)&page=\(strongSelf.page)"
+                    strongSelf.daguerreLink = baseLink(strongSelf.forumID) + "thread\(dateString).php?fid=\(strongSelf.forumID)"
                 }
             }
             hud.hide(true)
@@ -78,7 +78,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     
     func loadPostList(link:String, forPage page:Int) {
         let hud = MBProgressHUD.showHUDAddedTo(navigationController.view, animated: true)
-        var request = Alamofire.request(.GET, link)
+        var request = Alamofire.request(.GET, link + "&page=\(self.page)")
         request.response { [weak self] (request, response, data, error) in
             var strongSelf = self!
             if data == nil {
@@ -124,7 +124,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
         }
     }
     
-    func loatPostListForPage(page:Int) {
+    func loadPostListForPage(page:Int) {
         var link:String
         if forumID == 16 {
             if (daguerreLink as NSString).isEqualToString("") {
@@ -204,7 +204,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     
     override func tableView(tableView: UITableView!, willDisplayCell cell: UITableViewCell!, forRowAtIndexPath indexPath: NSIndexPath!) {
         if indexPath.row == posts.count - 1 {
-            loatPostListForPage(page)
+            loadPostListForPage(page)
         }
     }
     
@@ -240,7 +240,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
         posts = []
         page = 1
         tableView.reloadData()
-        loatPostListForPage(page)
+        loadPostListForPage(page)
     }
     
     // MARK: ActionSheet Delegates
