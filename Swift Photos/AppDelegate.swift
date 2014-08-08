@@ -9,13 +9,14 @@
 import UIKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, MMAppSwitcherDataSource {
                             
     var window: UIWindow?
 
 
     func application(application: UIApplication!, didFinishLaunchingWithOptions launchOptions: NSDictionary!) -> Bool {
         // Override point for customization after application launch.
+        MMAppSwitcher.sharedInstance().setDataSource(self)
         return true
     }
 
@@ -41,6 +42,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
-
+    // MARK: MMAppSwitcher
+    
+    func appSwitcher(appSwitcher: MMAppSwitcher!, viewForCardWithSize size: CGSize) -> UIView! {
+        var windowFrame:CGRect
+        if let win = window {
+            windowFrame = window!.frame
+        }
+        else {
+            windowFrame = CGRectZero
+        }
+        let view = UIView(frame: windowFrame)
+        view.backgroundColor = UIColor.whiteColor()
+        return view
+    }
 }
 

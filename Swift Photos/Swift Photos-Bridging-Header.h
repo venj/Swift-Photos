@@ -4,4 +4,5 @@
 
 #import <MWPhotoBrowser/MWPhotoBrowser.h>
 #import <MBProgressHUD/MBProgressHUD.h>
+#import <MMAppSwitcher/MMAppSwitcher.h>
 #import "NSData+GBK.h"
