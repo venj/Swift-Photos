@@ -46,14 +46,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MMAppSwitcherDataSource {
     // MARK: MMAppSwitcher
     
     func appSwitcher(appSwitcher: MMAppSwitcher!, viewForCardWithSize size: CGSize) -> UIView! {
-        let view = UIView(frame: CGRectZero)
-        if let win = window {
-            var windowFrame = win.frame
-            var maxLength = max(windowFrame.size.width, windowFrame.size.height)
-            var frame = CGRectMake(0.0, 0.0, maxLength, maxLength)
-            view.center = win.center
-            view.backgroundColor = UIColor.whiteColor()
-        }
+        var windowFrame = window!.frame
+        var maxLength = max(windowFrame.size.width, windowFrame.size.height)
+        var frame = CGRectMake(0.0, 0.0, maxLength, maxLength)
+        let view = UIView(frame: frame)
+        view.center = window!.center
+        view.backgroundColor = UIColor.whiteColor()
         return view
     }
 }
