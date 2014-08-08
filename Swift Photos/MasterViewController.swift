@@ -14,6 +14,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     var images:Array<String> = []
     var page = 1
     var forumID = 16
+    var daguerreLink:String = ""
     
     let categories = [NSLocalizedString("Daguerre's Flag", tableName: nil, value: "Daguerre's Flag", comment: "達蓋爾的旗幟"): 16,
                       NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图"): 53,
@@ -40,33 +41,49 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
         // Dispose of any resources that can be recreated.
     }
     
-    func loatPostListForPage(page:Int) {
+    func parseDaguerreLink() {
+        let link = baseLink(forumID)
+        var request = Alamofire.request(.GET, link + "index.php")
+        var hud = showHUDInView(self.navigationController.view, withMessage: NSLocalizedString("Parsing Daguerre Link...", tableName: nil, value: "Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."), afterDelay: 0.0)
+        request.response { [weak self] (request, response, data, error) in
+            var strongSelf = self!
+            if data == nil {
+                hud.hide(true)
+                showHUDInView(strongSelf.navigationController.view, withMessage: NSLocalizedString("No data received. iOS 7 user?", tableName: nil, value: "No data received. iOS 7 user?", comment: "HUD when no data received."), afterDelay: 2.0)
+                return
+            }
+            else {
+                if error == nil {
+                    let d = data as NSData
+                    var str:NSString = d.stringFromGBKData()
+                    var err:NSError?
+                    let regexString:String = "<a href=\"([^\"]+?)\">達蓋爾的旗幟</a>"
+                    var linkIndex = 0, titleIndex = 0
+                    var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &err)
+                    let matches = regex.matchesInString(str, options: nil, range: NSMakeRange(0, str.length))
+                    if matches.count > 0 {
+                        let match: AnyObject = matches[0]
+                        strongSelf.daguerreLink = link + str.substringWithRange(match.rangeAtIndex(1))
+                    }
+                }
+                else {
+                    let dateString = "0806"
+                    strongSelf.daguerreLink = baseLink(strongSelf.forumID) + "thread\(dateString).php?fid=\(strongSelf.forumID)&page=\(strongSelf.page)"
+                }
+            }
+            hud.hide(true)
+            strongSelf.loadPostList(strongSelf.daguerreLink, forPage: 1)
+        }
+    }
+    
+    func loadPostList(link:String, forPage page:Int) {
         let hud = MBProgressHUD.showHUDAddedTo(navigationController.view, animated: true)
-        
-        var link:String
-        if forumID == 16 {
-            /*
-            var date = NSDate(timeIntervalSinceNow: -24 * 60 * 60)
-            var formatter = NSDateFormatter()
-            formatter.dateFormat = "MMdd"
-            let dateString = formatter.stringFromDate(date) */
-            
-            let dateString = "0806"
-            link = baseLink(forumID) + "thread\(dateString).php?fid=\(forumID)&page=\(page)"
-        }
-        else {
-            link = baseLink(forumID) + "forumdisplay.php?fid=\(forumID)&page=\(page)"
-        }
-        
         var request = Alamofire.request(.GET, link)
         request.response { [weak self] (request, response, data, error) in
             var strongSelf = self!
             if data == nil {
                 hud.hide(true)
-                var messageHUD = MBProgressHUD.showHUDAddedTo(strongSelf.navigationController.view, animated: true)
-                messageHUD.mode = MBProgressHUDModeCustomView
-                messageHUD.labelText = NSLocalizedString("No data received. iOS 7 user?", tableName: nil, value: "No data received. iOS 7 user?", comment: "HUD when no data received.")
-                messageHUD.hide(true, afterDelay: 2.0)
+                showHUDInView(strongSelf.navigationController.view, withMessage: NSLocalizedString("No data received. iOS 7 user?", tableName: nil, value: "No data received. iOS 7 user?", comment: "HUD when no data received."), afterDelay: 2.0)
                 return
             }
             if error == nil {
@@ -105,6 +122,23 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
                 hud.hide(true)
             }
         }
+    }
+    
+    func loatPostListForPage(page:Int) {
+        var link:String
+        if forumID == 16 {
+            if (daguerreLink as NSString).isEqualToString("") {
+                parseDaguerreLink()
+            }
+            else {
+                loadPostList(daguerreLink, forPage: page)
+            }
+        }
+        else {
+            link = baseLink(forumID) + "forumdisplay.php?fid=\(forumID)&page=\(page)"
+            loadPostList(link, forPage: page)
+        }
+        
     }
     
     // MARK: - Table View
