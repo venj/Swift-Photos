@@ -15,7 +15,8 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     var page = 1
     var forumID = 16
     
-    let categories = [NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图"): 16,
+    let categories = [NSLocalizedString("Daguerre's Flag", tableName: nil, value: "Daguerre's Flag", comment: "達蓋爾的旗幟"): 16,
+                      NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图"): 53,
                       NSLocalizedString("Sexy Beauty", tableName: nil, value: "Sexy Beauty", comment: "激情贴图"): 70,
                       NSLocalizedString("Cam Shot", tableName: nil, value: "Cam Shot", comment: "走光偷拍"): 81,
                       NSLocalizedString("Selfies", tableName: nil, value: "Selfies", comment: "网友自拍"): 59,
@@ -42,12 +43,22 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     func loatPostListForPage(page:Int) {
         let hud = MBProgressHUD.showHUDAddedTo(navigationController.view, animated: true)
         
-        var date = NSDate(timeIntervalSinceNow: -24 * 60 * 60)
-        var formatter = NSDateFormatter()
-        formatter.dateFormat = "MMdd"
-        let dateString = formatter.stringFromDate(date)
+        var link:String
+        if forumID == 16 {
+            /*
+            var date = NSDate(timeIntervalSinceNow: -24 * 60 * 60)
+            var formatter = NSDateFormatter()
+            formatter.dateFormat = "MMdd"
+            let dateString = formatter.stringFromDate(date) */
+            
+            let dateString = "0806"
+            link = baseLink(forumID) + "thread\(dateString).php?fid=\(forumID)&page=\(page)"
+        }
+        else {
+            link = baseLink(forumID) + "forumdisplay.php?fid=\(forumID)&page=\(page)"
+        }
         
-        var request = Alamofire.request(.GET, baseLink + "thread\(dateString).php?fid=\(forumID)&page=\(page)")
+        var request = Alamofire.request(.GET, link)
         request.response { [weak self] (request, response, data, error) in
             var strongSelf = self!
             if data == nil {
@@ -62,14 +73,26 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
                 let d = data as NSData
                 var str:NSString = d.stringFromGBKData()
                 var err:NSError?
-                var regex = NSRegularExpression(pattern: "<a href=\"([^\"]+?)\"[^>]+?>(<font [^>]+?>)?([^\\d<]+?\\[\\d+[^\\d]+?)(</font>)?</a>", options: .CaseInsensitive, error: &err)
+                var regexString:String
+                var linkIndex = 0, titleIndex = 0
+                if strongSelf.forumID == 16 {
+                    regexString = "<a href=\"([^\"]+?)\"[^>]+?>(<font [^>]+?>)?([^\\d<]+?\\[\\d+[^\\d]+?)(</font>)?</a>"
+                    linkIndex = 1
+                    titleIndex = 3
+                }
+                else {
+                    regexString = "<a href=\"(viewthread\\.php[^\"]+?)\">([^\\d<]+?\\d+[^\\d]+?)</a>"
+                    linkIndex = 1
+                    titleIndex = 2
+                }
+                var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &err)
                 let matches = regex.matchesInString(str, options: nil, range: NSMakeRange(0, str.length))
                 var indexPathes:Array<NSIndexPath> = []
                 var cellCount = strongSelf.posts.count
                 for var i = 0; i < matches.count; ++i {
                     let match: AnyObject = matches[i]
-                    let link = baseLink + str.substringWithRange(match.rangeAtIndex(1))
-                    let title = str.substringWithRange(match.rangeAtIndex(3))
+                    let link = baseLink(strongSelf.forumID) + str.substringWithRange(match.rangeAtIndex(linkIndex))
+                    let title = str.substringWithRange(match.rangeAtIndex(titleIndex))
                     strongSelf.posts.append(Post(title: title, link: link))
                     indexPathes.append(NSIndexPath(forRow:cellCount + i, inSection: 0))
                 }
@@ -111,9 +134,15 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
             if error == nil {
                 let d = data as NSData
                 var str:NSString = d.stringFromGBKData()
-                println(str)
                 var error:NSError?
-                var regex = NSRegularExpression(pattern: "input type='image' src='([^\"]+?)'", options: .CaseInsensitive, error: &error)
+                var regexString:String
+                if strongSelf.forumID == 16 {
+                    regexString = "input type='image' src='([^\"]+?)'"
+                }
+                else {
+                    regexString = "img src=\"([^\"]+)\" .+? onload"
+                }
+                var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &error)
                 let matches = regex.matchesInString(str, options: nil, range: NSMakeRange(0, str.length))
                 for match in matches {
                     let imageLink = str.substringWithRange(match.rangeAtIndex(1))

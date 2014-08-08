@@ -8,4 +8,11 @@
 
 import UIKit
 
-let baseLink = "This is a secret."
+func baseLink(forumID:Int) -> String {
+    if forumID == 16 {
+        return "You may already know this one."
+    }
+    else {
+        return "This is a secret."
+    }
+}

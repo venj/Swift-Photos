@@ -47,7 +47,7 @@
 		25142ABD199208F200CB4C93 /* Swift Photos-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Swift Photos-Bridging-Header.h"; sourceTree = "<group>"; };
 		25142AC219921FE200CB4C93 /* NSData+GBK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+GBK.h"; sourceTree = "<group>"; };
 		25142AC319921FE200CB4C93 /* NSData+GBK.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+GBK.m"; sourceTree = "<group>"; };
-		253BF0E819936526007B3702 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
+		253BF0E919946863007B3702 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = "zh-Hans"; path = "zh-Hans.lproj/Main.storyboard"; sourceTree = "<group>"; };
 		258A1F6E199270320080BB60 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		258A1F73199270330080BB60 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		258A1F7A199272A00080BB60 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -318,7 +318,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				25142A9F1991F36300CB4C93 /* Base */,
-				253BF0E819936526007B3702 /* zh-Hans */,
+				253BF0E919946863007B3702 /* zh-Hans */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
