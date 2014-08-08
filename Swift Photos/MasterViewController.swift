@@ -191,8 +191,9 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
                     return
                 }
                 var photoBrowser = MWPhotoBrowser(delegate: self)
-                photoBrowser.displayActionButton = false
+                photoBrowser.displayActionButton = true
                 photoBrowser.zoomPhotosToFill = false
+                photoBrowser.displayNavArrows = true
                 strongSelf.navigationController.pushViewController(photoBrowser, animated: true)
             }
             else {
