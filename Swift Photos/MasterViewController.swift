@@ -222,6 +222,14 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     }
     
     func photoBrowser(photoBrowser: MWPhotoBrowser!, titleForPhotoAtIndex index: UInt) -> String! {
+        var t:NSMutableString = (self.currentTitle as NSString).mutableCopy() as NSMutableString
+        let range = t.rangeOfString("[")
+        // FIXME: Why can't I use NSNotFound here
+        if range.location != NSIntegerMax {
+            t.insertString("\(index + 1)/", atIndex: range.location + 1)
+            return t
+        }
+        
         return self.currentTitle
     }
     
