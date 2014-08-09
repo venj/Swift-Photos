@@ -15,6 +15,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     var page = 1
     var forumID = 16
     var daguerreLink:String = ""
+    var currentTitle:String = ""
     
     let categories = [NSLocalizedString("Daguerre's Flag", tableName: nil, value: "Daguerre's Flag", comment: "達蓋爾的旗幟"): 16,
                       NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图"): 53,
@@ -190,6 +191,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
                 if strongSelf.images.count == 0 {
                     return
                 }
+                strongSelf.currentTitle = tableView.cellForRowAtIndexPath(indexPath).textLabel.text
                 var photoBrowser = MWPhotoBrowser(delegate: self)
                 photoBrowser.displayActionButton = true
                 photoBrowser.zoomPhotosToFill = false
@@ -217,6 +219,10 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     func photoBrowser(photoBrowser: MWPhotoBrowser!, photoAtIndex index: UInt) -> MWPhotoProtocol! {
         var p = MWPhoto(URL: NSURL(string: images[Int(index)]))
         return p
+    }
+    
+    func photoBrowser(photoBrowser: MWPhotoBrowser!, titleForPhotoAtIndex index: UInt) -> String! {
+        return self.currentTitle
     }
     
     // MARK: Actions
