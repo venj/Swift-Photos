@@ -1,5 +1,7 @@
 PODS:
   - DACircularProgress (2.2.0)
+  - InAppSettingsKit (2.1)
+  - KKPasscodeLock (0.2.2)
   - MBProgressHUD (0.8)
   - MMAppSwitcher (0.2.0)
   - MWPhotoBrowser (1.4.0):
@@ -13,6 +15,8 @@ PODS:
   - SDWebImage/Core (3.7.1)
 
 DEPENDENCIES:
+  - InAppSettingsKit (~> 2.1)
+  - KKPasscodeLock (~> 0.2.2)
   - MBProgressHUD (~> 0.6)
   - MMAppSwitcher (~> 0.2.0)
   - MWPhotoBrowser (~> 1.4.0)
@@ -20,6 +24,8 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   DACircularProgress: 3b41941891a56dc6aa17971f5322a9a38a6f446e
+  InAppSettingsKit: 853cdc9fcc76b87a4694f8d2b930e116463b5a29
+  KKPasscodeLock: 51e73d34a5b6ec8d20d041a97210545ae073f7ed
   MBProgressHUD: c356980b0cd097f19acec959b49dca5eb8ec31be
   MMAppSwitcher: 83d42bf769c28cc3a1c6e744d221eed199dc8298
   MWPhotoBrowser: 4efcdb9da34751f97992128a5356f3929d1af537

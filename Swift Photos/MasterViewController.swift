@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIActionSheetDelegate {
+class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIActionSheetDelegate, IASKSettingsDelegate,  KKPasscodeSettingsViewControllerDelegate {
     
     var posts:Array<Post> = []
     var images:Array<String> = []
@@ -16,6 +16,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     var forumID = 16
     var daguerreLink:String = ""
     var currentTitle:String = ""
+    var settingsViewController:IASKAppSettingsViewController!
     
     let categories = [NSLocalizedString("Daguerre's Flag", tableName: nil, value: "Daguerre's Flag", comment: "達蓋爾的旗幟"): 16,
                       NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图"): 53,
@@ -51,7 +52,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
         var request = Alamofire.request(.GET, link + "index.php")
         var hud = showHUDInView(self.navigationController.view, withMessage: NSLocalizedString("Parsing Daguerre Link...", tableName: nil, value: "Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."), afterDelay: 0.0)
         request.response { [weak self] (request, response, data, error) in
-            var strongSelf = self!
+            let strongSelf = self!
             if data == nil {
                 hud.hide(true)
                 showHUDInView(strongSelf.navigationController.view, withMessage: NSLocalizedString("No data received. iOS 7 user?", tableName: nil, value: "No data received. iOS 7 user?", comment: "HUD when no data received."), afterDelay: 2.0)
@@ -85,7 +86,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
         let hud = MBProgressHUD.showHUDAddedTo(navigationController.view, animated: true)
         var request = Alamofire.request(.GET, link + "&page=\(self.page)")
         request.response { [weak self] (request, response, data, error) in
-            var strongSelf = self!
+            let strongSelf = self!
             if data == nil {
                 hud.hide(true)
                 showHUDInView(strongSelf.navigationController.view, withMessage: NSLocalizedString("No data received. iOS 7 user?", tableName: nil, value: "No data received. iOS 7 user?", comment: "HUD when no data received."), afterDelay: 2.0)
@@ -168,7 +169,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
         let hud = MBProgressHUD.showHUDAddedTo(navigationController.view, animated: true)
         var request = Alamofire.request(.GET, posts[indexPath.row].link)
         request.response { [weak self] (request, response, data, error) in
-            var strongSelf = self!
+            let strongSelf = self!
             strongSelf.images = []
             if error == nil {
                 let d = data as NSData
@@ -249,7 +250,18 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     }
     
     @IBAction func showSettings(sender:AnyObject?) {
+        recalculateCacheSize()
+        let defaults = NSUserDefaults.standardUserDefaults()
+        let status = KKPasscodeLock.sharedLock().isPasscodeRequired() ? localizedString("On", "打开") : localizedString("Off", "关闭")
+        defaults.setObject(status, forKey: PasscodeLockStatus)
+        defaults.synchronize()
         
+        settingsViewController = IASKAppSettingsViewController(style: .Grouped)
+        settingsViewController.delegate = self
+        settingsViewController.showCreditsFooter = false
+        let settingsNavigationController = UINavigationController(rootViewController: settingsViewController)
+        settingsNavigationController.modalPresentationStyle = .FormSheet
+        self.presentViewController(settingsNavigationController, animated: true) {}
     }
     
     @IBAction func refresh(sender:AnyObject?) {
@@ -266,12 +278,55 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
         loadPostListForPage(page)
     }
     
+    func recalculateCacheSize() {
+        let defaults = NSUserDefaults.standardUserDefaults()
+        let size = SDImageCache.sharedImageCache().getSize()
+        let humanReadableSize = NSString(format: "%.1f MB", Double(size) / (1024 * 1024))
+        defaults.setObject(humanReadableSize, forKey: ImageCacheSizeKey)
+        defaults.synchronize()
+    }
+    
     // MARK: ActionSheet Delegates
     func actionSheet(actionSheet: UIActionSheet!, didDismissWithButtonIndex buttonIndex: Int) {
         if buttonIndex != actionSheet.cancelButtonIndex {
             let key = actionSheet.buttonTitleAtIndex(buttonIndex)
             title = key
             loadFirstPageForKey(key)
+        }
+    }
+    
+    // MARK: KKPassCode Delegate
+    
+    func didSettingsChanged(viewController:KKPasscodeViewController) {
+        let defaults = NSUserDefaults.standardUserDefaults()
+        let status = KKPasscodeLock.sharedLock().isPasscodeRequired() ? localizedString("On", "已打开") : localizedString("Off", "已关闭")
+        defaults.setObject(status, forKey: PasscodeLockStatus)
+        defaults.synchronize()
+        settingsViewController.tableView.reloadData()
+    }
+    
+    // MARK: Settings
+    
+    func settingsViewControllerDidEnd(sender: IASKAppSettingsViewController!) {
+        sender.dismissViewControllerAnimated(true) {}
+    }
+    
+    func settingsViewController(sender: IASKAppSettingsViewController!, buttonTappedForSpecifier specifier: IASKSpecifier!) {
+        if (specifier.key() as NSString).isEqualToString(PasscodeLockConfig) {
+            let vc = KKPasscodeSettingsViewController(style:.Grouped)
+            vc.delegate = self
+            sender.navigationController.pushViewController(vc, animated: true)
+        }
+        else if (specifier.key() as NSString).isEqualToString(ClearCacheNowKey) {
+            let aView = sender.navigationController.view
+            let hud = MBProgressHUD.showHUDAddedTo(aView, animated: true)
+            SDImageCache.sharedImageCache().clearDiskOnCompletion() { [weak self] in
+                let strongSelf = self!
+                hud.hide(true)
+                strongSelf.recalculateCacheSize()
+                showHUDInView(aView, withMessage: localizedString("Cache Cleared", "缓存已清除"), afterDelay: 1.0)
+                sender.tableView.reloadData()
+            }
         }
     }
 }

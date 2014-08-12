@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>Title</key>
+			<string>Cache</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Default Value</key>
+			<string>0.0 KB</string>
+			<key>Title</key>
+			<string>Cache Size</string>
+			<key>Key</key>
+			<string>kImageCacheSizeKey</string>
+			<key>Type</key>
+			<string>PSTitleValueSpecifier</string>
+		</dict>
+		<dict>
+			<key>Default Value</key>
+			<false/>
+			<key>Title</key>
+			<string>Clear Cache On Exit</string>
+			<key>Key</key>
+			<string>kClearCacheOnExitKey</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Clear Cache Now</string>
+			<key>Key</key>
+			<string>kClearCacheNowKey</string>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentLeft</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Security</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Default Value</key>
+			<string>Off</string>
+			<key>Title</key>
+			<string>Passcode Lock</string>
+			<key>Key</key>
+			<string>kPasscodeLockStatus</string>
+			<key>Type</key>
+			<string>PSTitleValueSpecifier</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Configure Passcode</string>
+			<key>Key</key>
+			<string>kPasscodeLockConfig</string>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentLeft</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>App Version</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Default Value</key>
+			<string>1.0</string>
+			<key>Title</key>
+			<string>Version</string>
+			<key>Key</key>
+			<string>kCurrentVersionKey</string>
+			<key>Type</key>
+			<string>PSTitleValueSpecifier</string>
+		</dict>
+	</array>
+	<key>StringsTable</key>
+	<string>Root</string>
+</dict>
+</plist>

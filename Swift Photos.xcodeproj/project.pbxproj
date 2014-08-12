@@ -17,6 +17,7 @@
 		25142ABA1991F67900CB4C93 /* Alamofire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25142AB91991F67900CB4C93 /* Alamofire.swift */; };
 		25142ABC199203DC00CB4C93 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25142ABB199203DC00CB4C93 /* Common.swift */; };
 		25142AC419921FE200CB4C93 /* NSData+GBK.m in Sources */ = {isa = PBXBuildFile; fileRef = 25142AC319921FE200CB4C93 /* NSData+GBK.m */; };
+		251B99E41999B13B00F8A67A /* InAppSettings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 251B99E31999B13B00F8A67A /* InAppSettings.bundle */; };
 		253BF0EB1994A232007B3702 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253BF0EA1994A232007B3702 /* Helpers.swift */; };
 		258A1F6D199270320080BB60 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 258A1F6F199270320080BB60 /* Localizable.strings */; };
 		258A1F72199270330080BB60 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 258A1F74199270330080BB60 /* InfoPlist.strings */; };
@@ -48,6 +49,7 @@
 		25142ABD199208F200CB4C93 /* Swift Photos-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Swift Photos-Bridging-Header.h"; sourceTree = "<group>"; };
 		25142AC219921FE200CB4C93 /* NSData+GBK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+GBK.h"; sourceTree = "<group>"; };
 		25142AC319921FE200CB4C93 /* NSData+GBK.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+GBK.m"; sourceTree = "<group>"; };
+		251B99E31999B13B00F8A67A /* InAppSettings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = InAppSettings.bundle; sourceTree = "<group>"; };
 		253A9E6A1999AC8200781AC2 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		253BF0EA1994A232007B3702 /* Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		258A1F6E199270320080BB60 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -118,6 +120,7 @@
 		25142A961991F36300CB4C93 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				251B99E31999B13B00F8A67A /* InAppSettings.bundle */,
 				258A1F74199270330080BB60 /* InfoPlist.strings */,
 				258A1F6F199270320080BB60 /* Localizable.strings */,
 				25142ABD199208F200CB4C93 /* Swift Photos-Bridging-Header.h */,
@@ -237,6 +240,7 @@
 				25142AA01991F36300CB4C93 /* Main.storyboard in Resources */,
 				258A1F72199270330080BB60 /* InfoPlist.strings in Resources */,
 				258A1F6D199270320080BB60 /* Localizable.strings in Resources */,
+				251B99E41999B13B00F8A67A /* InAppSettings.bundle in Resources */,
 				25142AA21991F36300CB4C93 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

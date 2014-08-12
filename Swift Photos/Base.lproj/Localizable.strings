@@ -36,3 +36,12 @@
 
 /* 分类 */
 "Categories" = "Categories";
+
+/* 已打开 */
+"On" = "On";
+
+/* 已关闭 */
+"Off" = "Off";
+
+/* 缓存已清除 */
+"Cache Cleared" = "Cache Cleared";
