@@ -9,7 +9,7 @@
 import UIKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, MMAppSwitcherDataSource {
+class AppDelegate: UIResponder, UIApplicationDelegate, MMAppSwitcherDataSource, KKPasscodeViewControllerDelegate {
                             
     var window: UIWindow?
 
@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MMAppSwitcherDataSource {
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
         MMAppSwitcher.sharedInstance().setNeedsUpdate()
         
-        if NSUserDefaults.standardUserDefaults().objectForKey(ClearCacheOnExitKey).boolValue == true {
+        if NSUserDefaults.standardUserDefaults().objectForKey(ClearCacheOnExitKey)?.boolValue == true {
             let app = UIApplication.sharedApplication()
             var bgTask:UIBackgroundTaskIdentifier = app.beginBackgroundTaskWithExpirationHandler() {}
             bgTask = app.beginBackgroundTaskWithExpirationHandler() {
@@ -47,14 +47,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MMAppSwitcherDataSource {
 
     func applicationWillEnterForeground(application: UIApplication!) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+        showPassLock()
     }
 
     func applicationDidBecomeActive(application: UIApplication!) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     }
 
     func applicationWillTerminate(application: UIApplication!) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+    
+    // MARK: Helper
+    func showPassLock() {
+        if KKPasscodeLock.sharedLock().isPasscodeRequired() {
+            let vc = KKPasscodeViewController()
+            vc.mode = UInt(KKPasscodeModeEnter)
+            vc.delegate = self
+            let nav = UINavigationController(rootViewController: vc)
+            vc.modalPresentationStyle = .FullScreen
+            window?.rootViewController.presentViewController(nav, animated: false, completion: nil)
+        }
     }
 
     // MARK: MMAppSwitcher

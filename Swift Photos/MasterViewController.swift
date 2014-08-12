@@ -34,6 +34,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        (UIApplication.sharedApplication().delegate as AppDelegate).showPassLock()
         title = NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图")
         let categoryButton = UIBarButtonItem(title: NSLocalizedString("Categories", tableName: nil, value: "Categories", comment: "分类"), style: .Plain, target: self, action: "showSections:")
         let settingsButton = UIBarButtonItem(title: NSLocalizedString("Settings", tableName: nil, value: "Settings", comment: "设置"), style: .Plain, target: self, action: "showSettings:")
@@ -250,7 +251,9 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     }
     
     @IBAction func showSettings(sender:AnyObject?) {
+        let settingsHUD = MBProgressHUD.showHUDAddedTo(navigationController.view, animated: true)
         recalculateCacheSize()
+        settingsHUD.hide(true)
         let defaults = NSUserDefaults.standardUserDefaults()
         let status = KKPasscodeLock.sharedLock().isPasscodeRequired() ? localizedString("On", "打开") : localizedString("Off", "关闭")
         defaults.setObject(status, forKey: PasscodeLockStatus)
@@ -310,6 +313,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     func settingsViewControllerDidEnd(sender: IASKAppSettingsViewController!) {
         sender.dismissViewControllerAnimated(true) {}
     }
+    
     
     func settingsViewController(sender: IASKAppSettingsViewController!, buttonTappedForSpecifier specifier: IASKSpecifier!) {
         if (specifier.key() as NSString).isEqualToString(PasscodeLockConfig) {
