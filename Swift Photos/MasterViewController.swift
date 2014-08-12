@@ -145,7 +145,6 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
             link = baseLink(forumID) + "forumdisplay.php?fid=\(forumID)&page=\(page)"
             loadPostList(link, forPage: page)
         }
-        
     }
     
     // MARK: - Table View
@@ -235,7 +234,6 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
             t.insertString("\(index + 1)/", atIndex: range.location + 1)
             return t
         }
-        
         return self.currentTitle
     }
     
@@ -252,19 +250,24 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     
     @IBAction func showSettings(sender:AnyObject?) {
         let settingsHUD = MBProgressHUD.showHUDAddedTo(navigationController.view, animated: true)
-        recalculateCacheSize()
-        settingsHUD.hide(true)
-        let defaults = NSUserDefaults.standardUserDefaults()
-        let status = KKPasscodeLock.sharedLock().isPasscodeRequired() ? localizedString("On", "打开") : localizedString("Off", "关闭")
-        defaults.setObject(status, forKey: PasscodeLockStatus)
-        defaults.synchronize()
-        
-        settingsViewController = IASKAppSettingsViewController(style: .Grouped)
-        settingsViewController.delegate = self
-        settingsViewController.showCreditsFooter = false
-        let settingsNavigationController = UINavigationController(rootViewController: settingsViewController)
-        settingsNavigationController.modalPresentationStyle = .FormSheet
-        self.presentViewController(settingsNavigationController, animated: true) {}
+        SDImageCache.sharedImageCache().calculateSizeWithCompletionBlock() { [weak self] (fileCount:UInt, totalSize:UInt) in
+            let defaults = NSUserDefaults.standardUserDefaults()
+            let strongSelf = self!
+            let humanReadableSize = NSString(format: "%.1f MB", Double(totalSize) / (1024 * 1024))
+            defaults.setObject(humanReadableSize, forKey: ImageCacheSizeKey)
+            
+            let status = KKPasscodeLock.sharedLock().isPasscodeRequired() ? localizedString("On", "打开") : localizedString("Off", "关闭")
+            defaults.setObject(status, forKey: PasscodeLockStatus)
+            defaults.synchronize()
+            
+            strongSelf.settingsViewController = IASKAppSettingsViewController(style: .Grouped)
+            strongSelf.settingsViewController.delegate = self
+            strongSelf.settingsViewController.showCreditsFooter = false
+            let settingsNavigationController = UINavigationController(rootViewController: strongSelf.settingsViewController)
+            settingsNavigationController.modalPresentationStyle = .FormSheet
+            strongSelf.presentViewController(settingsNavigationController, animated: true) {}
+            settingsHUD.hide(true)
+        }
     }
     
     @IBAction func refresh(sender:AnyObject?) {
@@ -299,7 +302,6 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     }
     
     // MARK: KKPassCode Delegate
-    
     func didSettingsChanged(viewController:KKPasscodeViewController) {
         let defaults = NSUserDefaults.standardUserDefaults()
         let status = KKPasscodeLock.sharedLock().isPasscodeRequired() ? localizedString("On", "已打开") : localizedString("Off", "已关闭")
@@ -309,7 +311,6 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     }
     
     // MARK: Settings
-    
     func settingsViewControllerDidEnd(sender: IASKAppSettingsViewController!) {
         sender.dismissViewControllerAnimated(true) {}
     }
