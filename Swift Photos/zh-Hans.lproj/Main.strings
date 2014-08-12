@@ -1,0 +1,12 @@
+
+/* Class = "IBUILabel"; text = "Title"; ObjectID = "2pz-XF-uhl"; */
+"2pz-XF-uhl.text" = "Title";
+
+/* Class = "IBUITableViewController"; title = "Master"; ObjectID = "pGg-6v-bdr"; */
+"pGg-6v-bdr.title" = "Master";
+
+/* Class = "IBUINavigationController"; title = "Master"; ObjectID = "rS3-R9-Ivy"; */
+"rS3-R9-Ivy.title" = "Master";
+
+/* Class = "IBUINavigationItem"; title = "Master"; ObjectID = "tQt-TN-PWz"; */
+"tQt-TN-PWz.title" = "Master";

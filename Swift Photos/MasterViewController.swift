@@ -34,6 +34,10 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         title = NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图")
+        let categoryButton = UIBarButtonItem(title: NSLocalizedString("Categories", tableName: nil, value: "Categories", comment: "分类"), style: .Plain, target: self, action: "showSections:")
+        let settingsButton = UIBarButtonItem(title: NSLocalizedString("Settings", tableName: nil, value: "Settings", comment: "设置"), style: .Plain, target: self, action: "showSettings:")
+        navigationItem.rightBarButtonItems = [categoryButton, settingsButton]
+        
         loadFirstPageForKey(title)
     }
 
@@ -242,6 +246,10 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
             sheet.addButtonWithTitle(key)
         }
         sheet.showFromBarButtonItem(navigationItem.rightBarButtonItem, animated: true)
+    }
+    
+    @IBAction func showSettings(sender:AnyObject?) {
+        
     }
     
     @IBAction func refresh(sender:AnyObject?) {
