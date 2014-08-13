@@ -36,3 +36,40 @@ func updateVersionNumber() {
     defaults.setObject("\(version)(\(build))", forKey:CurrentVersionKey)
     defaults.synchronize()
 }
+
+func userDocumentPath() -> String {
+    let path = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as String
+    return path
+}
+
+func localImagePath(link:String) -> String {
+    let imageCache = SDImageCache.sharedImageCache()
+    let key = SDWebImageManager.sharedManager().cacheKeyForURL(NSURL(string:link))
+    let path = imageCache.defaultCachePathForKey(key)
+    
+    return path
+}
+
+func localDirectoryForPost(link:String) -> String {
+    let key = SDWebImageManager.sharedManager().cacheKeyForURL(NSURL(string:link))
+    let hash = SDImageCache.sharedImageCache().cachePathForKey(key, inPath: "")
+    let path = (userDocumentPath() as NSString).stringByAppendingPathComponent(hash)
+    let fm = NSFileManager.defaultManager()
+    var isDir:ObjCBool = false
+    let dirExists = fm.fileExistsAtPath(path, isDirectory: &isDir)
+    if dirExists && !isDir {
+        fm.removeItemAtPath(path, error: nil)
+    }
+    else if !dirExists {
+        fm.createDirectoryAtPath(path, withIntermediateDirectories: true, attributes: nil, error: nil)
+    }
+    
+    return path
+}
+
+func saveCachedLinksToHomeDirectory(links:Array<String>, forPostLink postLink:String) {
+    let fm = NSFileManager.defaultManager()
+    for link in links {
+        fm.copyItemAtPath(localImagePath(link), toPath: localDirectoryForPost(postLink), error: nil)
+    }
+}
