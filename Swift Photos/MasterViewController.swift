@@ -38,7 +38,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
         title = NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图")
         let categoryButton = UIBarButtonItem(title: NSLocalizedString("Categories", tableName: nil, value: "Categories", comment: "分类"), style: .Plain, target: self, action: "showSections:")
         let settingsButton = UIBarButtonItem(title: NSLocalizedString("Settings", tableName: nil, value: "Settings", comment: "设置"), style: .Plain, target: self, action: "showSettings:")
-        navigationItem.rightBarButtonItems = [categoryButton, settingsButton]
+        navigationItem.rightBarButtonItems = [settingsButton, categoryButton]
         
         loadFirstPageForKey(title)
     }
