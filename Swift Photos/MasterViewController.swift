@@ -165,49 +165,28 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     
     override func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath!) {
         let indexPath = tableView.indexPathForSelectedRow()
-        
         let hud = MBProgressHUD.showHUDAddedTo(navigationController.view, animated: true)
-        var request = Alamofire.request(.GET, posts[indexPath.row].link)
-        request.response { [weak self] (request, response, data, error) in
+        let link = posts[indexPath.row].link
+        self.images = []
+        fetchImageLinks(fromPostLink: link, completionHandler: { [weak self] fetchedImages in
             let strongSelf = self!
-            strongSelf.images = []
-            if error == nil {
-                let d = data as NSData
-                var str:NSString = d.stringFromGBKData()
-                var error:NSError?
-                var regexString:String
-                if strongSelf.forumID == 16 {
-                    regexString = "input type='image' src='([^\"]+?)'"
-                }
-                else {
-                    regexString = "img src=\"([^\"]+)\" .+? onload"
-                }
-                var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &error)
-                let matches = regex.matchesInString(str, options: nil, range: NSMakeRange(0, str.length))
-                for match in matches {
-                    let imageLink = str.substringWithRange(match.rangeAtIndex(1))
-                    strongSelf.images.append(imageLink)
-                }
-                
-                tableView.deselectRowAtIndexPath(indexPath, animated: true)
-                hud.hide(true)
-                
-                // Skip non pics
-                if strongSelf.images.count == 0 {
-                    return
-                }
-                strongSelf.currentTitle = tableView.cellForRowAtIndexPath(indexPath).textLabel.text
-                var photoBrowser = MWPhotoBrowser(delegate: self)
-                photoBrowser.displayActionButton = true
-                photoBrowser.zoomPhotosToFill = false
-                photoBrowser.displayNavArrows = true
-                strongSelf.navigationController.pushViewController(photoBrowser, animated: true)
+            hud.hide(true)
+            strongSelf.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            // Skip non pics
+            if fetchedImages.count == 0 {
+                return
             }
-            else {
-                // Handle error
-                hud.hide(true)
-            }
-        }
+            strongSelf.images = fetchedImages
+            strongSelf.currentTitle = strongSelf.tableView.cellForRowAtIndexPath(indexPath).textLabel.text
+            var photoBrowser = MWPhotoBrowser(delegate: self)
+            photoBrowser.displayActionButton = true
+            photoBrowser.zoomPhotosToFill = false
+            photoBrowser.displayNavArrows = true
+            strongSelf.navigationController.pushViewController(photoBrowser, animated: true)
+        },
+        errorHandler: {
+            hud.hide(true)
+        })
     }
     
     override func tableView(tableView: UITableView!, willDisplayCell cell: UITableViewCell!, forRowAtIndexPath indexPath: NSIndexPath!) {
@@ -292,6 +271,37 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
         defaults.synchronize()
     }
     
+    func fetchImageLinks(fromPostLink postLink:String, completionHandler:((Array<String>) -> Void), errorHandler:(() -> Void)) {
+        var request = Alamofire.request(.GET, postLink)
+        request.response { [weak self] (request, response, data, error) in
+            let strongSelf = self!
+            var fetchedImages = Array<String>()
+            if error == nil {
+                let d = data as NSData
+                var str:NSString = d.stringFromGBKData()
+                var error:NSError?
+                var regexString:String
+                if strongSelf.forumID == 16 {
+                    regexString = "input type='image' src='([^\"]+?)'"
+                }
+                else {
+                    regexString = "img src=\"([^\"]+)\" .+? onload"
+                }
+                var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &error)
+                let matches = regex.matchesInString(str, options: nil, range: NSMakeRange(0, str.length))
+                for match in matches {
+                    let imageLink = str.substringWithRange(match.rangeAtIndex(1))
+                    fetchedImages.append(imageLink)
+                }
+                completionHandler(fetchedImages)
+            }
+            else {
+                // Handle error
+                errorHandler()
+            }
+        }
+    }
+    
     // MARK: ActionSheet Delegates
     func actionSheet(actionSheet: UIActionSheet!, didDismissWithButtonIndex buttonIndex: Int) {
         if buttonIndex != actionSheet.cancelButtonIndex {
@@ -314,7 +324,6 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     func settingsViewControllerDidEnd(sender: IASKAppSettingsViewController!) {
         sender.dismissViewControllerAnimated(true) {}
     }
-    
     
     func settingsViewController(sender: IASKAppSettingsViewController!, buttonTappedForSpecifier specifier: IASKSpecifier!) {
         if (specifier.key() as NSString).isEqualToString(PasscodeLockConfig) {
