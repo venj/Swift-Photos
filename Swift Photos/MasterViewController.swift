@@ -35,11 +35,16 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         (UIApplication.sharedApplication().delegate as AppDelegate).showPassLock()
-        title = NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图")
+        let savedTitle: AnyObject! = getValue(LastViewedSectionTitle)
+        if let t: AnyObject = savedTitle {
+            categories[(t as String)] != nil ? title = (savedTitle as String) : setDefaultTitle()
+        }
+        else {
+            setDefaultTitle()
+        }
         let categoryButton = UIBarButtonItem(title: NSLocalizedString("Categories", tableName: nil, value: "Categories", comment: "分类"), style: .Plain, target: self, action: "showSections:")
         let settingsButton = UIBarButtonItem(title: NSLocalizedString("Settings", tableName: nil, value: "Settings", comment: "设置"), style: .Plain, target: self, action: "showSettings:")
         navigationItem.rightBarButtonItems = [settingsButton, categoryButton]
-        
         loadFirstPageForKey(title)
     }
 
@@ -302,11 +307,27 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
         }
     }
     
+    func getValue(key:String) -> AnyObject! {
+        let defaults = NSUserDefaults.standardUserDefaults()
+        return defaults.objectForKey(key)
+    }
+    
+    func saveValue(value:AnyObject, forKey key:String) {
+        let defaults = NSUserDefaults.standardUserDefaults()
+        defaults.setObject(value, forKey: key)
+        defaults.synchronize()
+    }
+    
+    func setDefaultTitle() {
+        title = NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图")
+    }
+    
     // MARK: ActionSheet Delegates
     func actionSheet(actionSheet: UIActionSheet!, didDismissWithButtonIndex buttonIndex: Int) {
         if buttonIndex != actionSheet.cancelButtonIndex {
             let key = actionSheet.buttonTitleAtIndex(buttonIndex)
             title = key
+            saveValue(key, forKey: LastViewedSectionTitle)
             loadFirstPageForKey(key)
         }
     }

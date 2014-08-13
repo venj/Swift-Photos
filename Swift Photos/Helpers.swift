@@ -14,6 +14,7 @@ let ClearCacheNowKey = "kClearCacheNowKey"
 let ImageCacheSizeKey = "kImageCacheSizeKey"
 let PasscodeLockStatus = "kPasscodeLockStatus"
 let PasscodeLockConfig = "kPasscodeLockConfig"
+let LastViewedSectionTitle = "kLastViewedSectionTitle"
 
 func showHUDInView(view:UIView, withMessage message: String, afterDelay delay:NSTimeInterval) -> MBProgressHUD {
     var messageHUD = MBProgressHUD.showHUDAddedTo(view, animated: true)
