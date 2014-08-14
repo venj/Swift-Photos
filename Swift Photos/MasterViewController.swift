@@ -68,7 +68,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
             else {
                 if error == nil {
                     let d = data as NSData
-                    var str:NSString = d.stringFromGBKData()
+                    var str:NSString = d.stringFromGB18030Data()
                     var err:NSError?
                     let regexString:String = "<a href=\"([^\"]+?)\">達蓋爾的旗幟</a>"
                     var linkIndex = 0, titleIndex = 0
@@ -101,7 +101,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
             }
             if error == nil {
                 let d = data as NSData
-                var str:NSString = d.stringFromGBKData()
+                var str:NSString = d.stringFromGB18030Data()
                 var err:NSError?
                 var regexString:String
                 var linkIndex = 0, titleIndex = 0
@@ -287,7 +287,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
             var fetchedImages = Array<String>()
             if error == nil {
                 let d = data as NSData
-                var str:NSString = d.stringFromGBKData()
+                var str:NSString = d.stringFromGB18030Data()
                 var error:NSError?
                 var regexString:String
                 if strongSelf.forumID == 16 {

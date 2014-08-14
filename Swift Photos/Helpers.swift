@@ -97,8 +97,9 @@ func saveCachedLinksToHomeDirectory(links:Array<String>, forPostLink postLink:St
 }
 
 extension NSData {
-    func stringFromGBKData() -> String {
-        let cfEncoding = CFStringConvertWindowsCodepageToEncoding(936)
+    func stringFromGB18030Data() -> String {
+        // CP 936: GBK, CP 54936: GB18030
+        let cfEncoding = CFStringConvertWindowsCodepageToEncoding(54936) //GB18030
         let gbkEncoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding)
         return NSString(data: self, encoding: gbkEncoding)
     }
