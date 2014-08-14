@@ -95,3 +95,11 @@ func saveCachedLinksToHomeDirectory(links:Array<String>, forPostLink postLink:St
         fm.copyItemAtPath(localImagePath(link), toPath: localDirectoryForPost(postLink), error: nil)
     }
 }
+
+extension NSData {
+    func stringFromGBKData() -> String {
+        let cfEncoding = CFStringConvertWindowsCodepageToEncoding(936)
+        let gbkEncoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding)
+        return NSString(data: self, encoding: gbkEncoding)
+    }
+}

@@ -11,4 +11,3 @@
 #import <SDWebImage/SDWebImageManager.h>
 #import <KKPasscodeLock/KKPasscodeLock.h>
 #import <KKPasscodeLock/KKPasscodeSettingsViewController.h>
-#import "NSData+GBK.h"
