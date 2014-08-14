@@ -17,6 +17,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     var daguerreLink:String = ""
     var currentTitle:String = ""
     var settingsViewController:IASKAppSettingsViewController!
+    var sheet:UIActionSheet!
     
     let categories = [NSLocalizedString("Daguerre's Flag", tableName: nil, value: "Daguerre's Flag", comment: "達蓋爾的旗幟"): 16,
                       NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图"): 53,
@@ -223,13 +224,20 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     
     // MARK: Actions
     @IBAction func showSections(sender:AnyObject?) {
-        let ver:NSString = UIDevice.currentDevice().systemVersion as NSString
-        let majorVersion = ver.componentsSeparatedByString(".")[0] as String
-        var sheet = UIActionSheet(title: NSLocalizedString("Please select a category", tableName: nil, value: "Please select a category", comment: "ActionSheet title."), delegate: self, cancelButtonTitle: NSLocalizedString("Cancel", tableName: nil, value: "Cancel", comment: "Cancel button. (General)"), destructiveButtonTitle: nil)
-        for key in categories.keys {
-            sheet.addButtonWithTitle(key)
+        if sheet == nil {
+            let majorVersion = systemMajorVersion()
+            let cancelTitle = NSLocalizedString("Cancel", tableName: nil, value: "Cancel", comment: "Cancel button. (General)")
+            sheet = UIActionSheet(title: NSLocalizedString("Please select a category", tableName: nil, value: "Please select a category", comment: "ActionSheet title."), delegate: self, cancelButtonTitle: majorVersion != 7 ? cancelTitle : nil, destructiveButtonTitle: nil)
+            for key in categories.keys {
+                sheet.addButtonWithTitle(key)
+            }
+            if majorVersion == 7 && userInterfaceIdiom() == .Phone {
+                sheet.addButtonWithTitle(cancelTitle)
+            }
         }
-        sheet.showFromBarButtonItem(navigationItem.rightBarButtonItem, animated: true)
+        if !sheet.visible {
+            sheet.showFromBarButtonItem(navigationItem.rightBarButtonItems[1] as UIBarButtonItem, animated: true)
+        }
     }
     
     @IBAction func showSettings(sender:AnyObject?) {
@@ -324,6 +332,9 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     
     // MARK: ActionSheet Delegates
     func actionSheet(actionSheet: UIActionSheet!, didDismissWithButtonIndex buttonIndex: Int) {
+        if systemMajorVersion() == 7 && buttonIndex == (actionSheet.numberOfButtons - 1) && userInterfaceIdiom() == .Phone {
+            return
+        }
         if buttonIndex != actionSheet.cancelButtonIndex {
             let key = actionSheet.buttonTitleAtIndex(buttonIndex)
             title = key

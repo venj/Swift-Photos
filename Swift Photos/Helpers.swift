@@ -16,6 +16,16 @@ let PasscodeLockStatus = "kPasscodeLockStatus"
 let PasscodeLockConfig = "kPasscodeLockConfig"
 let LastViewedSectionTitle = "kLastViewedSectionTitle"
 
+func systemMajorVersion() -> Int {
+    let ver:NSString = UIDevice.currentDevice().systemVersion as NSString
+    let majorVersion = (ver.componentsSeparatedByString(".")[0] as NSString).integerValue
+    return majorVersion
+}
+
+func userInterfaceIdiom() -> UIUserInterfaceIdiom {
+    return UIDevice.currentDevice().userInterfaceIdiom
+}
+
 func showHUDInView(view:UIView, withMessage message: String, afterDelay delay:NSTimeInterval) -> MBProgressHUD {
     var messageHUD = MBProgressHUD.showHUDAddedTo(view, animated: true)
     messageHUD.mode = MBProgressHUDModeCustomView
