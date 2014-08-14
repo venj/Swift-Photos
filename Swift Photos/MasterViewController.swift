@@ -166,11 +166,17 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
         let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as UITableViewCell
 
         cell.textLabel.text = posts[indexPath.row].title
+        let link = posts[indexPath.row].link
+        if imagesCached(forPostLink: link) {
+            cell.textLabel.textColor = UIColor.blueColor()
+        }
+        else {
+            cell.textLabel.textColor = UIColor.blackColor()
+        }
         return cell
     }
     
     override func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath!) {
-        let indexPath = tableView.indexPathForSelectedRow()
         let hud = MBProgressHUD.showHUDAddedTo(navigationController.view, animated: true)
         let link = posts[indexPath.row].link
         self.images = []
@@ -191,6 +197,19 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
             strongSelf.navigationController.pushViewController(photoBrowser, animated: true)
         },
         errorHandler: {
+            hud.hide(true)
+        })
+    }
+    
+    override func tableView(tableView: UITableView!, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath!) {
+        let hud = MBProgressHUD.showHUDAddedTo(navigationController.view, animated: true)
+        let link = posts[indexPath.row].link
+        fetchImageLinks(fromPostLink: link, completionHandler: { [weak self] fetchedImages in
+            let strongSelf = self!
+            saveCachedLinksToHomeDirectory(fetchedImages, forPostLink: link)
+            strongSelf.tableView.reloadData()
+            hud.hide(true)
+        }, errorHandler: {
             hud.hide(true)
         })
     }

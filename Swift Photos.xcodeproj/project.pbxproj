@@ -47,12 +47,12 @@
 		25142ABB199203DC00CB4C93 /* Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		25142ABD199208F200CB4C93 /* Swift Photos-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Swift Photos-Bridging-Header.h"; sourceTree = "<group>"; };
 		251B99E31999B13B00F8A67A /* InAppSettings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = InAppSettings.bundle; sourceTree = "<group>"; };
-		253A9E6A1999AC8200781AC2 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		253BF0EA1994A232007B3702 /* Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		258A1F6E199270320080BB60 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		258A1F73199270330080BB60 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		258A1F7A199272A00080BB60 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		258A1F7C199272D50080BB60 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		25A22615199CE458008ACB70 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		4669F24C7C4E45DE9E8321D0 /* libPods-Swift Photos.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Swift Photos.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D06AF810D6341FEA0D18280 /* Pods-Swift Photos.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Swift Photos.xcconfig"; path = "Pods/Pods-Swift Photos.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -319,7 +319,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				25142A9F1991F36300CB4C93 /* Base */,
-				253A9E6A1999AC8200781AC2 /* zh-Hans */,
+				25A22615199CE458008ACB70 /* zh-Hans */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";

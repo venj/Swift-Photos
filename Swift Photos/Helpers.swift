@@ -91,9 +91,21 @@ func localDirectoryForPost(link:String) -> String {
 
 func saveCachedLinksToHomeDirectory(links:Array<String>, forPostLink postLink:String) {
     let fm = NSFileManager.defaultManager()
-    for link in links {
-        fm.copyItemAtPath(localImagePath(link), toPath: localDirectoryForPost(postLink), error: nil)
+    for var i = 0; i < links.count; i++ {
+        let imagePath = localImagePath(links[i])
+        let destDir:NSString = localDirectoryForPost(postLink) as NSString
+        let destImageName = destDir.stringByAppendingPathComponent("\(i + 1)")
+        if fm.fileExistsAtPath(imagePath) && !fm.fileExistsAtPath(destImageName) {
+            fm.copyItemAtPath(imagePath, toPath: destImageName, error: nil)
+        }
     }
+}
+
+func imagesCached(forPostLink link:String) -> Bool {
+    let targetDir = localDirectoryForPost(link)
+    let fm = NSFileManager.defaultManager()
+    let numberOfFiles = fm.contentsOfDirectoryAtPath(targetDir, error: nil).count
+    return numberOfFiles > 0 ? true : false
 }
 
 extension NSData {
