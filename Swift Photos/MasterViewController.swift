@@ -140,7 +140,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     func loadPostListForPage(page:Int) {
         var link:String
         if forumID == 16 {
-            if (daguerreLink as NSString).isEqualToString("") {
+            if daguerreLink == "" {
                 parseDaguerreLink()
             }
             else {
@@ -341,12 +341,12 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     }
     
     func settingsViewController(sender: IASKAppSettingsViewController!, buttonTappedForSpecifier specifier: IASKSpecifier!) {
-        if (specifier.key() as NSString).isEqualToString(PasscodeLockConfig) {
+        if specifier.key() == PasscodeLockConfig {
             let vc = KKPasscodeSettingsViewController(style:.Grouped)
             vc.delegate = self
             sender.navigationController.pushViewController(vc, animated: true)
         }
-        else if (specifier.key() as NSString).isEqualToString(ClearCacheNowKey) {
+        else if specifier.key() == ClearCacheNowKey {
             let aView = sender.navigationController.view
             let hud = MBProgressHUD.showHUDAddedTo(aView, animated: true)
             SDImageCache.sharedImageCache().clearDiskOnCompletion() { [weak self] in
