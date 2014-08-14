@@ -243,14 +243,12 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     @IBAction func showSettings(sender:AnyObject?) {
         let settingsHUD = MBProgressHUD.showHUDAddedTo(navigationController.view, animated: true)
         SDImageCache.sharedImageCache().calculateSizeWithCompletionBlock() { [weak self] (fileCount:UInt, totalSize:UInt) in
-            let defaults = NSUserDefaults.standardUserDefaults()
             let strongSelf = self!
             let humanReadableSize = NSString(format: "%.1f MB", Double(totalSize) / (1024 * 1024))
-            defaults.setObject(humanReadableSize, forKey: ImageCacheSizeKey)
+            saveValue(humanReadableSize, forKey: ImageCacheSizeKey)
             
             let status = KKPasscodeLock.sharedLock().isPasscodeRequired() ? localizedString("On", "打开") : localizedString("Off", "关闭")
-            defaults.setObject(status, forKey: PasscodeLockStatus)
-            defaults.synchronize()
+            saveValue(status, forKey: PasscodeLockStatus)
             
             strongSelf.settingsViewController = IASKAppSettingsViewController(style: .Grouped)
             strongSelf.settingsViewController.delegate = self
@@ -277,11 +275,9 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     }
     
     func recalculateCacheSize() {
-        let defaults = NSUserDefaults.standardUserDefaults()
         let size = SDImageCache.sharedImageCache().getSize()
         let humanReadableSize = NSString(format: "%.1f MB", Double(size) / (1024 * 1024))
-        defaults.setObject(humanReadableSize, forKey: ImageCacheSizeKey)
-        defaults.synchronize()
+        saveValue(humanReadableSize, forKey: ImageCacheSizeKey)
     }
     
     func fetchImageLinks(fromPostLink postLink:String, completionHandler:((Array<String>) -> Void), errorHandler:(() -> Void)) {
@@ -315,17 +311,6 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
         }
     }
     
-    func getValue(key:String) -> AnyObject! {
-        let defaults = NSUserDefaults.standardUserDefaults()
-        return defaults.objectForKey(key)
-    }
-    
-    func saveValue(value:AnyObject, forKey key:String) {
-        let defaults = NSUserDefaults.standardUserDefaults()
-        defaults.setObject(value, forKey: key)
-        defaults.synchronize()
-    }
-    
     func setDefaultTitle() {
         title = NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图")
     }
@@ -345,10 +330,8 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     
     // MARK: KKPassCode Delegate
     func didSettingsChanged(viewController:KKPasscodeViewController) {
-        let defaults = NSUserDefaults.standardUserDefaults()
         let status = KKPasscodeLock.sharedLock().isPasscodeRequired() ? localizedString("On", "已打开") : localizedString("Off", "已关闭")
-        defaults.setObject(status, forKey: PasscodeLockStatus)
-        defaults.synchronize()
+        saveValue(status, forKey: PasscodeLockStatus)
         settingsViewController.tableView.reloadData()
     }
     

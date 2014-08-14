@@ -16,6 +16,17 @@ let PasscodeLockStatus = "kPasscodeLockStatus"
 let PasscodeLockConfig = "kPasscodeLockConfig"
 let LastViewedSectionTitle = "kLastViewedSectionTitle"
 
+func getValue(key:String) -> AnyObject! {
+    let defaults = NSUserDefaults.standardUserDefaults()
+    return defaults.objectForKey(key)
+}
+
+func saveValue(value:AnyObject, forKey key:String) {
+    let defaults = NSUserDefaults.standardUserDefaults()
+    defaults.setObject(value, forKey: key)
+    defaults.synchronize()
+}
+
 func systemMajorVersion() -> Int {
     let ver:NSString = UIDevice.currentDevice().systemVersion as NSString
     let majorVersion = (ver.componentsSeparatedByString(".")[0] as NSString).integerValue
