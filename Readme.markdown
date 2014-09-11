@@ -6,6 +6,8 @@
 编译
 ----
 
+**请重新签代码编译，免去繁琐的冲突解决。记得先保存你的Common.swift文件。**
+
 你需要安装最新版的Xcode 6和Cocoa Pods。然后执行如下操作：
 
 ```
@@ -17,6 +19,8 @@ $ pod install
 ```
 
 然后打开Swift Photo.xcworkspace，编译安装即可。
+
+如果你需要安装到iOS 7的系统上，请先将Alamofire子项目的Deployment Target设置成7.0。
 
 更新记录
 -------
