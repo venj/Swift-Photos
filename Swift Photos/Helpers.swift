@@ -104,7 +104,7 @@ func saveCachedLinksToHomeDirectory(links:Array<String>, forPostLink postLink:St
 func imagesCached(forPostLink link:String) -> Bool {
     let targetDir = localDirectoryForPost(link)
     let fm = NSFileManager.defaultManager()
-    let numberOfFiles = fm.contentsOfDirectoryAtPath(targetDir, error: nil).count
+    let numberOfFiles = fm.contentsOfDirectoryAtPath(targetDir, error: nil)!.count
     return numberOfFiles > 0 ? true : false
 }
 

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Alamofire
 
 class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIActionSheetDelegate, IASKSettingsDelegate,  KKPasscodeSettingsViewControllerDelegate {
     
@@ -46,7 +47,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
         let categoryButton = UIBarButtonItem(title: NSLocalizedString("Categories", tableName: nil, value: "Categories", comment: "分类"), style: .Plain, target: self, action: "showSections:")
         let settingsButton = UIBarButtonItem(title: NSLocalizedString("Settings", tableName: nil, value: "Settings", comment: "设置"), style: .Plain, target: self, action: "showSettings:")
         navigationItem.rightBarButtonItems = [settingsButton, categoryButton]
-        loadFirstPageForKey(title)
+        loadFirstPageForKey(title!)
     }
 
     override func didReceiveMemoryWarning() {
@@ -56,13 +57,14 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     
     func parseDaguerreLink() {
         let link = baseLink(forumID)
-        var request = Alamofire.request(.GET, link + "index.php")
-        var hud = showHUDInView(self.navigationController.view, withMessage: NSLocalizedString("Parsing Daguerre Link...", tableName: nil, value: "Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."), afterDelay: 0.0)
+        var request =
+        Alamofire.request(.GET, link + "index.php")
+        var hud = showHUDInView(self.navigationController!.view, withMessage: NSLocalizedString("Parsing Daguerre Link...", tableName: nil, value: "Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."), afterDelay: 0.0)
         request.response { [weak self] (request, response, data, error) in
             let strongSelf = self!
             if data == nil {
                 hud.hide(true)
-                showHUDInView(strongSelf.navigationController.view, withMessage: NSLocalizedString("No data received. iOS 7 user?", tableName: nil, value: "No data received. iOS 7 user?", comment: "HUD when no data received."), afterDelay: 2.0)
+                showHUDInView(strongSelf.navigationController!.view, withMessage: NSLocalizedString("No data received. iOS 7 user?", tableName: nil, value: "No data received. iOS 7 user?", comment: "HUD when no data received."), afterDelay: 2.0)
                 return
             }
             else {
@@ -90,13 +92,13 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     }
     
     func loadPostList(link:String, forPage page:Int) {
-        let hud = MBProgressHUD.showHUDAddedTo(navigationController.view, animated: true)
+        let hud = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
         var request = Alamofire.request(.GET, link + "&page=\(self.page)")
         request.response { [weak self] (request, response, data, error) in
             let strongSelf = self!
             if data == nil {
                 hud.hide(true)
-                showHUDInView(strongSelf.navigationController.view, withMessage: NSLocalizedString("No data received. iOS 7 user?", tableName: nil, value: "No data received. iOS 7 user?", comment: "HUD when no data received."), afterDelay: 2.0)
+                showHUDInView(strongSelf.navigationController!.view, withMessage: NSLocalizedString("No data received. iOS 7 user?", tableName: nil, value: "No data received. iOS 7 user?", comment: "HUD when no data received."), afterDelay: 2.0)
                 return
             }
             if error == nil {
@@ -165,19 +167,19 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as UITableViewCell
 
-        cell.textLabel.text = posts[indexPath.row].title
+        cell.textLabel?.text = posts[indexPath.row].title
         let link = posts[indexPath.row].link
         if imagesCached(forPostLink: link) {
-            cell.textLabel.textColor = UIColor.blueColor()
+            cell.textLabel?.textColor = UIColor.blueColor()
         }
         else {
-            cell.textLabel.textColor = UIColor.blackColor()
+            cell.textLabel?.textColor = UIColor.blackColor()
         }
         return cell
     }
     
-    override func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath!) {
-        let hud = MBProgressHUD.showHUDAddedTo(navigationController.view, animated: true)
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let hud = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
         let link = posts[indexPath.row].link
         self.images = []
         fetchImageLinks(fromPostLink: link, completionHandler: { [weak self] fetchedImages in
@@ -189,20 +191,21 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
                 return
             }
             strongSelf.images = fetchedImages
-            strongSelf.currentTitle = strongSelf.tableView.cellForRowAtIndexPath(indexPath).textLabel.text
+            let aCell:UITableViewCell = tableView.cellForRowAtIndexPath(indexPath)!
+            strongSelf.currentTitle = aCell.textLabel!.text!
             var photoBrowser = MWPhotoBrowser(delegate: self)
             photoBrowser.displayActionButton = true
             photoBrowser.zoomPhotosToFill = false
             photoBrowser.displayNavArrows = true
-            strongSelf.navigationController.pushViewController(photoBrowser, animated: true)
+            strongSelf.navigationController?.pushViewController(photoBrowser, animated: true)
         },
         errorHandler: {
             hud.hide(true)
         })
     }
     
-    override func tableView(tableView: UITableView!, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath!) {
-        let hud = MBProgressHUD.showHUDAddedTo(navigationController.view, animated: true)
+    override func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {
+        let hud = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
         let link = posts[indexPath.row].link
         fetchImageLinks(fromPostLink: link, completionHandler: { [weak self] fetchedImages in
             let strongSelf = self!
@@ -214,7 +217,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
         })
     }
     
-    override func tableView(tableView: UITableView!, willDisplayCell cell: UITableViewCell!, forRowAtIndexPath indexPath: NSIndexPath!) {
+    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
         if indexPath.row == posts.count - 1 {
             loadPostListForPage(page)
         }
@@ -255,12 +258,12 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
             }
         }
         if !sheet.visible {
-            sheet.showFromBarButtonItem(navigationItem.rightBarButtonItems[1] as UIBarButtonItem, animated: true)
+            sheet.showFromBarButtonItem(navigationItem.rightBarButtonItems![1] as UIBarButtonItem, animated: true)
         }
     }
     
     @IBAction func showSettings(sender:AnyObject?) {
-        let settingsHUD = MBProgressHUD.showHUDAddedTo(navigationController.view, animated: true)
+        let settingsHUD = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
         SDImageCache.sharedImageCache().calculateSizeWithCompletionBlock() { [weak self] (fileCount:UInt, totalSize:UInt) in
             let strongSelf = self!
             let humanReadableSize = NSString(format: "%.1f MB", Double(totalSize) / (1024 * 1024))
@@ -281,7 +284,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     
     @IBAction func refresh(sender:AnyObject?) {
         let key = title
-        loadFirstPageForKey(key)
+        loadFirstPageForKey(key!)
     }
     
     // MARK: Helper
@@ -363,16 +366,16 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
         if specifier.key() == PasscodeLockConfig {
             let vc = KKPasscodeSettingsViewController(style:.Grouped)
             vc.delegate = self
-            sender.navigationController.pushViewController(vc, animated: true)
+            sender.navigationController?.pushViewController(vc, animated: true)
         }
         else if specifier.key() == ClearCacheNowKey {
-            let aView = sender.navigationController.view
+            let aView = sender.navigationController?.view
             let hud = MBProgressHUD.showHUDAddedTo(aView, animated: true)
             SDImageCache.sharedImageCache().clearDiskOnCompletion() { [weak self] in
                 let strongSelf = self!
                 hud.hide(true)
                 strongSelf.recalculateCacheSize()
-                showHUDInView(aView, withMessage: localizedString("Cache Cleared", "缓存已清除"), afterDelay: 1.0)
+                showHUDInView(aView!, withMessage: localizedString("Cache Cleared", "缓存已清除"), afterDelay: 1.0)
                 sender.tableView.reloadData()
             }
         }

@@ -66,7 +66,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MMAppSwitcherDataSource, 
             vc.delegate = self
             let nav = UINavigationController(rootViewController: vc)
             vc.modalPresentationStyle = .FullScreen
-            window?.rootViewController.presentViewController(nav, animated: false, completion: nil)
+            window?.rootViewController?.presentViewController(nav, animated: false, completion: nil)
         }
     }
 
