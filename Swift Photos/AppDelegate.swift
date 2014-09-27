@@ -9,7 +9,7 @@
 import UIKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, MMAppSwitcherDataSource, KKPasscodeViewControllerDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, MMAppSwitcherDataSource, LTHPasscodeViewControllerDelegate {
                             
     var window: UIWindow?
 
@@ -60,13 +60,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MMAppSwitcherDataSource, 
     
     // MARK: Helper
     func showPassLock() {
-        if KKPasscodeLock.sharedLock().isPasscodeRequired() {
-            let vc = KKPasscodeViewController()
-            vc.mode = UInt(KKPasscodeModeEnter)
-            vc.delegate = self
-            let nav = UINavigationController(rootViewController: vc)
-            vc.modalPresentationStyle = .FullScreen
-            window?.rootViewController?.presentViewController(nav, animated: false, completion: nil)
+        if LTHPasscodeViewController.doesPasscodeExist() {
+            LTHPasscodeViewController.sharedUser().showLockScreenWithAnimation(true, withLogout: false, andLogoutTitle: nil)
         }
     }
 

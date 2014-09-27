@@ -9,10 +9,10 @@
 import UIKit
 import Alamofire
 
-class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIActionSheetDelegate, IASKSettingsDelegate,  KKPasscodeSettingsViewControllerDelegate {
+class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSettingsDelegate {
     
     var posts:Array<Post> = []
-    var images:Array<String> = []
+    var images:Array<IDMPhoto> = []
     var page = 1
     var forumID = 16
     var daguerreLink:String = ""
@@ -190,14 +190,35 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
             if fetchedImages.count == 0 {
                 return
             }
-            strongSelf.images = fetchedImages
+            else {
+                var imageArray = Array<IDMPhoto>()
+                for var i = 0; i < fetchedImages.count; i++ {
+                    let img = fetchedImages[i]
+                    let photo = IDMPhoto(URL: NSURL(string: img))
+                    // Caption
+                    let cell = strongSelf.tableView.cellForRowAtIndexPath(indexPath)
+                    var t:NSMutableString = cell!.textLabel!.text!.mutableCopy() as NSMutableString
+                    var range = t.rangeOfString("[", options:.BackwardsSearch)
+                    if range.location == NSNotFound {
+                        range = t.rangeOfString("【", options:.BackwardsSearch)
+                    }
+                    if range.location != NSNotFound {
+                        t.insertString("\(i + 1)/", atIndex: range.location + 1)
+                    }
+                    photo.caption = t
+                    
+                    imageArray.append(photo)
+                }
+                strongSelf.images = imageArray
+            }
             let aCell:UITableViewCell = tableView.cellForRowAtIndexPath(indexPath)!
             strongSelf.currentTitle = aCell.textLabel!.text!
-            var photoBrowser = MWPhotoBrowser(delegate: self)
-            photoBrowser.displayActionButton = true
-            photoBrowser.zoomPhotosToFill = false
-            photoBrowser.displayNavArrows = true
-            strongSelf.navigationController?.pushViewController(photoBrowser, animated: true)
+            
+            var photoBrowser = IDMPhotoBrowser(photos: strongSelf.images)
+            photoBrowser.displayActionButton = true;
+            photoBrowser.displayArrowButton = true;
+            photoBrowser.displayCounterLabel = true;
+            strongSelf.presentViewController(photoBrowser, animated: true, completion: nil)
         },
         errorHandler: {
             hud.hide(true)
@@ -221,27 +242,6 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
         if indexPath.row == posts.count - 1 {
             loadPostListForPage(page)
         }
-    }
-    
-    // MARK: MWPhotoBrowser Delegate
-    func numberOfPhotosInPhotoBrowser(photoBrowser: MWPhotoBrowser!) -> UInt {
-        return UInt(images.count)
-    }
-    
-    func photoBrowser(photoBrowser: MWPhotoBrowser!, photoAtIndex index: UInt) -> MWPhotoProtocol! {
-        var p = MWPhoto(URL: NSURL(string: images[Int(index)]))
-        return p
-    }
-    
-    func photoBrowser(photoBrowser: MWPhotoBrowser!, titleForPhotoAtIndex index: UInt) -> String! {
-        var t:NSMutableString = (self.currentTitle as NSString).mutableCopy() as NSMutableString
-        let range = t.rangeOfString("[", options:.BackwardsSearch)
-        // FIXME: Why can't I use NSNotFound here
-        if range.location != NSIntegerMax {
-            t.insertString("\(index + 1)/", atIndex: range.location + 1)
-            return t
-        }
-        return self.currentTitle
     }
     
     // MARK: Actions
@@ -269,7 +269,7 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
             let humanReadableSize = NSString(format: "%.1f MB", Double(totalSize) / (1024 * 1024))
             saveValue(humanReadableSize, forKey: ImageCacheSizeKey)
             
-            let status = KKPasscodeLock.sharedLock().isPasscodeRequired() ? localizedString("On", "打开") : localizedString("Off", "关闭")
+            let status = LTHPasscodeViewController.doesPasscodeExist() ? localizedString("On", "打开") : localizedString("Off", "关闭")
             saveValue(status, forKey: PasscodeLockStatus)
             
             strongSelf.settingsViewController = IASKAppSettingsViewController(style: .Grouped)
@@ -351,11 +351,11 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     }
     
     // MARK: KKPassCode Delegate
-    func didSettingsChanged(viewController:KKPasscodeViewController) {
-        let status = KKPasscodeLock.sharedLock().isPasscodeRequired() ? localizedString("On", "已打开") : localizedString("Off", "已关闭")
-        saveValue(status, forKey: PasscodeLockStatus)
-        settingsViewController.tableView.reloadData()
-    }
+//    func didSettingsChanged(viewController:KKPasscodeViewController) {
+//        let status = KKPasscodeLock.sharedLock().isPasscodeRequired() ? localizedString("On", "已打开") : localizedString("Off", "已关闭")
+//        saveValue(status, forKey: PasscodeLockStatus)
+//        settingsViewController.tableView.reloadData()
+//    }
     
     // MARK: Settings
     func settingsViewControllerDidEnd(sender: IASKAppSettingsViewController!) {
@@ -364,9 +364,12 @@ class MasterViewController: UITableViewController, MWPhotoBrowserDelegate, UIAct
     
     func settingsViewController(sender: IASKAppSettingsViewController!, buttonTappedForSpecifier specifier: IASKSpecifier!) {
         if specifier.key() == PasscodeLockConfig {
-            let vc = KKPasscodeSettingsViewController(style:.Grouped)
-            vc.delegate = self
-            sender.navigationController?.pushViewController(vc, animated: true)
+            if LTHPasscodeViewController.doesPasscodeExist() {
+                LTHPasscodeViewController.sharedUser().showForEnablingPasscodeInViewController(sender, asModal: false)
+            }
+            else {
+                LTHPasscodeViewController.sharedUser().showForDisablingPasscodeInViewController(sender, asModal: false)
+            }
         }
         else if specifier.key() == ClearCacheNowKey {
             let aView = sender.navigationController?.view
