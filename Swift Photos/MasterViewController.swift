@@ -215,9 +215,10 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             strongSelf.currentTitle = aCell.textLabel!.text!
             
             var photoBrowser = IDMPhotoBrowser(photos: strongSelf.images)
-            photoBrowser.displayActionButton = true;
-            photoBrowser.displayArrowButton = true;
-            photoBrowser.displayCounterLabel = true;
+            photoBrowser.displayActionButton = true
+            photoBrowser.displayArrowButton = true
+            photoBrowser.displayCounterLabel = true
+            photoBrowser.usePopAnimation = true
             strongSelf.presentViewController(photoBrowser, animated: true, completion: nil)
         },
         errorHandler: {
@@ -364,7 +365,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     func settingsViewController(sender: IASKAppSettingsViewController!, buttonTappedForSpecifier specifier: IASKSpecifier!) {
         if specifier.key() == PasscodeLockConfig {
-            if LTHPasscodeViewController.doesPasscodeExist() {
+            if !LTHPasscodeViewController.doesPasscodeExist() {
                 LTHPasscodeViewController.sharedUser().showForEnablingPasscodeInViewController(sender, asModal: false)
             }
             else {
