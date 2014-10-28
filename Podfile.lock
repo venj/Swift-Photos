@@ -26,7 +26,7 @@ PODS:
     - DACircularProgress
     - pop
   - InAppSettingsKit (2.1)
-  - LTHPasscodeViewController (3.1.9)
+  - LTHPasscodeViewController (3.3.2)
   - MBProgressHUD (0.9)
   - MMAppSwitcher (0.2.0)
   - pop (1.0.7)
@@ -37,8 +37,8 @@ PODS:
 DEPENDENCIES:
   - IDMPhotoBrowser (~> 1.4)
   - InAppSettingsKit (~> 2.1)
-  - LTHPasscodeViewController (~> 3.1.9)
-  - MBProgressHUD (~> 0.6)
+  - LTHPasscodeViewController (~> 3.3.2)
+  - MBProgressHUD (~> 0.9)
   - MMAppSwitcher (~> 0.2.0)
   - SDWebImage (~> 3.7.1)
 
@@ -47,10 +47,10 @@ SPEC CHECKSUMS:
   DACircularProgress: 3b41941891a56dc6aa17971f5322a9a38a6f446e
   IDMPhotoBrowser: da2110d99ea8735ad9a0ba52f2d184e756104a71
   InAppSettingsKit: 853cdc9fcc76b87a4694f8d2b930e116463b5a29
-  LTHPasscodeViewController: 2d7f017c56985bd663e4e1625a126f7e81d6fdaf
+  LTHPasscodeViewController: 1139ed7e6b5d96ef51f508b9a29e35a2d0a82ac4
   MBProgressHUD: 2038dbcf3dce73215abed6001657043d53aa79a8
   MMAppSwitcher: 83d42bf769c28cc3a1c6e744d221eed199dc8298
   pop: 2f14a1ea61339767af9e66741b418c831b3844df
   SDWebImage: 116e88633b5b416ea0ca4b334a4ac59cf72dd38d
 
-COCOAPODS: 0.34.1
+COCOAPODS: 0.34.4
