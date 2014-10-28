@@ -75,9 +75,9 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                     let regexString:String = "<a href=\"([^\"]+?)\">達蓋爾的旗幟</a>"
                     var linkIndex = 0, titleIndex = 0
                     var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &err)
-                    let matches = regex.matchesInString(str, options: nil, range: NSMakeRange(0, str.length))
-                    if matches.count > 0 {
-                        let match: AnyObject = matches[0]
+                    let matches = regex?.matchesInString(str, options: nil, range: NSMakeRange(0, str.length))
+                    if matches!.count > 0 {
+                        let match: AnyObject = matches![0]
                         strongSelf.daguerreLink = link + str.substringWithRange(match.rangeAtIndex(1))
                     }
                 }
@@ -118,7 +118,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                     titleIndex = 2
                 }
                 var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &err)
-                let matches = regex.matchesInString(str, options: nil, range: NSMakeRange(0, str.length))
+                let matches = regex!.matchesInString(str, options: nil, range: NSMakeRange(0, str.length))
                 var indexPathes:Array<NSIndexPath> = []
                 var cellCount = strongSelf.posts.count
                 for var i = 0; i < matches.count; ++i {
@@ -167,13 +167,13 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as UITableViewCell
 
-        cell.textLabel?.text = posts[indexPath.row].title
+        cell.textLabel.text = posts[indexPath.row].title
         let link = posts[indexPath.row].link
         if imagesCached(forPostLink: link) {
-            cell.textLabel?.textColor = UIColor.blueColor()
+            cell.textLabel.textColor = UIColor.blueColor()
         }
         else {
-            cell.textLabel?.textColor = UIColor.blackColor()
+            cell.textLabel.textColor = UIColor.blackColor()
         }
         return cell
     }
@@ -197,7 +197,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                     let photo = IDMPhoto(URL: NSURL(string: img))
                     // Caption
                     let cell = strongSelf.tableView.cellForRowAtIndexPath(indexPath)
-                    var t:NSMutableString = cell!.textLabel!.text!.mutableCopy() as NSMutableString
+                    var t:NSMutableString = cell!.textLabel.text!.mutableCopy() as NSMutableString
                     var range = t.rangeOfString("[", options:.BackwardsSearch)
                     if range.location == NSNotFound {
                         range = t.rangeOfString("【", options:.BackwardsSearch)
@@ -212,7 +212,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 strongSelf.images = imageArray
             }
             let aCell:UITableViewCell = tableView.cellForRowAtIndexPath(indexPath)!
-            strongSelf.currentTitle = aCell.textLabel!.text!
+            strongSelf.currentTitle = aCell.textLabel.text!
             
             var photoBrowser = IDMPhotoBrowser(photos: strongSelf.images)
             photoBrowser.displayActionButton = true
@@ -320,7 +320,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                     regexString = "img src=\"([^\"]+)\" .+? onload"
                 }
                 var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &error)
-                let matches = regex.matchesInString(str, options: nil, range: NSMakeRange(0, str.length))
+                let matches = regex!.matchesInString(str, options: nil, range: NSMakeRange(0, str.length))
                 for match in matches {
                     let imageLink = str.substringWithRange(match.rangeAtIndex(1))
                     fetchedImages.append(imageLink)

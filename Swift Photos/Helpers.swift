@@ -113,6 +113,6 @@ extension NSData {
         // CP 936: GBK, CP 54936: GB18030
         let cfEncoding = CFStringConvertWindowsCodepageToEncoding(54936) //GB18030
         let gbkEncoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding)
-        return NSString(data: self, encoding: gbkEncoding)
+        return NSString(data: self, encoding: gbkEncoding)!
     }
 }
