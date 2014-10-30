@@ -20,10 +20,17 @@ $ pod install
 
 然后打开Swift Photo.xcworkspace，编译安装即可。
 
-如果你需要安装到iOS 7的系统上，请先将Alamofire子项目的Deployment Target设置成7.0。
+如果你需要安装到iOS 8的系统上，请先将Alamofire子项目的Deployment Target设置成7.0。
 
 更新记录
 -------
+
+**2.0(44, 测试版)**
+
+- 现在已经支持iPhone 6, 6 Plus的全新分辨率
+- 现在已支持TouchID解锁（感谢`LTHPasscodeViewController`）
+- 换回`MWPhotoBrowser`
+- iOS 7已不再支持
 
 **2.0(38, 测试版)**
 
