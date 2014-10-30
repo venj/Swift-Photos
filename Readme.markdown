@@ -20,10 +20,12 @@ $ pod install
 
 然后打开Swift Photo.xcworkspace，编译安装即可。
 
-如果你需要安装到iOS 8的系统上，请先将Alamofire子项目的Deployment Target设置成7.0。
-
 更新记录
 -------
+
+**2.0(47, 测试版)**
+
+- 修正了在加载论坛帖子列表时在文档目录创建大量空文件夹的问题。
 
 **2.0(44, 测试版)**
 
