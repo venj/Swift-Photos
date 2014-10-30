@@ -6,7 +6,8 @@ pod 'MBProgressHUD', '~> 0.9'
 pod 'MMAppSwitcher', '~> 0.2.0'
 pod 'InAppSettingsKit', '~> 2.1'
 pod 'LTHPasscodeViewController', '~> 3.3.2'
-pod 'IDMPhotoBrowser', '~> 1.4'
+#pod 'IDMPhotoBrowser', '~> 1.4'
+pod 'MWPhotoBrowser', '~> 1.4.1'
 pod 'SDWebImage', '~> 3.7.1'
 end
 

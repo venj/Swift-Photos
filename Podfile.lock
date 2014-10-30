@@ -1,56 +1,35 @@
 PODS:
-  - AFNetworking (2.4.1):
-    - AFNetworking/NSURLConnection
-    - AFNetworking/NSURLSession
-    - AFNetworking/Reachability
-    - AFNetworking/Security
-    - AFNetworking/Serialization
-    - AFNetworking/UIKit
-  - AFNetworking/NSURLConnection (2.4.1):
-    - AFNetworking/Reachability
-    - AFNetworking/Security
-    - AFNetworking/Serialization
-  - AFNetworking/NSURLSession (2.4.1):
-    - AFNetworking/Reachability
-    - AFNetworking/Security
-    - AFNetworking/Serialization
-  - AFNetworking/Reachability (2.4.1)
-  - AFNetworking/Security (2.4.1)
-  - AFNetworking/Serialization (2.4.1)
-  - AFNetworking/UIKit (2.4.1):
-    - AFNetworking/NSURLConnection
-    - AFNetworking/NSURLSession
   - DACircularProgress (2.2.0)
-  - IDMPhotoBrowser (1.4):
-    - AFNetworking
-    - DACircularProgress
-    - pop
-  - InAppSettingsKit (2.1)
-  - LTHPasscodeViewController (3.3.2)
+  - InAppSettingsKit (2.2)
+  - LTHPasscodeViewController (3.3.3)
   - MBProgressHUD (0.9)
   - MMAppSwitcher (0.2.0)
-  - pop (1.0.7)
+  - MWPhotoBrowser (1.4.1):
+    - DACircularProgress
+    - MBProgressHUD (~> 0.8)
+    - PSTCollectionView (~> 1.2)
+    - SDWebImage (~> 3.7)
+  - PSTCollectionView (1.2.3)
   - SDWebImage (3.7.1):
     - SDWebImage/Core
   - SDWebImage/Core (3.7.1)
 
 DEPENDENCIES:
-  - IDMPhotoBrowser (~> 1.4)
   - InAppSettingsKit (~> 2.1)
   - LTHPasscodeViewController (~> 3.3.2)
   - MBProgressHUD (~> 0.9)
   - MMAppSwitcher (~> 0.2.0)
+  - MWPhotoBrowser (~> 1.4.1)
   - SDWebImage (~> 3.7.1)
 
 SPEC CHECKSUMS:
-  AFNetworking: 0aabc6fae66d6e5d039eeb21c315843c7aae51ab
   DACircularProgress: 3b41941891a56dc6aa17971f5322a9a38a6f446e
-  IDMPhotoBrowser: da2110d99ea8735ad9a0ba52f2d184e756104a71
-  InAppSettingsKit: 853cdc9fcc76b87a4694f8d2b930e116463b5a29
-  LTHPasscodeViewController: 1139ed7e6b5d96ef51f508b9a29e35a2d0a82ac4
+  InAppSettingsKit: 08d5d21057973c5fd6cd9f7063fc27f73aa0d7a3
+  LTHPasscodeViewController: 8387a22d59ed648e3c23d8db265eaae110850975
   MBProgressHUD: 2038dbcf3dce73215abed6001657043d53aa79a8
   MMAppSwitcher: 83d42bf769c28cc3a1c6e744d221eed199dc8298
-  pop: 2f14a1ea61339767af9e66741b418c831b3844df
+  MWPhotoBrowser: be05b3b7521e961382a4ba5579685bf5a00b93d8
+  PSTCollectionView: d9f466e4554cc83260ca9bde7beb27f308e8fd76
   SDWebImage: 116e88633b5b416ea0ca4b334a4ac59cf72dd38d
 
 COCOAPODS: 0.34.4

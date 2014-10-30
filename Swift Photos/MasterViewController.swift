@@ -9,10 +9,10 @@
 import UIKit
 import Alamofire
 
-class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSettingsDelegate {
+class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSettingsDelegate, MWPhotoBrowserDelegate {
     
-    var posts:Array<Post> = []
-    var images:Array<IDMPhoto> = []
+    var posts:[Post] = []
+    var images:[String] = []
     var page = 1
     var forumID = 16
     var daguerreLink:String = ""
@@ -190,36 +190,14 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             if fetchedImages.count == 0 {
                 return
             }
-            else {
-                var imageArray = Array<IDMPhoto>()
-                for var i = 0; i < fetchedImages.count; i++ {
-                    let img = fetchedImages[i]
-                    let photo = IDMPhoto(URL: NSURL(string: img))
-                    // Caption
-                    let cell = strongSelf.tableView.cellForRowAtIndexPath(indexPath)
-                    var t:NSMutableString = cell!.textLabel.text!.mutableCopy() as NSMutableString
-                    var range = t.rangeOfString("[", options:.BackwardsSearch)
-                    if range.location == NSNotFound {
-                        range = t.rangeOfString("【", options:.BackwardsSearch)
-                    }
-                    if range.location != NSNotFound {
-                        t.insertString("\(i + 1)/", atIndex: range.location + 1)
-                    }
-                    photo.caption = t
-                    
-                    imageArray.append(photo)
-                }
-                strongSelf.images = imageArray
-            }
+            strongSelf.images = fetchedImages
             let aCell:UITableViewCell = tableView.cellForRowAtIndexPath(indexPath)!
             strongSelf.currentTitle = aCell.textLabel.text!
-            
-            var photoBrowser = IDMPhotoBrowser(photos: strongSelf.images)
+            var photoBrowser = MWPhotoBrowser(delegate: self)
             photoBrowser.displayActionButton = true
-            photoBrowser.displayArrowButton = true
-            photoBrowser.displayCounterLabel = true
-            photoBrowser.usePopAnimation = true
-            strongSelf.presentViewController(photoBrowser, animated: true, completion: nil)
+            photoBrowser.zoomPhotosToFill = false
+            photoBrowser.displayNavArrows = true
+            strongSelf.navigationController?.pushViewController(photoBrowser, animated: true)
         },
         errorHandler: {
             hud.hide(true)
@@ -243,6 +221,27 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         if indexPath.row == posts.count - 1 {
             loadPostListForPage(page)
         }
+    }
+    
+    // MARK: MWPhotoBrowser Delegate
+    func numberOfPhotosInPhotoBrowser(photoBrowser: MWPhotoBrowser!) -> UInt {
+        return UInt(images.count)
+    }
+    
+    func photoBrowser(photoBrowser: MWPhotoBrowser!, photoAtIndex index: UInt) -> MWPhotoProtocol! {
+        var p = MWPhoto(URL: NSURL(string: images[Int(index)]))
+        return p
+    }
+    
+    func photoBrowser(photoBrowser: MWPhotoBrowser!, titleForPhotoAtIndex index: UInt) -> String! {
+        var t:NSMutableString = (self.currentTitle as NSString).mutableCopy() as NSMutableString
+        let range = t.rangeOfString("[", options:.BackwardsSearch)
+        // FIXME: Why can't I use NSNotFound here
+        if range.location != NSIntegerMax {
+            t.insertString("\(index + 1)/", atIndex: range.location + 1)
+            return t
+        }
+        return self.currentTitle
     }
     
     // MARK: Actions
@@ -350,13 +349,6 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             loadFirstPageForKey(key)
         }
     }
-    
-    // MARK: KKPassCode Delegate
-//    func didSettingsChanged(viewController:KKPasscodeViewController) {
-//        let status = KKPasscodeLock.sharedLock().isPasscodeRequired() ? localizedString("On", "已打开") : localizedString("Off", "已关闭")
-//        saveValue(status, forKey: PasscodeLockStatus)
-//        settingsViewController.tableView.reloadData()
-//    }
     
     // MARK: Settings
     func settingsViewControllerDidEnd(sender: IASKAppSettingsViewController!) {
