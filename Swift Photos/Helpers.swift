@@ -73,6 +73,11 @@ func localImagePath(link:String) -> String {
 }
 
 func localDirectoryForPost(link:String) -> String {
+    let link = localDirectoryForPost(link, true)
+    return link!
+}
+
+func localDirectoryForPost(link:String, create:Bool) -> String? {
     let key = SDWebImageManager.sharedManager().cacheKeyForURL(NSURL(string:link))
     let hash = SDImageCache.sharedImageCache().cachePathForKey(key, inPath: "")
     let path = (userDocumentPath() as NSString).stringByAppendingPathComponent(hash)
@@ -83,7 +88,12 @@ func localDirectoryForPost(link:String) -> String {
         fm.removeItemAtPath(path, error: nil)
     }
     else if !dirExists {
-        fm.createDirectoryAtPath(path, withIntermediateDirectories: true, attributes: nil, error: nil)
+        if create {
+            fm.createDirectoryAtPath(path, withIntermediateDirectories: true, attributes: nil, error: nil)
+        }
+        else {
+            return nil
+        }
     }
     
     return path
@@ -102,10 +112,14 @@ func saveCachedLinksToHomeDirectory(links:Array<String>, forPostLink postLink:St
 }
 
 func imagesCached(forPostLink link:String) -> Bool {
-    let targetDir = localDirectoryForPost(link)
-    let fm = NSFileManager.defaultManager()
-    let numberOfFiles = fm.contentsOfDirectoryAtPath(targetDir, error: nil)!.count
-    return numberOfFiles > 0 ? true : false
+    if let targetDir = localDirectoryForPost(link, false) {
+        let fm = NSFileManager.defaultManager()
+        let numberOfFiles = fm.contentsOfDirectoryAtPath(targetDir, error: nil)!.count
+        return numberOfFiles > 0 ? true : false
+    }
+    else {
+        return false
+    }
 }
 
 extension NSData {
