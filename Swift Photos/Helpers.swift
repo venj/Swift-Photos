@@ -28,7 +28,7 @@ func saveValue(value:AnyObject, forKey key:String) {
 }
 
 func systemMajorVersion() -> Int {
-    let ver:NSString = UIDevice.currentDevice().systemVersion as NSString
+    let ver = UIDevice.currentDevice().systemVersion
     let majorVersion = (ver.componentsSeparatedByString(".")[0] as NSString).integerValue
     return majorVersion
 }
@@ -72,15 +72,10 @@ func localImagePath(link:String) -> String {
     return path
 }
 
-func localDirectoryForPost(link:String) -> String {
-    let link = localDirectoryForPost(link, true)
-    return link!
-}
-
-func localDirectoryForPost(link:String, create:Bool) -> String? {
+func localDirectoryForPost(link:String, create:Bool = true) -> String? {
     let key = SDWebImageManager.sharedManager().cacheKeyForURL(NSURL(string:link))
     let hash = SDImageCache.sharedImageCache().cachePathForKey(key, inPath: "")
-    let path = (userDocumentPath() as NSString).stringByAppendingPathComponent(hash)
+    let path = userDocumentPath().stringByAppendingPathComponent(hash)
     let fm = NSFileManager.defaultManager()
     var isDir:ObjCBool = false
     let dirExists = fm.fileExistsAtPath(path, isDirectory: &isDir)
@@ -103,7 +98,7 @@ func saveCachedLinksToHomeDirectory(links:Array<String>, forPostLink postLink:St
     let fm = NSFileManager.defaultManager()
     for var i = 0; i < links.count; i++ {
         let imagePath = localImagePath(links[i])
-        let destDir:NSString = localDirectoryForPost(postLink) as NSString
+        let destDir = localDirectoryForPost(postLink)!
         let destImageName = destDir.stringByAppendingPathComponent("\(i + 1)")
         if fm.fileExistsAtPath(imagePath) && !fm.fileExistsAtPath(destImageName) {
             fm.copyItemAtPath(imagePath, toPath: destImageName, error: nil)
@@ -112,7 +107,7 @@ func saveCachedLinksToHomeDirectory(links:Array<String>, forPostLink postLink:St
 }
 
 func imagesCached(forPostLink link:String) -> Bool {
-    if let targetDir = localDirectoryForPost(link, false) {
+    if let targetDir = localDirectoryForPost(link, create: false) {
         let fm = NSFileManager.defaultManager()
         let numberOfFiles = fm.contentsOfDirectoryAtPath(targetDir, error: nil)!.count
         return numberOfFiles > 0 ? true : false

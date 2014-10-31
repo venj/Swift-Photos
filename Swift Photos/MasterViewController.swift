@@ -234,7 +234,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
     
     func photoBrowser(photoBrowser: MWPhotoBrowser!, titleForPhotoAtIndex index: UInt) -> String! {
-        var t:NSMutableString = (self.currentTitle as NSString).mutableCopy() as NSMutableString
+        var t:NSMutableString = self.currentTitle.mutableCopy() as NSMutableString
         let range = t.rangeOfString("[", options:.BackwardsSearch)
         // FIXME: Why can't I use NSNotFound here
         if range.location != NSIntegerMax {
