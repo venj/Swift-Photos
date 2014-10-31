@@ -205,15 +205,21 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
     
     override func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {
-        let hud = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
+        let cell = tableView.cellForRowAtIndexPath(indexPath)!
+        let spinWheel = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
+        cell.accessoryView = spinWheel
+        spinWheel.startAnimating()
+        
         let link = posts[indexPath.row].link
         fetchImageLinks(fromPostLink: link, completionHandler: { [weak self] fetchedImages in
             let strongSelf = self!
             saveCachedLinksToHomeDirectory(fetchedImages, forPostLink: link)
             strongSelf.tableView.reloadData()
-            hud.hide(true)
+            spinWheel.stopAnimating()
+            cell.accessoryView = nil
         }, errorHandler: {
-            hud.hide(true)
+            spinWheel.stopAnimating()
+            cell.accessoryView = nil
         })
     }
     
