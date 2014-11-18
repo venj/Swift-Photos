@@ -190,6 +190,8 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             if fetchedImages.count == 0 {
                 return
             }
+            // prefetch images
+            strongSelf.fetchImagesToCache(fetchedImages)
             strongSelf.images = fetchedImages
             let aCell:UITableViewCell = tableView.cellForRowAtIndexPath(indexPath)!
             strongSelf.currentTitle = aCell.textLabel.text!
@@ -341,6 +343,38 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     func setDefaultTitle() {
         title = NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图")
+    }
+    
+    // Don't care if the request is succeeded or not.
+    func fetchImagesToCache(images:[String]) {
+        var image = ""
+        let path = ""
+        for image in images {
+            if image == images[0] {
+                // Skip the first pic.
+                continue
+            }
+            if SDWebImageManager.sharedManager().cachedImageExistsForURL(NSURL(string: image)) {
+                //println("Cached")
+                continue
+            }
+            Alamofire.download(.GET, image, { (temporaryURL, response) in
+                // 返回下载目标路径的 fileURL
+                let imageURL = NSURL.fileURLWithPath(localImagePath(image))
+                if let directory = imageURL {
+                    return directory
+                }
+                return temporaryURL
+            }) // For Debug
+            .progress { (bytesRead, totalBytesRead, totalBytesExpectedToRead) in
+                //if totalBytesRead == totalBytesExpectedToRead {
+                //    println("Done.")
+                //}
+            } // For Debug
+            .response { (request, response, _, error) in
+                //println(response)
+            }
+        }
     }
     
     // MARK: ActionSheet Delegates
