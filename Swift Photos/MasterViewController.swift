@@ -260,6 +260,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     func photoBrowser(photoBrowser: MWPhotoBrowser!, photoAtIndex index: UInt) -> MWPhotoProtocol! {
         var p = MWPhoto(URL: NSURL(string: images[Int(index)]))
+        p.caption = "\(index + 1)/\(images.count)"
         return p
     }
     
