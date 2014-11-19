@@ -179,31 +179,53 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let hud = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
         let link = posts[indexPath.row].link
         self.images = []
-        fetchImageLinks(fromPostLink: link, completionHandler: { [weak self] fetchedImages in
-            let strongSelf = self!
-            hud.hide(true)
-            strongSelf.tableView.deselectRowAtIndexPath(indexPath, animated: true)
-            // Skip non pics
-            if fetchedImages.count == 0 {
-                return
+        // Local Data
+        if imagesCached(forPostLink: link) {
+            let localDir = localDirectoryForPost(link, create: false)
+            let basePath = NSURL(fileURLWithPath: localDir!)?.absoluteString
+            let fm = NSFileManager.defaultManager()
+            var images : [String] = []
+            let files = fm.contentsOfDirectoryAtPath(localDir!, error: nil)!
+            for f in files {
+                if let base = basePath {
+                    images.append(base.stringByAppendingPathComponent(f as String))
+                }
             }
-            // prefetch images
-            strongSelf.fetchImagesToCache(fetchedImages)
-            strongSelf.images = fetchedImages
-            let aCell:UITableViewCell = tableView.cellForRowAtIndexPath(indexPath)!
-            strongSelf.currentTitle = aCell.textLabel.text!
+            self.images = images
             var photoBrowser = MWPhotoBrowser(delegate: self)
             photoBrowser.displayActionButton = true
             photoBrowser.zoomPhotosToFill = false
             photoBrowser.displayNavArrows = true
-            strongSelf.navigationController?.pushViewController(photoBrowser, animated: true)
-        },
-        errorHandler: {
-            hud.hide(true)
-        })
+            self.navigationController?.pushViewController(photoBrowser, animated: true)
+        }
+        else {
+            //remote data
+            let hud = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
+            fetchImageLinks(fromPostLink: link, completionHandler: { [weak self] fetchedImages in
+                let strongSelf = self!
+                hud.hide(true)
+                strongSelf.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+                // Skip non pics
+                if fetchedImages.count == 0 {
+                    return
+                }
+                // prefetch images
+                strongSelf.fetchImagesToCache(fetchedImages)
+                strongSelf.images = fetchedImages
+                let aCell:UITableViewCell = tableView.cellForRowAtIndexPath(indexPath)!
+                strongSelf.currentTitle = aCell.textLabel.text!
+                var photoBrowser = MWPhotoBrowser(delegate: self)
+                photoBrowser.displayActionButton = true
+                photoBrowser.zoomPhotosToFill = false
+                photoBrowser.displayNavArrows = true
+                strongSelf.navigationController?.pushViewController(photoBrowser, animated: true)
+                },
+                errorHandler: {
+                    hud.hide(true)
+            })
+        }
     }
     
     override func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {
