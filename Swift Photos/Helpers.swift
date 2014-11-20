@@ -11,6 +11,7 @@ import UIKit
 let CurrentVersionKey = "kCurrentVersionKey"
 let ClearCacheOnExitKey = "kClearCacheOnExitKey"
 let ClearCacheNowKey = "kClearCacheNowKey"
+let ClearDownloadCacheKey = "kClearDownloadCacheKey"
 let ImageCacheSizeKey = "kImageCacheSizeKey"
 let PasscodeLockStatus = "kPasscodeLockStatus"
 let PasscodeLockConfig = "kPasscodeLockConfig"

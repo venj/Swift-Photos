@@ -42,6 +42,16 @@
 		</dict>
 		<dict>
 			<key>Title</key>
+			<string>Clear Download Cache</string>
+			<key>Key</key>
+			<string>kClearDownloadCacheKey</string>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentLeft</string>
+		</dict>
+		<dict>
+			<key>Title</key>
 			<string>Security</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>

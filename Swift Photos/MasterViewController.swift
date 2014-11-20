@@ -438,6 +438,28 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 sender.tableView.reloadData()
             }
         }
+        else if specifier.key() == ClearDownloadCacheKey {
+            let aView = sender.navigationController?.view
+            let hud = MBProgressHUD.showHUDAddedTo(aView, animated: true)
+            clearDownloadCache() { [weak self] in
+                let strongSelf = self!
+                hud.hide(true)
+                showHUDInView(aView!, withMessage: localizedString("Cache Cleared", "缓存已清除"), afterDelay: 1.0)
+                sender.tableView.reloadData()
+            }
+        }
+    }
+    
+    func clearDownloadCache( complete: ()->() ) {
+        let tempDir = NSTemporaryDirectory();
+        println(tempDir)
+        let fm = NSFileManager.defaultManager()
+        if let contents = fm.contentsOfDirectoryAtPath(tempDir, error: nil) {
+            for item in contents {
+                fm.removeItemAtPath(tempDir.stringByAppendingPathComponent(item as String), error: nil)
+            }
+        }
+        complete()
     }
 }
 
