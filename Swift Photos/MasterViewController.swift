@@ -167,13 +167,13 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as UITableViewCell
 
-        cell.textLabel.text = posts[indexPath.row].title
+        cell.textLabel?.text = posts[indexPath.row].title
         let link = posts[indexPath.row].link
         if imagesCached(forPostLink: link) {
-            cell.textLabel.textColor = UIColor.blueColor()
+            cell.textLabel?.textColor = UIColor.blueColor()
         }
         else {
-            cell.textLabel.textColor = UIColor.blackColor()
+            cell.textLabel?.textColor = UIColor.blackColor()
         }
         return cell
     }
@@ -215,7 +215,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 strongSelf.fetchImagesToCache(fetchedImages)
                 strongSelf.images = fetchedImages
                 let aCell:UITableViewCell = tableView.cellForRowAtIndexPath(indexPath)!
-                strongSelf.currentTitle = aCell.textLabel.text!
+                strongSelf.currentTitle = aCell.textLabel!.text!
                 var photoBrowser = MWPhotoBrowser(delegate: self)
                 photoBrowser.displayActionButton = true
                 photoBrowser.zoomPhotosToFill = false
@@ -381,7 +381,8 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 //println("Cached")
                 continue
             }
-            Alamofire.download(.GET, image, { (temporaryURL, response) in
+            let imageLink = image.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
+            Alamofire.download(.GET, imageLink, { (temporaryURL, response) in
                 // 返回下载目标路径的 fileURL
                 let imageURL = NSURL.fileURLWithPath(localImagePath(image))
                 if let directory = imageURL {
