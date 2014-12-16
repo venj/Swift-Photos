@@ -20,8 +20,9 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.tableHeaderView = nil
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: sectionTableIdentifier)
+        self.automaticallyAdjustsScrollViewInsets = false
+        tableView.contentInset = UIEdgeInsetsMake(66.0, 0.0, 0.0, 0.0)
     }
 
     override func didReceiveMemoryWarning() {
