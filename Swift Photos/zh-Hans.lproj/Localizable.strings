@@ -48,3 +48,6 @@
 
 /* 缓存已清除 */
 "Cache Cleared" = "缓存已清除";
+
+/* 搜索已加载的帖子 */
+"Search loaded posts" = "搜索已加载的帖子";

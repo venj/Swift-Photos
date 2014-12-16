@@ -13,6 +13,9 @@
 /* 动漫漫画 */
 "Hentai Manga" = "Hentai Manga";
 
+/* HUD when no data received. */
+"No data received. iOS 7 user?" = "No data received. iOS 7 user?";
+
 /* ActionSheet title. */
 "Please select a category" = "Please select a category";
 
@@ -45,3 +48,6 @@
 
 /* 缓存已清除 */
 "Cache Cleared" = "Cache Cleared";
+
+/* 搜索已加载的帖子 */
+"Search loaded posts" = "Search loaded posts";

@@ -9,9 +9,10 @@
 import UIKit
 import Alamofire
 
-class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSettingsDelegate, MWPhotoBrowserDelegate {
+class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSettingsDelegate, MWPhotoBrowserDelegate, UISearchControllerDelegate {
     
     var posts:[Post] = []
+    var filteredPosts:[Post] = []
     var images:[String] = []
     var page = 1
     var forumID = 16
@@ -19,6 +20,8 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     var currentTitle:String = ""
     var settingsViewController:IASKAppSettingsViewController!
     var sheet:UIActionSheet!
+    var searchController:UISearchController!
+    var resultsController:SearchResultController!
     
     let categories = [NSLocalizedString("Daguerre's Flag", tableName: nil, value: "Daguerre's Flag", comment: "達蓋爾的旗幟"): 16,
                       NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图"): 53,
@@ -32,7 +35,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     override func awakeFromNib() {
         super.awakeFromNib()
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -48,6 +51,15 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         let settingsButton = UIBarButtonItem(title: NSLocalizedString("Settings", tableName: nil, value: "Settings", comment: "设置"), style: .Plain, target: self, action: "showSettings:")
         navigationItem.rightBarButtonItems = [settingsButton, categoryButton]
         loadFirstPageForKey(title!)
+        
+        // SearchBar
+        resultsController = SearchResultController()
+        searchController = UISearchController(searchResultsController: resultsController)
+        searchController.searchResultsUpdater = resultsController
+        let searchBar = searchController.searchBar
+        self.tableView.tableHeaderView = searchBar
+        searchBar.sizeToFit()
+        searchBar.placeholder = NSLocalizedString("Search loaded posts", tableName: nil, value: "Search loaded posts", comment: "搜索已加载的帖子")
     }
 
     override func didReceiveMemoryWarning() {
@@ -127,6 +139,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                     let title = str.substringWithRange(match.rangeAtIndex(titleIndex))
                     strongSelf.posts.append(Post(title: title, link: link))
                     indexPathes.append(NSIndexPath(forRow:cellCount + i, inSection: 0))
+                    strongSelf.resultsController.posts = strongSelf.posts // Assignment
                 }
                 hud.hide(true)
                 strongSelf.tableView.insertRowsAtIndexPaths(indexPathes, withRowAnimation:.Top)
@@ -461,6 +474,20 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             }
         }
         complete()
+    }
+    
+    // MARK: UISearchResultUpdating
+    func updateSearchResultsForSearchController(searchController: UISearchController) {
+        let searchString = searchController.searchBar.text
+        filteredPosts.removeAll(keepCapacity: true)
+        
+        if !searchString.isEmpty {
+            self.searchDisplayController
+        }
+    }
+    
+    func didPresentSearchController(searchController: UISearchController) {
+        resultsController.forumID = self.forumID
     }
 }
 
