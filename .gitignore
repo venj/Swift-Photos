@@ -30,4 +30,5 @@ Pods/
 
 # Exclude Project file
 Common.swift
+.DS_Store
 
