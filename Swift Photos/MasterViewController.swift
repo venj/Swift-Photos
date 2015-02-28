@@ -15,9 +15,10 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     var filteredPosts:[Post] = []
     var images:[String] = []
     var page = 1
-    var forumID = 16
+    var forumID = DaguerreForumID
     var daguerreLink:String = ""
     var currentTitle:String = ""
+    var currentCLLink:String = ""
     var settingsViewController:IASKAppSettingsViewController!
     var sheet:UIActionSheet!
     var searchController:UISearchController!
@@ -68,37 +69,28 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
     
     func parseDaguerreLink() {
-        let link = baseLink(forumID)
-        var request =
-        Alamofire.request(.GET, link + "index.php")
+        let link = getDaguerreLink()
+        var request = Alamofire.request(.GET, link + "index.php")
         var hud = showHUDInView(self.navigationController!.view, withMessage: NSLocalizedString("Parsing Daguerre Link...", tableName: nil, value: "Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."), afterDelay: 0.0)
         request.response { [weak self] (request, response, data, error) in
             let strongSelf = self!
-            if data == nil {
-                hud.hide(true)
-                showHUDInView(strongSelf.navigationController!.view, withMessage: NSLocalizedString("No data received. iOS 7 user?", tableName: nil, value: "No data received. iOS 7 user?", comment: "HUD when no data received."), afterDelay: 2.0)
+            if (error != nil) {
                 return
             }
             else {
-                if error == nil {
-                    let d = data as NSData
-                    var str:NSString = d.stringFromGB18030Data()
-                    var err:NSError?
-                    let regexString:String = "<a href=\"([^\"]+?)\">達蓋爾的旗幟</a>"
-                    var linkIndex = 0, titleIndex = 0
-                    var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &err)
-                    let matches = regex?.matchesInString(str, options: nil, range: NSMakeRange(0, str.length))
-                    if matches!.count > 0 {
-                        let match: AnyObject = matches![0]
-                        strongSelf.daguerreLink = link + str.substringWithRange(match.rangeAtIndex(1))
-                    }
+                let d = data as NSData
+                var str:NSString = d.stringFromGB18030Data()
+                var err:NSError?
+                let regexString:String = "<a href=\"([^\"]+?)\">達蓋爾的旗幟</a>"
+                var linkIndex = 0, titleIndex = 0
+                var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &err)
+                let matches = regex?.matchesInString(str, options: nil, range: NSMakeRange(0, str.length))
+                if matches!.count > 0 {
+                    let match: AnyObject = matches![0]
+                    strongSelf.daguerreLink = link + str.substringWithRange(match.rangeAtIndex(1))
                 }
-                else {
-                    let dateString = "0806"
-                    strongSelf.daguerreLink = baseLink(strongSelf.forumID) + "thread\(dateString).php?fid=\(strongSelf.forumID)"
-                }
+                hud.hide(true)
             }
-            hud.hide(true)
             strongSelf.loadPostList(strongSelf.daguerreLink, forPage: 1)
         }
     }
@@ -119,7 +111,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 var err:NSError?
                 var regexString:String
                 var linkIndex = 0, titleIndex = 0
-                if strongSelf.forumID == 16 {
+                if strongSelf.forumID == DaguerreForumID {
                     regexString = "<a href=\"([^\"]+?)\"[^>]+?>(<font [^>]+?>)?([^\\d<]+?\\[\\d+[^\\d]+?)(</font>)?</a>"
                     linkIndex = 1
                     titleIndex = 3
@@ -154,7 +146,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     func loadPostListForPage(page:Int) {
         var link:String
-        if forumID == 16 {
+        if forumID == DaguerreForumID {
             if daguerreLink == "" {
                 parseDaguerreLink()
             }
@@ -307,6 +299,10 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
     
     @IBAction func showSettings(sender:AnyObject?) {
+        if getValue(CurrentCLLinkKey) == nil {
+            getDaguerreLink()
+        }
+        
         let settingsHUD = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
         SDImageCache.sharedImageCache().calculateSizeWithCompletionBlock() { [weak self] (fileCount:UInt, totalSize:UInt) in
             let strongSelf = self!
@@ -328,7 +324,13 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     @IBAction func refresh(sender:AnyObject?) {
         let key = title
-        loadFirstPageForKey(key!)
+        let range = daguerreLink.rangeOfString(currentCLLink)
+        if range == nil {
+            parseDaguerreLink()
+        }
+        else {
+            loadFirstPageForKey(key!)
+        }
     }
     
     // MARK: Helper
@@ -356,7 +358,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 var str:NSString = d.stringFromGB18030Data()
                 var error:NSError?
                 var regexString:String
-                if strongSelf.forumID == 16 {
+                if strongSelf.forumID == DaguerreForumID {
                     regexString = "input type='image' src='([^\"]+?)'"
                 }
                 else {
@@ -461,6 +463,10 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 showHUDInView(aView!, withMessage: localizedString("Cache Cleared", "缓存已清除"), afterDelay: 1.0)
                 sender.tableView.reloadData()
             }
+        }
+        else if specifier.key() == CurrentCLLinkKey {
+            let linksController = CLLinksTableViewTableViewController(style:.Grouped);
+            sender.navigationController?.pushViewController(linksController, animated: true)
         }
     }
     

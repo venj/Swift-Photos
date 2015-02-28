@@ -78,6 +78,22 @@
 		</dict>
 		<dict>
 			<key>Title</key>
+			<string>Current 1024 Link</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>-</string>
+			<key>Key</key>
+			<string>kCurrentCLLinkKey</string>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentLeft</string>
+		</dict>
+		<dict>
+			<key>Title</key>
 			<string>App Version</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>

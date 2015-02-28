@@ -16,8 +16,10 @@ let ImageCacheSizeKey = "kImageCacheSizeKey"
 let PasscodeLockStatus = "kPasscodeLockStatus"
 let PasscodeLockConfig = "kPasscodeLockConfig"
 let LastViewedSectionTitle = "kLastViewedSectionTitle"
+let CurrentCLLinkKey = "kCurrentCLLinkKey"
+let DaguerreForumID = 16
 
-func getValue(key:String) -> AnyObject! {
+func getValue(key:String) -> AnyObject? {
     let defaults = NSUserDefaults.standardUserDefaults()
     return defaults.objectForKey(key)
 }
@@ -115,6 +117,25 @@ func imagesCached(forPostLink link:String) -> Bool {
     }
     else {
         return false
+    }
+}
+
+func siteLinks(forumID:Int) -> [String] {
+    return baseLink(forumID).componentsSeparatedByString(";")
+}
+
+func getDaguerreLink() -> String {
+    var link = getValue(CurrentCLLinkKey) as String?
+    if let l = link {
+        return l
+    }
+    else {
+        let links = siteLinks(DaguerreForumID)
+        let l = links[0]
+        if link == nil {
+            saveValue(l, forKey: CurrentCLLinkKey)
+        }
+        return l
     }
 }
 
