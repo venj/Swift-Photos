@@ -324,6 +324,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     @IBAction func refresh(sender:AnyObject?) {
         let key = title
+        currentCLLink = getDaguerreLink()
         let range = daguerreLink.rangeOfString(currentCLLink)
         if range == nil {
             parseDaguerreLink()
