@@ -124,18 +124,23 @@ func siteLinks(forumID:Int) -> [String] {
     return baseLink(forumID).componentsSeparatedByString(";")
 }
 
-func getDaguerreLink() -> String {
-    var link = getValue(CurrentCLLinkKey) as String?
-    if let l = link {
-        return l
+func getDaguerreLink(forumID:Int) -> String {
+    if forumID == DaguerreForumID {
+        var link = getValue(CurrentCLLinkKey) as String?
+        if let l = link {
+            return l
+        }
+        else {
+            let links = siteLinks(DaguerreForumID)
+            let l = links[0]
+            if link == nil {
+                saveValue(l, forKey: CurrentCLLinkKey)
+            }
+            return l
+        }
     }
     else {
-        let links = siteLinks(DaguerreForumID)
-        let l = links[0]
-        if link == nil {
-            saveValue(l, forKey: CurrentCLLinkKey)
-        }
-        return l
+        return baseLink(forumID)
     }
 }
 

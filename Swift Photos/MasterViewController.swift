@@ -69,7 +69,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
     
     func parseDaguerreLink() {
-        let link = getDaguerreLink()
+        let link = getDaguerreLink(self.forumID)
         var request = Alamofire.request(.GET, link + "index.php")
         var hud = showHUDInView(self.navigationController!.view, withMessage: NSLocalizedString("Parsing Daguerre Link...", tableName: nil, value: "Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."), afterDelay: 0.0)
         request.response { [weak self] (request, response, data, error) in
@@ -127,7 +127,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 var cellCount = strongSelf.posts.count
                 for var i = 0; i < matches.count; ++i {
                     let match: AnyObject = matches[i]
-                    let link = baseLink(strongSelf.forumID) + str.substringWithRange(match.rangeAtIndex(linkIndex))
+                    let link = getDaguerreLink(strongSelf.forumID) + str.substringWithRange(match.rangeAtIndex(linkIndex))
                     let title = str.substringWithRange(match.rangeAtIndex(titleIndex))
                     strongSelf.posts.append(Post(title: title, link: link))
                     indexPathes.append(NSIndexPath(forRow:cellCount + i, inSection: 0))
@@ -300,7 +300,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     @IBAction func showSettings(sender:AnyObject?) {
         if getValue(CurrentCLLinkKey) == nil {
-            getDaguerreLink()
+            getDaguerreLink(self.forumID)
         }
         
         let settingsHUD = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
@@ -324,9 +324,9 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     @IBAction func refresh(sender:AnyObject?) {
         let key = title
-        currentCLLink = getDaguerreLink()
+        currentCLLink = getDaguerreLink(self.forumID)
         let range = daguerreLink.rangeOfString(currentCLLink)
-        if range == nil {
+        if self.forumID == DaguerreForumID && range == nil {
             parseDaguerreLink()
         }
         else {
