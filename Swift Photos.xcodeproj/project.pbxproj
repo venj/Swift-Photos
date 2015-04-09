@@ -19,10 +19,10 @@
 		2539A3A51AA1A514004A5619 /* CLLinksTableViewTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2539A3A41AA1A514004A5619 /* CLLinksTableViewTableViewController.swift */; };
 		253BF0EB1994A232007B3702 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253BF0EA1994A232007B3702 /* Helpers.swift */; };
 		254486BC1A40151E00F25634 /* SearchResultController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254486BB1A40151E00F25634 /* SearchResultController.swift */; };
-		256AC5CB19C12D8800C7746A /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2528909A19C127C90018B2D2 /* Alamofire.framework */; };
-		256AC5CC19C12D8800C7746A /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2528909A19C127C90018B2D2 /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		258A1F6D199270320080BB60 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 258A1F6F199270320080BB60 /* Localizable.strings */; };
 		258A1F72199270330080BB60 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 258A1F74199270330080BB60 /* InfoPlist.strings */; };
+		258FBD951AD6658000D10202 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2528909A19C127C90018B2D2 /* Alamofire.framework */; };
+		258FBD961AD6658000D10202 /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2528909A19C127C90018B2D2 /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,12 +47,12 @@
 			remoteGlobalIDString = F8111E3E19A95C8B0040E7D1;
 			remoteInfo = AlamofireTests;
 		};
-		256AC5CD19C12D8800C7746A /* PBXContainerItemProxy */ = {
+		258FBD971AD6658000D10202 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2528909419C127C90018B2D2 /* Alamofire.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = F8111E3219A95C8B0040E7D1;
-			remoteInfo = Alamofire;
+			remoteInfo = "Alamofire iOS";
 		};
 		25D87B0C1AD65A2E00735759 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -71,13 +71,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		256AC5CF19C12D8900C7746A /* Embed Frameworks */ = {
+		258FBD991AD6658000D10202 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				256AC5CC19C12D8800C7746A /* Alamofire.framework in Embed Frameworks */,
+				258FBD961AD6658000D10202 /* Alamofire.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -117,8 +117,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				258FBD951AD6658000D10202 /* Alamofire.framework in Frameworks */,
 				2199E70E00E64BD28B253665 /* libPods-Swift Photos.a in Frameworks */,
-				256AC5CB19C12D8800C7746A /* Alamofire.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,12 +239,12 @@
 				25142A901991F36200CB4C93 /* Frameworks */,
 				25142A911991F36200CB4C93 /* Resources */,
 				31CEAD326BDE46CDB1DDEF5B /* Copy Pods Resources */,
-				256AC5CF19C12D8900C7746A /* Embed Frameworks */,
+				258FBD991AD6658000D10202 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				256AC5CE19C12D8800C7746A /* PBXTargetDependency */,
+				258FBD981AD6658000D10202 /* PBXTargetDependency */,
 			);
 			name = "Swift Photos";
 			productName = "Swift Photos";
@@ -431,10 +431,10 @@
 			target = 25142A921991F36200CB4C93 /* Swift Photos */;
 			targetProxy = 25142AA81991F36300CB4C93 /* PBXContainerItemProxy */;
 		};
-		256AC5CE19C12D8800C7746A /* PBXTargetDependency */ = {
+		258FBD981AD6658000D10202 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = Alamofire;
-			targetProxy = 256AC5CD19C12D8800C7746A /* PBXContainerItemProxy */;
+			name = "Alamofire iOS";
+			targetProxy = 258FBD971AD6658000D10202 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -553,12 +553,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				INFOPLIST_FILE = "Swift Photos/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "76654030-a6ea-4247-a87c-3bb00c40f4bc";
 				SWIFT_OBJC_BRIDGING_HEADER = "Swift Photos/Swift Photos-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -572,12 +572,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				INFOPLIST_FILE = "Swift Photos/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "76654030-a6ea-4247-a87c-3bb00c40f4bc";
 				SWIFT_OBJC_BRIDGING_HEADER = "Swift Photos/Swift Photos-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
