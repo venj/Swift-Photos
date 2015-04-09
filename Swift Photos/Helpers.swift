@@ -56,14 +56,14 @@ func localizedString(key:String, comment:String) -> String {
 
 func updateVersionNumber() {
     let defaults = NSUserDefaults.standardUserDefaults()
-    let version = NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString") as String
-    let build = NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion") as String
+    let version = NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString") as! String
+    let build = NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion") as! String
     defaults.setObject("\(version)(\(build))", forKey:CurrentVersionKey)
     defaults.synchronize()
 }
 
 func userDocumentPath() -> String {
-    let path = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as String
+    let path = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as! String
     return path
 }
 
@@ -126,7 +126,7 @@ func siteLinks(forumID:Int) -> [String] {
 
 func getDaguerreLink(forumID:Int) -> String {
     if forumID == DaguerreForumID {
-        var link = getValue(CurrentCLLinkKey) as String?
+        var link = getValue(CurrentCLLinkKey) as! String?
         if let l = link {
             return l
         }
@@ -149,6 +149,6 @@ extension NSData {
         // CP 936: GBK, CP 54936: GB18030
         let cfEncoding = CFStringConvertWindowsCodepageToEncoding(54936) //GB18030
         let gbkEncoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding)
-        return NSString(data: self, encoding: gbkEncoding)!
+        return NSString(data: self, encoding: gbkEncoding)! as String
     }
 }

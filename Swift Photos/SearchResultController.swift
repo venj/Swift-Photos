@@ -42,7 +42,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(sectionTableIdentifier) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier(sectionTableIdentifier) as! UITableViewCell
         cell.textLabel?.text = filteredPosts[indexPath.row].title
         cell.textLabel?.font = UIFont.boldSystemFontOfSize(17)
         cell.accessoryType = .DetailDisclosureButton
@@ -83,7 +83,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
             let files = fm.contentsOfDirectoryAtPath(localDir!, error: nil)!
             for f in files {
                 if let base = basePath {
-                    images.append(base.stringByAppendingPathComponent(f as String))
+                    images.append(base.stringByAppendingPathComponent(f as! String))
                 }
             }
             self.images = images
@@ -149,7 +149,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
             let strongSelf = self!
             var fetchedImages = Array<String>()
             if error == nil {
-                let d = data as NSData
+                let d = data as! NSData
                 var str:NSString = d.stringFromGB18030Data()
                 var error:NSError?
                 var regexString:String
@@ -160,7 +160,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
                     regexString = "img src=\"([^\"]+)\" .+? onload"
                 }
                 var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &error)
-                let matches = regex!.matchesInString(str, options: nil, range: NSMakeRange(0, str.length))
+                let matches = regex!.matchesInString(str as String, options: nil, range: NSMakeRange(0, str.length))
                 for match in matches {
                     let imageLink = str.substringWithRange(match.rangeAtIndex(1))
                     fetchedImages.append(imageLink)
@@ -219,12 +219,12 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
     }
     
     func photoBrowser(photoBrowser: MWPhotoBrowser!, titleForPhotoAtIndex index: UInt) -> String! {
-        var t:NSMutableString = self.currentTitle.mutableCopy() as NSMutableString
+        var t:NSMutableString = self.currentTitle.mutableCopy() as! NSMutableString
         let range = t.rangeOfString("[", options:.BackwardsSearch)
         // FIXME: Why can't I use NSNotFound here
         if range.location != NSIntegerMax {
             t.insertString("\(index + 1)/", atIndex: range.location + 1)
-            return t
+            return t as String
         }
         return self.currentTitle
     }

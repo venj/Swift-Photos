@@ -49,11 +49,11 @@ class CLLinksTableViewTableViewController: UITableViewController {
 
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(CLLinksCellIdentifier, forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier(CLLinksCellIdentifier, forIndexPath: indexPath) as! UITableViewCell
         
         let clLink = clLinks[indexPath.row]
         cell.textLabel!.text = clLink
-        let currentCLLink = getValue(CurrentCLLinkKey) as NSString?
+        let currentCLLink = getValue(CurrentCLLinkKey) as! NSString?
         
         if let l = currentCLLink {
             if l.isEqualToString(clLink) {

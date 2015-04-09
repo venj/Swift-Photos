@@ -40,10 +40,10 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        (UIApplication.sharedApplication().delegate as AppDelegate).showPassLock()
+        (UIApplication.sharedApplication().delegate as! AppDelegate).showPassLock()
         let savedTitle: AnyObject! = getValue(LastViewedSectionTitle)
         if let t: AnyObject = savedTitle {
-            categories[(t as String)] != nil ? title = (savedTitle as String) : setDefaultTitle()
+            categories[(t as! String)] != nil ? title = (savedTitle as! String) : setDefaultTitle()
         }
         else {
             setDefaultTitle()
@@ -78,13 +78,13 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 return
             }
             else {
-                let d = data as NSData
+                let d = data as! NSData
                 var str:NSString = d.stringFromGB18030Data()
                 var err:NSError?
                 let regexString:String = "<a href=\"([^\"]+?)\">達蓋爾的旗幟</a>"
                 var linkIndex = 0, titleIndex = 0
                 var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &err)
-                let matches = regex?.matchesInString(str, options: nil, range: NSMakeRange(0, str.length))
+                let matches = regex?.matchesInString(str as String, options: nil, range: NSMakeRange(0, str.length))
                 if matches!.count > 0 {
                     let match: AnyObject = matches![0]
                     strongSelf.daguerreLink = link + str.substringWithRange(match.rangeAtIndex(1))
@@ -106,7 +106,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 return
             }
             if error == nil {
-                let d = data as NSData
+                let d = data as! NSData
                 var str:NSString = d.stringFromGB18030Data()
                 var err:NSError?
                 var regexString:String
@@ -122,7 +122,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                     titleIndex = 2
                 }
                 var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &err)
-                let matches = regex!.matchesInString(str, options: nil, range: NSMakeRange(0, str.length))
+                let matches = regex!.matchesInString(str as String, options: nil, range: NSMakeRange(0, str.length))
                 var indexPathes:Array<NSIndexPath> = []
                 var cellCount = strongSelf.posts.count
                 for var i = 0; i < matches.count; ++i {
@@ -170,7 +170,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! UITableViewCell
 
         cell.textLabel?.text = posts[indexPath.row].title
         let link = posts[indexPath.row].link
@@ -195,7 +195,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             let files = fm.contentsOfDirectoryAtPath(localDir!, error: nil)!
             for f in files {
                 if let base = basePath {
-                    images.append(base.stringByAppendingPathComponent(f as String))
+                    images.append(base.stringByAppendingPathComponent(f as! String))
                 }
             }
             self.images = images
@@ -270,12 +270,12 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
     
     func photoBrowser(photoBrowser: MWPhotoBrowser!, titleForPhotoAtIndex index: UInt) -> String! {
-        var t:NSMutableString = self.currentTitle.mutableCopy() as NSMutableString
+        var t:NSMutableString = self.currentTitle.mutableCopy() as! NSMutableString
         let range = t.rangeOfString("[", options:.BackwardsSearch)
         // FIXME: Why can't I use NSNotFound here
         if range.location != NSIntegerMax {
             t.insertString("\(index + 1)/", atIndex: range.location + 1)
-            return t
+            return t as String
         }
         return self.currentTitle
     }
@@ -294,7 +294,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             }
         }
         if !sheet.visible {
-            sheet.showFromBarButtonItem(navigationItem.rightBarButtonItems![1] as UIBarButtonItem, animated: true)
+            sheet.showFromBarButtonItem(navigationItem.rightBarButtonItems![1] as! UIBarButtonItem, animated: true)
         }
     }
     
@@ -355,7 +355,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             let strongSelf = self!
             var fetchedImages = Array<String>()
             if error == nil {
-                let d = data as NSData
+                let d = data as! NSData
                 var str:NSString = d.stringFromGB18030Data()
                 var error:NSError?
                 var regexString:String
@@ -366,7 +366,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                     regexString = "img src=\"([^\"]+)\" .+? onload"
                 }
                 var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &error)
-                let matches = regex!.matchesInString(str, options: nil, range: NSMakeRange(0, str.length))
+                let matches = regex!.matchesInString(str as String, options: nil, range: NSMakeRange(0, str.length))
                 for match in matches {
                     let imageLink = str.substringWithRange(match.rangeAtIndex(1))
                     fetchedImages.append(imageLink)
@@ -418,7 +418,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
     
     // MARK: ActionSheet Delegates
-    func actionSheet(actionSheet: UIActionSheet!, didDismissWithButtonIndex buttonIndex: Int) {
+    func actionSheet(actionSheet: UIActionSheet, didDismissWithButtonIndex buttonIndex: Int) {
         if systemMajorVersion() == 7 && buttonIndex == (actionSheet.numberOfButtons - 1) && userInterfaceIdiom() == .Phone {
             return
         }
@@ -477,7 +477,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         let fm = NSFileManager.defaultManager()
         if let contents = fm.contentsOfDirectoryAtPath(tempDir, error: nil) {
             for item in contents {
-                fm.removeItemAtPath(tempDir.stringByAppendingPathComponent(item as String), error: nil)
+                fm.removeItemAtPath(tempDir.stringByAppendingPathComponent(item as! String), error: nil)
             }
         }
         complete()
@@ -487,10 +487,6 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     func updateSearchResultsForSearchController(searchController: UISearchController) {
         let searchString = searchController.searchBar.text
         filteredPosts.removeAll(keepCapacity: true)
-        
-        if !searchString.isEmpty {
-            self.searchDisplayController
-        }
     }
     
     func didPresentSearchController(searchController: UISearchController) {
