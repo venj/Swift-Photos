@@ -8,6 +8,9 @@
 
 import UIKit
 
+// Web request time out.
+let requestTimeOutForWeb = 15.0
+
 func baseLink(forumID:Int) -> String {
     if forumID == 16 {
         return "You may already know this one."
