@@ -144,7 +144,10 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
     
     
     func fetchImageLinks(fromPostLink postLink:String, completionHandler:((Array<String>) -> Void), errorHandler:(() -> Void)) {
-        var request = Alamofire.request(.GET, postLink)
+        let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        configuration.timeoutIntervalForRequest = requestTimeOutForWeb
+        let manager = Alamofire.Manager(configuration: configuration)
+        var request = manager.request(.GET, postLink)
         request.response { [weak self] (request, response, data, error) in
             let strongSelf = self!
             var fetchedImages = Array<String>()
@@ -188,7 +191,10 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
                 continue
             }
             let imageLink = image.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
-            Alamofire.download(.GET, imageLink, { (temporaryURL, response) in
+            let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+            configuration.timeoutIntervalForRequest = requestTimeOutForWeb
+            let manager = Alamofire.Manager(configuration: configuration)
+            manager.download(.GET, imageLink, destination: { (temporaryURL, response) in
                 // 返回下载目标路径的 fileURL
                 let imageURL = NSURL.fileURLWithPath(localImagePath(image))
                 if let directory = imageURL {

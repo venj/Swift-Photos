@@ -70,7 +70,10 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     func parseDaguerreLink() {
         let link = getDaguerreLink(self.forumID)
-        var request = Alamofire.request(.GET, link + "index.php")
+        let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        configuration.timeoutIntervalForRequest = requestTimeOutForWeb
+        let manager = Alamofire.Manager(configuration: configuration)
+        var request = manager.request(.GET, link + "index.php")
         var hud = showHUDInView(self.navigationController!.view, withMessage: NSLocalizedString("Parsing Daguerre Link...", tableName: nil, value: "Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."), afterDelay: 0.0)
         request.response { [weak self] (request, response, data, error) in
             let strongSelf = self!
@@ -97,7 +100,10 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     func loadPostList(link:String, forPage page:Int) {
         let hud = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
-        var request = Alamofire.request(.GET, link + "&page=\(self.page)")
+        let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        configuration.timeoutIntervalForRequest = requestTimeOutForWeb
+        let manager = Alamofire.Manager(configuration: configuration)
+        var request = manager.request(.GET, link + "&page=\(self.page)")
         request.response { [weak self] (request, response, data, error) in
             let strongSelf = self!
             if data == nil {
@@ -350,7 +356,10 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
     
     func fetchImageLinks(fromPostLink postLink:String, completionHandler:((Array<String>) -> Void), errorHandler:(() -> Void)) {
-        var request = Alamofire.request(.GET, postLink)
+        let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        configuration.timeoutIntervalForRequest = requestTimeOutForWeb
+        let manager = Alamofire.Manager(configuration: configuration)
+        var request = manager.request(.GET, postLink)
         request.response { [weak self] (request, response, data, error) in
             let strongSelf = self!
             var fetchedImages = Array<String>()
@@ -398,7 +407,11 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 continue
             }
             let imageLink = image.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
-            Alamofire.download(.GET, imageLink, { (temporaryURL, response) in
+            
+            let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+            configuration.timeoutIntervalForRequest = requestTimeOutForWeb
+            let manager = Alamofire.Manager(configuration: configuration)
+            manager.download(.GET, imageLink, destination: { (temporaryURL, response) in
                 // 返回下载目标路径的 fileURL
                 let imageURL = NSURL.fileURLWithPath(localImagePath(image))
                 if let directory = imageURL {
