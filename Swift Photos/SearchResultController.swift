@@ -8,6 +8,9 @@
 
 import UIKit
 import Alamofire
+import MWPhotoBrowser
+import MBProgressHUD
+import SDWebImage
 
 class SearchResultController: UITableViewController, UISearchResultsUpdating, MWPhotoBrowserDelegate {
     

@@ -1,8 +1,9 @@
 PODS:
-  - DACircularProgress (2.2.0)
-  - InAppSettingsKit (2.2)
+  - Alamofire (1.2.1)
+  - DACircularProgress (2.3.1)
+  - InAppSettingsKit (2.6)
   - LTHPasscodeViewController (3.3.3)
-  - MBProgressHUD (0.9)
+  - MBProgressHUD (0.9.1)
   - MMAppSwitcher (0.2.0)
   - MWPhotoBrowser (1.4.1):
     - DACircularProgress
@@ -11,28 +12,30 @@ PODS:
     - SDWebImage (~> 3.7)
   - PSTCollectionView (1.2.3)
   - Reveal-iOS-SDK (1.0.7)
-  - SDWebImage (3.7.1):
-    - SDWebImage/Core (= 3.7.1)
-  - SDWebImage/Core (3.7.1)
+  - SDWebImage (3.7.2):
+    - SDWebImage/Core (= 3.7.2)
+  - SDWebImage/Core (3.7.2)
 
 DEPENDENCIES:
-  - InAppSettingsKit (~> 2.1)
+  - Alamofire (= 1.2.1)
+  - InAppSettingsKit (~> 2.6)
   - LTHPasscodeViewController (~> 3.3.2)
-  - MBProgressHUD (~> 0.9)
+  - MBProgressHUD (~> 0.9.1)
   - MMAppSwitcher (~> 0.2.0)
   - MWPhotoBrowser (~> 1.4.1)
   - Reveal-iOS-SDK (~> 1.0.7)
-  - SDWebImage (~> 3.7.1)
+  - SDWebImage (~> 3.7.2)
 
 SPEC CHECKSUMS:
-  DACircularProgress: 3b41941891a56dc6aa17971f5322a9a38a6f446e
-  InAppSettingsKit: 08d5d21057973c5fd6cd9f7063fc27f73aa0d7a3
-  LTHPasscodeViewController: 8387a22d59ed648e3c23d8db265eaae110850975
-  MBProgressHUD: 2038dbcf3dce73215abed6001657043d53aa79a8
-  MMAppSwitcher: 83d42bf769c28cc3a1c6e744d221eed199dc8298
-  MWPhotoBrowser: be05b3b7521e961382a4ba5579685bf5a00b93d8
-  PSTCollectionView: d9f466e4554cc83260ca9bde7beb27f308e8fd76
-  Reveal-iOS-SDK: 7ee5e9b37ef13dcd93ae1736c1b72c7c650da3e3
-  SDWebImage: 116e88633b5b416ea0ca4b334a4ac59cf72dd38d
+  Alamofire: 1acfdf179aff68b41a48dff70c1ac7fa263e2bcb
+  DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
+  InAppSettingsKit: cc56d3ec45f11352a16d5b210da8a3fa1b9d05ed
+  LTHPasscodeViewController: 01d2c19b6e2aefcd34f4a63d880cf3718da27fdc
+  MBProgressHUD: c47f2c166c126cf2ce36498d80f33e754d4e93ad
+  MMAppSwitcher: 6e813046b201593d1a1d06188a6f6336f06b7be2
+  MWPhotoBrowser: 2531e682860d62b8a7ba8659de02eb9040e431e5
+  PSTCollectionView: 6749df92885353521f55279a7ce2b293762e2be4
+  Reveal-iOS-SDK: 9125c58562f3347f6d74bb5e94b5311ef2568d2f
+  SDWebImage: 71b7cdc1d1721d6a82ed62889030225f2c249e29
 
-COCOAPODS: 0.35.0
+COCOAPODS: 0.37.1

@@ -8,6 +8,12 @@
 
 import UIKit
 import Alamofire
+import MMAppSwitcher
+import MWPhotoBrowser
+import MBProgressHUD
+import InAppSettingsKit
+import SDWebImage
+import LTHPasscodeViewController
 
 class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSettingsDelegate, MWPhotoBrowserDelegate, UISearchControllerDelegate {
     

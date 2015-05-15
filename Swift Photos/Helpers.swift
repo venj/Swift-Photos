@@ -7,6 +7,9 @@
 //
 
 import UIKit
+import MMAppSwitcher
+import MBProgressHUD
+import SDWebImage
 
 let CurrentVersionKey = "kCurrentVersionKey"
 let ClearCacheOnExitKey = "kClearCacheOnExitKey"
@@ -42,7 +45,7 @@ func userInterfaceIdiom() -> UIUserInterfaceIdiom {
 
 func showHUDInView(view:UIView, withMessage message: String, afterDelay delay:NSTimeInterval) -> MBProgressHUD {
     var messageHUD = MBProgressHUD.showHUDAddedTo(view, animated: true)
-    messageHUD.mode = MBProgressHUDModeCustomView
+    messageHUD.mode = MBProgressHUDMode.CustomView
     messageHUD.labelText = message
     if delay != 0.0 {
         messageHUD.hide(true, afterDelay: delay)
