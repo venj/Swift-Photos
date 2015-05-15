@@ -18,6 +18,13 @@ $ pod install
 
 然后打开Swift Photo.xcworkspace，编译安装即可。
 
+自build 78以来，本项目已经不再使用submodule，改为使用CocoaPods的framework功能，需要0.36.2(?)以上版本。
+
+已知问题
+
+1. 升级Alamofire到1.2.2之后，无法从web请求获取数据了。不知道是我写的问题还是Alamofire的API更改，所以暂时锁定为1.2.1
+2. MBPhotoBrowser对Objective-C模块编译支持还有问题。如果发生编译错误，可以将报错的行，也就是引用的第三方header文件的#import语句改成使用尖括号，本地的header使用相对路径。
+
 更新记录
 -------
 
@@ -81,17 +88,6 @@ $ pod install
 **1.0(27)**
 
 - 保存最后一次浏览的板块，下次打开会首先打开该板块。
-
-
-源码更新须知
-----------
-
-自build 78以来，本项目已经不再使用submodule，改为使用CocoaPods的framework功能，需要0.36.2(?)以上版本。
-
-已知问题
-
-1. 升级Alamofire到1.2.2之后，无法从web请求获取数据了。不知道是我写的问题还是Alamofire的API更改，所以暂时锁定为1.2.1
-2. MBPhotoBrowser对Objective-C模块编译支持还有问题。如果发生编译错误，可以将报错的行，也就是引用的第三方header文件的#import语句改成使用尖括号，本地的header使用相对路径。
 
 已知问题
 --------
