@@ -78,6 +78,11 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         request.response { [weak self] (request, response, data, error) in
             let strongSelf = self!
             if (error != nil) {
+                hud.hide(true)
+                let alert = UIAlertController(title: NSLocalizedString("Network error", tableName: nil, value: "Network error", comment: "Network error happened, typically timeout."), message: NSLocalizedString("Failed to reach 1024 in time. Maybe links are dead. You may use a VPN to access 1024.", tableName: nil, value: "Network error", comment: "1024 link down."), preferredStyle: .Alert)
+                let action = UIAlertAction(title: "OK", style: .Default, handler:nil)
+                alert.addAction(action)
+                strongSelf.presentViewController(alert, animated: true, completion: nil)
                 return
             }
             else {

@@ -54,3 +54,9 @@
 
 /* 选择草榴地址 */
 "Choose 1024 Link" = "Choose 1024 Link";
+
+/* 网络错误 */
+"Network error" = "Network error";
+
+/* 连接超时。可能是您的网络出现问题，或者链接挂了。如果您的网络正常，请选择科学上网连接。 */
+"Failed to reach 1024 in time. Maybe links are dead. You may use a VPN to access 1024." = "Failed to reach 1024 in time. Maybe links are dead. You may use a VPN to access 1024.";

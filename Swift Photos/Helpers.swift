@@ -128,11 +128,13 @@ func getDaguerreLink(forumID:Int) -> String {
     if forumID == DaguerreForumID {
         var link = getValue(CurrentCLLinkKey) as! String?
         if let l = link {
-            return l
+            let clearedLink = l.stringByReplacingOccurrencesOfString("(科学上网)", withString: "", options: NSStringCompareOptions.CaseInsensitiveSearch, range: Range(start: l.startIndex, end: l.endIndex))
+            return clearedLink
         }
         else {
             let links = siteLinks(DaguerreForumID)
-            let l = links[0]
+            var l = links[0]
+            l = l.stringByReplacingOccurrencesOfString("(科学上网)", withString: "", options: NSStringCompareOptions.CaseInsensitiveSearch, range: Range(start: l.startIndex, end: l.endIndex))
             if link == nil {
                 saveValue(l, forKey: CurrentCLLinkKey)
             }
