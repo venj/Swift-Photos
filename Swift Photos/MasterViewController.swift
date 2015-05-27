@@ -86,7 +86,9 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             if (error != nil) {
                 hud.hide(true)
                 let alert = UIAlertController(title: NSLocalizedString("Network error", tableName: nil, value: "Network error", comment: "Network error happened, typically timeout."), message: NSLocalizedString("Failed to reach 1024 in time. Maybe links are dead. You may use a VPN to access 1024.", tableName: nil, value: "Network error", comment: "1024 link down."), preferredStyle: .Alert)
-                let action = UIAlertAction(title: "OK", style: .Default, handler:nil)
+                let action = UIAlertAction(title: "OK", style: .Default, handler: { [weak self] (action) -> Void in
+                    showHUDInView(self!.navigationController!.view, withMessage: NSLocalizedString("1024 down, use a mirror", tableName: nil, value: "1024 down, use a mirror", comment: ""), afterDelay: 2.0)
+                })
                 alert.addAction(action)
                 strongSelf.presentViewController(alert, animated: true, completion: nil)
                 return
@@ -165,7 +167,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         var link:String
         if forumID == DaguerreForumID {
             if daguerreLink == "" {
-                parseDaguerreLink()
+                self.parseDaguerreLink()
             }
             else {
                 loadPostList(daguerreLink, forPage: page)
