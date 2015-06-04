@@ -392,8 +392,10 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &error)
                 let matches = regex!.matchesInString(str as String, options: nil, range: NSMakeRange(0, str.length))
                 for match in matches {
-                    let imageLink = str.substringWithRange(match.rangeAtIndex(1))
+                    var imageLink = str.substringWithRange(match.rangeAtIndex(1))
+                    imageLink = imageLink.stringByReplacingOccurrencesOfString(" ", withString: "%20")
                     fetchedImages.append(imageLink)
+                    println("\(imageLink)")
                 }
                 completionHandler(fetchedImages)
             }
