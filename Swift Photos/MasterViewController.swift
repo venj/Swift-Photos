@@ -395,7 +395,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                     var imageLink = str.substringWithRange(match.rangeAtIndex(1))
                     imageLink = imageLink.stringByReplacingOccurrencesOfString(" ", withString: "%20")
                     fetchedImages.append(imageLink)
-                    println("\(imageLink)")
+                    //println("\(imageLink)")
                 }
                 completionHandler(fetchedImages)
             }
