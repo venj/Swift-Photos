@@ -413,10 +413,6 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         var image = ""
         let path = ""
         for image in images {
-            if image == images[0] {
-                // Skip the first pic.
-                continue
-            }
             if SDWebImageManager.sharedManager().cachedImageExistsForURL(NSURL(string: image)) {
                 //println("Cached")
                 continue
