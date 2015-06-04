@@ -11,7 +11,7 @@ PODS:
     - PSTCollectionView (~> 1.2)
     - SDWebImage (~> 3.7)
   - PSTCollectionView (1.2.3)
-  - Reveal-iOS-SDK (1.0.7)
+  - Reveal-iOS-SDK (1.5.1)
   - SDWebImage (3.7.2):
     - SDWebImage/Core (= 3.7.2)
   - SDWebImage/Core (3.7.2)
@@ -23,7 +23,7 @@ DEPENDENCIES:
   - MBProgressHUD (~> 0.9.1)
   - MMAppSwitcher (~> 0.2.0)
   - MWPhotoBrowser (~> 1.4.1)
-  - Reveal-iOS-SDK (~> 1.0.7)
+  - Reveal-iOS-SDK (~> 1.5.1)
   - SDWebImage (~> 3.7.2)
 
 SPEC CHECKSUMS:
@@ -35,7 +35,7 @@ SPEC CHECKSUMS:
   MMAppSwitcher: 6e813046b201593d1a1d06188a6f6336f06b7be2
   MWPhotoBrowser: 2531e682860d62b8a7ba8659de02eb9040e431e5
   PSTCollectionView: 6749df92885353521f55279a7ce2b293762e2be4
-  Reveal-iOS-SDK: 9125c58562f3347f6d74bb5e94b5311ef2568d2f
+  Reveal-iOS-SDK: c9c55cad2729c85f6ced415f1b21857c9a2d8ef9
   SDWebImage: 71b7cdc1d1721d6a82ed62889030225f2c249e29
 
 COCOAPODS: 0.37.1

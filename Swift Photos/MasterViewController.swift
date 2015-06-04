@@ -159,6 +159,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             else {
                 // Handle error
                 hud.hide(true)
+                showHUDInView(self!.navigationController!.view, withMessage: NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."), afterDelay: 1)
             }
         }
     }
@@ -246,8 +247,9 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 photoBrowser.displayNavArrows = true
                 strongSelf.navigationController?.pushViewController(photoBrowser, animated: true)
                 },
-                errorHandler: {
+                errorHandler: { [weak self] in
                     hud.hide(true)
+                    showHUDInView(self!.navigationController!.view, withMessage: NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."), afterDelay: 1)
             })
         }
     }

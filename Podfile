@@ -10,7 +10,7 @@ pod 'InAppSettingsKit', '~> 2.6'
 pod 'LTHPasscodeViewController', '~> 3.3.2'
 pod 'MWPhotoBrowser', '~> 1.4.1'
 pod 'SDWebImage', '~> 3.7.2'
-pod 'Reveal-iOS-SDK', '~> 1.0.7', :configurations => ['Debug']
+pod 'Reveal-iOS-SDK', '~> 1.5.1', :configurations => ['Debug']
 end
 
 target "Swift PhotosTests" do
