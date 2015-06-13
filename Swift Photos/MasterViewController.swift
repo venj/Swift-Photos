@@ -29,7 +29,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     var sheet:UIActionSheet!
     var searchController:UISearchController!
     var resultsController:SearchResultController!
-    var myActivity : NSUserActivity?
+    var myActivity : NSUserActivity!
     
     let categories = [NSLocalizedString("Daguerre's Flag", tableName: nil, value: "Daguerre's Flag", comment: "達蓋爾的旗幟"): 16,
                       NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图"): 53,
@@ -113,6 +113,13 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
     
     func loadPostList(link:String, forPage page:Int) {
+        if myActivity != nil {
+            myActivity.invalidate()
+        }
+        myActivity = NSUserActivity(activityType: "me.venj.Swift-Photos.Continuity")
+        myActivity.webpageURL = NSURL(string: link)
+        myActivity.becomeCurrent()
+        
         let hud = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
         let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
         configuration.timeoutIntervalForRequest = requestTimeOutForWeb
@@ -247,9 +254,12 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 photoBrowser.zoomPhotosToFill = false
                 photoBrowser.displayNavArrows = true
                 strongSelf.navigationController?.pushViewController(photoBrowser, animated: true)
-                self?.myActivity? = NSUserActivity(activityType: "me.venj.Swift-Photos.Continuity")
-                self?.myActivity?.webpageURL = NSURL(string: link)
-                self?.myActivity?.becomeCurrent()
+                if strongSelf.myActivity != nil {
+                    strongSelf.myActivity.invalidate()
+                }
+                strongSelf.myActivity = NSUserActivity(activityType: "me.venj.Swift-Photos.Continuity")
+                strongSelf.myActivity.webpageURL = NSURL(string: link)
+                strongSelf.myActivity.becomeCurrent()
                 },
                 errorHandler: { [weak self] in
                     hud.hide(true)
@@ -397,7 +407,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 let matches = regex!.matchesInString(str as String, options: nil, range: NSMakeRange(0, str.length))
                 for match in matches {
                     var imageLink = str.substringWithRange(match.rangeAtIndex(1))
-                    imageLink = imageLink.stringByReplacingOccurrencesOfString(" ", withString: "%20")
+                    imageLink = imageLink.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
                     fetchedImages.append(imageLink)
                     //println("\(imageLink)")
                 }

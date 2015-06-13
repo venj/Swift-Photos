@@ -19,9 +19,13 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>84</string>
+	<string>86</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>me.venj.Swift-Photos.Continuity</string>
+	</array>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UIMainStoryboardFile</key>
@@ -40,10 +44,6 @@
 			<false/>
 		</dict>
 	</dict>
-	<key>NSUserActivityTypes</key>
-	<array>
-		<string>me.venj.Swift-Photos.Continuity</string>
-	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
