@@ -29,6 +29,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     var sheet:UIActionSheet!
     var searchController:UISearchController!
     var resultsController:SearchResultController!
+    var myActivity : NSUserActivity?
     
     let categories = [NSLocalizedString("Daguerre's Flag", tableName: nil, value: "Daguerre's Flag", comment: "達蓋爾的旗幟"): 16,
                       NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图"): 53,
@@ -246,6 +247,9 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 photoBrowser.zoomPhotosToFill = false
                 photoBrowser.displayNavArrows = true
                 strongSelf.navigationController?.pushViewController(photoBrowser, animated: true)
+                self?.myActivity? = NSUserActivity(activityType: "me.venj.Swift-Photos.Continuity")
+                self?.myActivity?.webpageURL = NSURL(string: link)
+                self?.myActivity?.becomeCurrent()
                 },
                 errorHandler: { [weak self] in
                     hud.hide(true)
