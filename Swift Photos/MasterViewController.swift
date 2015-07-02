@@ -245,7 +245,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                     return
                 }
                 // prefetch images
-                strongSelf.fetchImagesToCache(fetchedImages)
+                strongSelf.fetchImagesToCache(fetchedImages, withProgressAction: { (progress) -> Void in })
                 strongSelf.images = fetchedImages
                 let aCell:UITableViewCell = tableView.cellForRowAtIndexPath(indexPath)!
                 strongSelf.currentTitle = aCell.textLabel!.text!
@@ -266,6 +266,22 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                     showHUDInView(self!.navigationController!.view, withMessage: NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."), afterDelay: 1)
             })
         }
+    }
+    
+    func cacheImages(forIndexPath indexPath: NSIndexPath, withProgressAction progressAction:(Double) -> Void) {
+        let link = posts[indexPath.row].link
+        fetchImageLinks(fromPostLink: link, completionHandler: { [weak self] fetchedImages in
+            let strongSelf = self!
+            strongSelf.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            // Skip non pics
+            if fetchedImages.count == 0 {
+                return
+            }
+            // prefetch images
+            strongSelf.fetchImagesToCache(fetchedImages, withProgressAction:progressAction)
+            },
+            errorHandler: { [weak self] in
+            })
     }
     
     override func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {
@@ -292,6 +308,26 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             loadPostListForPage(page)
         }
     }
+    
+    override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
+        let cacheAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: "Cache") { (action, indexPath) -> Void in
+            self.cacheImages(forIndexPath: indexPath, withProgressAction: { (progress) -> Void in
+                // Update Progress.
+                println(progress)
+            })
+            if tableView.editing {
+                tableView.setEditing(false, animated: true)
+            }
+        }
+        cacheAction.backgroundColor = UIColor.magentaColor()
+        return [cacheAction]
+    }
+    
+    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        return true
+    }
+    
+    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) { }
     
     // MARK: MWPhotoBrowser Delegate
     func numberOfPhotosInPhotoBrowser(photoBrowser: MWPhotoBrowser!) -> UInt {
@@ -425,9 +461,11 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
     
     // Don't care if the request is succeeded or not.
-    func fetchImagesToCache(images:[String]) {
+    func fetchImagesToCache(images:[String], withProgressAction progressAction:(Double) -> Void ) {
         var image = ""
         let path = ""
+        var downloadedImagesCount = 0.0
+        let totalImagesCount = images.count
         for image in images {
             if SDWebImageManager.sharedManager().cachedImageExistsForURL(NSURL(string: image)) {
                 //println("Cached")
@@ -447,9 +485,12 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 return temporaryURL
             }) // For Debug
             .progress { (bytesRead, totalBytesRead, totalBytesExpectedToRead) in
-                //if totalBytesRead == totalBytesExpectedToRead {
-                //    println("Done.")
-                //}
+                let part = Double(totalBytesRead) / Double(totalBytesExpectedToRead)
+                let progress = (downloadedImagesCount + part) / Double(totalImagesCount)
+                progressAction(progress)
+                if (totalBytesRead == totalBytesExpectedToRead) {
+                    downloadedImagesCount += 1
+                }
             } // For Debug
             .response { (request, response, _, error) in
                 //println(response)
@@ -513,7 +554,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     func clearDownloadCache( complete: ()->() ) {
         let tempDir = NSTemporaryDirectory();
-        println(tempDir)
+        //println(tempDir)
         let fm = NSFileManager.defaultManager()
         if let contents = fm.contentsOfDirectoryAtPath(tempDir, error: nil) {
             for item in contents {
