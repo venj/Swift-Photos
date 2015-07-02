@@ -9,7 +9,7 @@
 import UIKit
 
 class ProgressTableViewCell: UITableViewCell {
-    var progress:Double = 0 {
+    var progress:Float = 0 {
         didSet {
             if progress > 0.0 {
                 self.progressView.alpha = 1.0
@@ -17,7 +17,13 @@ class ProgressTableViewCell: UITableViewCell {
             else {
                 self.progressView.alpha = 0.0
             }
-            self.progressView.progress = Float(progress)
+            if progress >= 1.0 {
+                self.progressView.tintColor = UIColor.greenColor()
+            }
+            else {
+                self.progressView.tintColor = nil
+            }
+            self.progressView.progress = progress
         }
     }
     

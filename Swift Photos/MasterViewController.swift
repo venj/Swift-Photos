@@ -202,13 +202,15 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
 
         cell.textLabel?.text = posts[indexPath.row].title
         cell.textLabel?.backgroundColor = UIColor.clearColor()
-        let link = posts[indexPath.row].link
+        let post = posts[indexPath.row]
+        let link = post.link
         if imagesCached(forPostLink: link) {
             cell.textLabel?.textColor = UIColor.blueColor()
         }
         else {
             cell.textLabel?.textColor = UIColor.blackColor()
         }
+        cell.progress = post.progress
         return cell
     }
     
@@ -269,22 +271,6 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         }
     }
     
-    func cacheImages(forIndexPath indexPath: NSIndexPath, withProgressAction progressAction:(Double) -> Void) {
-        let link = posts[indexPath.row].link
-        fetchImageLinks(fromPostLink: link, completionHandler: { [weak self] fetchedImages in
-            let strongSelf = self!
-            strongSelf.tableView.deselectRowAtIndexPath(indexPath, animated: true)
-            // Skip non pics
-            if fetchedImages.count == 0 {
-                return
-            }
-            // prefetch images
-            strongSelf.fetchImagesToCache(fetchedImages, withProgressAction:progressAction)
-            },
-            errorHandler: { [weak self] in
-            })
-    }
-    
     override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
         if indexPath.row == posts.count - 1 {
             loadPostListForPage(page)
@@ -293,13 +279,15 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
         let preloadAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: NSLocalizedString("Preload", tableName: nil, value: "Preload", comment: "Preload Button.")) { (action, indexPath) -> Void in
-            self.cacheImages(forIndexPath: indexPath, withProgressAction: { (progress) -> Void in
+            self.cacheImages(forIndexPath: indexPath, withProgressAction: { [weak self] (progress) -> Void in
                 // Update Progress.
-                let cell = tableView.cellForRowAtIndexPath(indexPath) as! ProgressTableViewCell
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    cell.progress = progress
-                    println(progress)
-                })
+                let cell = tableView.cellForRowAtIndexPath(indexPath) as? ProgressTableViewCell
+                self?.posts[indexPath.row].progress = progress
+                if let c = cell {
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        c.progress = progress
+                    })
+                }
             })
             if tableView.editing {
                 tableView.setEditing(false, animated: true)
@@ -473,14 +461,16 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
     
     // Don't care if the request is succeeded or not.
-    func fetchImagesToCache(images:[String], withProgressAction progressAction:(Double) -> Void ) {
+    func fetchImagesToCache(images:[String], withProgressAction progressAction:(Float) -> Void ) {
         var image = ""
         let path = ""
-        var downloadedImagesCount = 0.0
+        var downloadedImagesCount = 0
         let totalImagesCount = images.count
         for image in images {
             if SDWebImageManager.sharedManager().cachedImageExistsForURL(NSURL(string: image)) {
-                //println("Cached")
+                downloadedImagesCount++
+                let progress = Float(downloadedImagesCount) / Float(totalImagesCount)
+                progressAction(progress)
                 continue
             }
             let imageLink = image.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
@@ -497,17 +487,32 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 return temporaryURL
             }) // For Debug
             .progress { (bytesRead, totalBytesRead, totalBytesExpectedToRead) in
-                let part = Double(totalBytesRead) / Double(totalBytesExpectedToRead)
-                let progress = (downloadedImagesCount + part) / Double(totalImagesCount)
-                progressAction(progress)
                 if (totalBytesRead == totalBytesExpectedToRead) {
                     downloadedImagesCount += 1
+                    let progress = Float(downloadedImagesCount) / Float(totalImagesCount)
+                    progressAction(progress)
                 }
             } // For Debug
             .response { (request, response, _, error) in
                 //println(response)
             }
         }
+    }
+    
+    func cacheImages(forIndexPath indexPath: NSIndexPath, withProgressAction progressAction:(Float) -> Void) {
+        let link = posts[indexPath.row].link
+        fetchImageLinks(fromPostLink: link, completionHandler: { [weak self] fetchedImages in
+            let strongSelf = self!
+            strongSelf.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            // Skip non pics
+            if fetchedImages.count == 0 {
+                return
+            }
+            // prefetch images
+            strongSelf.fetchImagesToCache(fetchedImages, withProgressAction:progressAction)
+            },
+            errorHandler: { [weak self] in
+            })
     }
     
     // MARK: ActionSheet Delegates

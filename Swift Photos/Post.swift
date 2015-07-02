@@ -11,6 +11,7 @@ import UIKit
 class Post: NSObject {
     var title:String!
     var link:String!
+    var progress:Float = 0
     
     init(title:String, link:String) {
         super.init()
