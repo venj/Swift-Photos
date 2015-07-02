@@ -198,9 +198,10 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! ProgressTableViewCell
 
         cell.textLabel?.text = posts[indexPath.row].title
+        cell.textLabel?.backgroundColor = UIColor.clearColor()
         let link = posts[indexPath.row].link
         if imagesCached(forPostLink: link) {
             cell.textLabel?.textColor = UIColor.blueColor()
@@ -284,25 +285,6 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             })
     }
     
-    override func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {
-        let cell = tableView.cellForRowAtIndexPath(indexPath)!
-        let spinWheel = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
-        cell.accessoryView = spinWheel
-        spinWheel.startAnimating()
-        
-        let link = posts[indexPath.row].link
-        fetchImageLinks(fromPostLink: link, completionHandler: { [weak self] fetchedImages in
-            let strongSelf = self!
-            saveCachedLinksToHomeDirectory(fetchedImages, forPostLink: link)
-            strongSelf.tableView.reloadData()
-            spinWheel.stopAnimating()
-            cell.accessoryView = nil
-        }, errorHandler: {
-            spinWheel.stopAnimating()
-            cell.accessoryView = nil
-        })
-    }
-    
     override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
         if indexPath.row == posts.count - 1 {
             loadPostListForPage(page)
@@ -310,20 +292,50 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
     
     override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
-        let cacheAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: "Cache") { (action, indexPath) -> Void in
+        let preloadAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: NSLocalizedString("Preload", tableName: nil, value: "Preload", comment: "Preload Button.")) { (action, indexPath) -> Void in
             self.cacheImages(forIndexPath: indexPath, withProgressAction: { (progress) -> Void in
                 // Update Progress.
-                println(progress)
+                let cell = tableView.cellForRowAtIndexPath(indexPath) as! ProgressTableViewCell
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    cell.progress = progress
+                    println(progress)
+                })
             })
             if tableView.editing {
                 tableView.setEditing(false, animated: true)
             }
         }
-        cacheAction.backgroundColor = UIColor.magentaColor()
-        return [cacheAction]
+        preloadAction.backgroundColor = UIColor.blueColor()
+        //Save
+        let link = posts[indexPath.row].link
+        let saveAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: NSLocalizedString("Save", tableName: nil, value: "Save", comment: "Save Button.")) { [weak self] (action, indexPath) -> Void in
+            let cell = tableView.cellForRowAtIndexPath(indexPath)!
+            let spinWheel = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
+            cell.accessoryView = spinWheel
+            spinWheel.startAnimating()
+            
+            self?.fetchImageLinks(fromPostLink: link, completionHandler: { [weak self] fetchedImages in
+                let strongSelf = self!
+                saveCachedLinksToHomeDirectory(fetchedImages, forPostLink: link)
+                strongSelf.tableView.reloadData()
+                spinWheel.stopAnimating()
+                cell.accessoryView = nil
+                }, errorHandler: {
+                    spinWheel.stopAnimating()
+                    cell.accessoryView = nil
+            })
+            
+            if tableView.editing {
+                tableView.setEditing(false, animated: true)
+            }
+        }
+        saveAction.backgroundColor = UIColor.greenColor()
+        return [preloadAction, saveAction]
     }
     
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        if indexPath.row < 0 { return false }
+        if imagesCached(forPostLink: posts[indexPath.row].link) { return false }
         return true
     }
     
