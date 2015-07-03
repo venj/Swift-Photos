@@ -59,7 +59,6 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         let settingsButton = UIBarButtonItem(title: NSLocalizedString("Settings", tableName: nil, value: "Settings", comment: "设置"), style: .Plain, target: self, action: "showSettings:")
         navigationItem.rightBarButtonItems = [settingsButton, categoryButton]
         loadFirstPageForKey(title!)
-        
         // SearchBar
         resultsController = SearchResultController()
         searchController = UISearchController(searchResultsController: resultsController)
@@ -211,6 +210,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             cell.textLabel?.textColor = UIColor.blackColor()
         }
         cell.progress = post.progress
+        cell.indentationWidth = 0.0
         return cell
     }
     

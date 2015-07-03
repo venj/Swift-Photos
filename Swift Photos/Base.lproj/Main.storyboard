@@ -37,16 +37,17 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="3Qu-rM-nZk">
-                                            <rect key="frame" x="8" y="41" width="584" height="2"/>
+                                            <rect key="frame" x="0.0" y="41" width="600" height="2"/>
                                         </progressView>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="3Qu-rM-nZk" firstAttribute="leading" secondItem="d3P-M7-ByW" secondAttribute="leadingMargin" id="R3O-If-sAw"/>
+                                        <constraint firstItem="3Qu-rM-nZk" firstAttribute="leading" secondItem="d3P-M7-ByW" secondAttribute="leading" id="DIm-3d-0RT"/>
                                         <constraint firstItem="3Qu-rM-nZk" firstAttribute="bottom" secondItem="d3P-M7-ByW" secondAttribute="bottomMargin" constant="8" id="UHm-dw-aUi"/>
-                                        <constraint firstAttribute="trailingMargin" secondItem="3Qu-rM-nZk" secondAttribute="trailing" id="kEg-Mf-Efd"/>
+                                        <constraint firstAttribute="trailing" secondItem="3Qu-rM-nZk" secondAttribute="trailing" id="wpU-vr-BEc"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <connections>
                                     <outlet property="progressView" destination="3Qu-rM-nZk" id="rOi-gC-18c"/>
                                 </connections>
