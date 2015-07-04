@@ -59,6 +59,8 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         let settingsButton = UIBarButtonItem(title: NSLocalizedString("Settings", tableName: nil, value: "Settings", comment: "设置"), style: .Plain, target: self, action: "showSettings:")
         navigationItem.rightBarButtonItems = [settingsButton, categoryButton]
         loadFirstPageForKey(title!)
+        
+        tableView.separatorInset = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
         // SearchBar
         resultsController = SearchResultController()
         searchController = UISearchController(searchResultsController: resultsController)
@@ -138,7 +140,8 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 var regexString:String
                 var linkIndex = 0, titleIndex = 0
                 if strongSelf.forumID == DaguerreForumID {
-                    regexString = "<a href=\"([^\"]+?)\"[^>]+?>(<font [^>]+?>)?([^\\d<]+?\\[\\d+[^\\d]+?)(</font>)?</a>"
+                    //regexString = "<a href=\"([^\"]+?)\"[^>]+?>(<font [^>]+?>)?([^\\d<]+?\\[\\d+[^\\d]+?)(</font>)?</a>"
+                    regexString = "[^\\d\\s]\\s+<h3><a href=\"(htm_data[^\"]+?)\"[^>]+?>(<font [^>]+?>)?(.+?(\\[\\d+[^\\[]+?\\])?)(</font>)?</a></h3>"
                     linkIndex = 1
                     titleIndex = 3
                 }
@@ -204,13 +207,13 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         let post = posts[indexPath.row]
         let link = post.link
         if imagesCached(forPostLink: link) {
-            cell.textLabel?.textColor = UIColor.blueColor()
+            cell.textLabel?.textColor = UIColor.iOS8darkBlueColor()
         }
         else {
             cell.textLabel?.textColor = UIColor.blackColor()
         }
         cell.progress = post.progress
-        cell.indentationWidth = 0.0
+        cell.indentationWidth = -15.0
         return cell
     }
     
@@ -275,9 +278,21 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         if indexPath.row == posts.count - 1 {
             loadPostListForPage(page)
         }
+        
+        // Seperator inset fix from Stack Overflow: http://stackoverflow.com/questions/25770119/ios-8-uitableview-separator-inset-0-not-working
+        if cell.respondsToSelector("setSeparatorInset:") {
+            cell.separatorInset = UIEdgeInsetsZero
+        }
+        if cell.respondsToSelector("setPreservesSuperviewLayoutMargins:") {
+            cell.preservesSuperviewLayoutMargins = false
+        }
+        if cell.respondsToSelector("setLayoutMargins:") {
+            cell.layoutMargins = UIEdgeInsetsZero
+        }
     }
     
     override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
+        if (indexPath.row < 0) { return [] }
         let preloadAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: NSLocalizedString("Preload", tableName: nil, value: "Preload", comment: "Preload Button.")) { (action, indexPath) -> Void in
             self.cacheImages(forIndexPath: indexPath, withProgressAction: { [weak self] (progress) -> Void in
                 // Update Progress.
@@ -293,7 +308,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 tableView.setEditing(false, animated: true)
             }
         }
-        preloadAction.backgroundColor = UIColor.blueColor()
+        preloadAction.backgroundColor = UIColor.iOS8purpleColor()
         //Save
         let link = posts[indexPath.row].link
         let saveAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: NSLocalizedString("Save", tableName: nil, value: "Save", comment: "Save Button.")) { [weak self] (action, indexPath) -> Void in
@@ -317,7 +332,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 tableView.setEditing(false, animated: true)
             }
         }
-        saveAction.backgroundColor = UIColor.greenColor()
+        saveAction.backgroundColor = UIColor.iOS8orangeColor()
         return [preloadAction, saveAction]
     }
     

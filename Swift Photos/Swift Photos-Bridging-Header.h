@@ -10,3 +10,4 @@
 #import <SDWebImage/SDWebImageManager.h>
 #import <LTHPasscodeViewController/LTHPasscodeViewController.h>
 #import <MWPhotoBrowser/MWPhotoBrowser.h>
+#import <iOS8Colors/UIColor+iOS8Colors.h>

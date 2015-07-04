@@ -11,6 +11,7 @@ pod 'LTHPasscodeViewController', '~> 3.3.2'
 pod 'MWPhotoBrowser', '~> 1.4.1'
 pod 'SDWebImage', '~> 3.7.2'
 pod 'Reveal-iOS-SDK', '~> 1.5.1', :configurations => ['Debug']
+pod 'iOS8Colors', '~> 0.1.2'
 end
 
 target "Swift PhotosTests" do

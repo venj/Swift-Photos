@@ -52,7 +52,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
         
         let link = posts[indexPath.row].link
         if imagesCached(forPostLink: link) {
-            cell.textLabel?.textColor = UIColor.blueColor()
+            cell.textLabel?.textColor = UIColor.iOS8darkBlueColor()
         }
         else {
             cell.textLabel?.textColor = UIColor.blackColor()
