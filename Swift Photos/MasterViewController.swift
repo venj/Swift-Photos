@@ -78,10 +78,8 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     func parseDaguerreLink() {
         let link = getDaguerreLink(self.forumID)
-        let manager = Manager.sharedInstance
-        manager.session.configuration.timeoutIntervalForRequest = requestTimeOutForWeb
         var hud = showHUDInView(self.navigationController!.view, withMessage: NSLocalizedString("Parsing Daguerre Link...", tableName: nil, value: "Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."), afterDelay: 0.0)
-        let request = manager.request(.GET, link + "index.php")
+        let request = Alamofire.request(.GET, link + "index.php")
         request.response { [weak self] (request, response, data, error) in
             let strongSelf = self!
             if (error?.domain != nil) {
@@ -123,17 +121,10 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         myActivity.becomeCurrent()
         
         let hud = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
-        let manager = Manager.sharedInstance
-        manager.session.configuration.timeoutIntervalForRequest = requestTimeOutForWeb
-        let request = manager.request(.GET, link + "&page=\(self.page)")
+        let request = Alamofire.request(.GET, link + "&page=\(self.page)")
         request.response { [weak self] (request, response, data, error) in
             let strongSelf = self!
-            if data == nil {
-                hud.hide(true)
-                showHUDInView(strongSelf.navigationController!.view, withMessage: NSLocalizedString("No data received. iOS 7 user?", tableName: nil, value: "No data received. iOS 7 user?", comment: "HUD when no data received."), afterDelay: 2.0)
-                return
-            }
-            if error == nil {
+            if error?.domain == nil {
                 if data != nil {
                     var str:NSString = data!.stringFromGB18030Data()
                     var err:NSError?
@@ -235,6 +226,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             }
             self.images = images
             var photoBrowser = MWPhotoBrowser(delegate: self)
+            self.currentTitle = tableView.cellForRowAtIndexPath(indexPath)!.textLabel!.text!
             photoBrowser.displayActionButton = true
             photoBrowser.zoomPhotosToFill = false
             photoBrowser.displayNavArrows = true
@@ -437,13 +429,11 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
     
     func fetchImageLinks(fromPostLink postLink:String, completionHandler:((Array<String>) -> Void), errorHandler:(() -> Void)) {
-        let manager = Manager.sharedInstance
-        manager.session.configuration.timeoutIntervalForRequest = requestTimeOutForWeb
-        let request = manager.request(.GET, postLink)
+        let request = Alamofire.request(.GET, postLink)
         request.response { [weak self] (request, response, data, error) in
             let strongSelf = self!
             var fetchedImages = Array<String>()
-            if error == nil {
+            if error?.domain == nil {
                 if data != nil {
                     var str:NSString = data!.stringFromGB18030Data()
                     var error:NSError?
@@ -490,10 +480,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 continue
             }
             let imageLink = image.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
-            
-            let manager = Manager.sharedInstance
-            manager.session.configuration.timeoutIntervalForRequest = requestTimeOutForWeb
-            manager.download(.GET, imageLink, destination: { (temporaryURL, response) in
+            Alamofire.download(.GET, imageLink, destination: { (temporaryURL, response) in
                 // 返回下载目标路径的 fileURL
                 let imageURL = NSURL.fileURLWithPath(localImagePath(image))
                 if let directory = imageURL {

@@ -13,9 +13,6 @@
 /* 动漫漫画 */
 "Hentai Manga" = "Hentai Manga";
 
-/* HUD when no data received. */
-"No data received. iOS 7 user?" = "No data received. iOS 7 user?";
-
 /* ActionSheet title. */
 "Please select a category" = "Please select a category";
 
@@ -62,7 +59,7 @@
 "Failed to reach 1024 in time. Maybe links are dead. You may use a VPN to access 1024." = "Failed to reach 1024 in time. Maybe links are dead. You may use a VPN to access 1024.";
 
 /* 主站挂了,到设置里修改地址 */
-"1024 down, use a mirror" = "1024 down, use a mirror";
+"1024 down, use a mirror" = "Connection failed, try to change an address.";
 
 /* 请求超时 */
 "Request timeout." = "Request timeout.";

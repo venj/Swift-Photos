@@ -13,9 +13,6 @@
 /* 动漫漫画 */
 "Hentai Manga" = "动漫漫画";
 
-/* HUD when no data received. */
-"No data received. iOS 7 user?" = "没有收到数据，iOS 7用户？";
-
 /* ActionSheet title. */
 "Please select a category" = "请选择一个分类";
 
@@ -62,7 +59,7 @@
 "Failed to reach 1024 in time. Maybe links are dead. You may use a VPN to access 1024." = "连接超时。可能是您的网络出现问题，或者链接挂了。如果您的网络正常，请选择科学上网连接。";
 
 /* 主站挂了,到设置里修改地址 */
-"1024 down, use a mirror" = "主站挂了,到设置里修改地址";
+"1024 down, use a mirror" = "连接失败，换个地址试试。";
 
 /* 请求超时 */
 "Request timeout." = "请求超时";

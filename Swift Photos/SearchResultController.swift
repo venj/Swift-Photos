@@ -147,13 +147,11 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
     
     
     func fetchImageLinks(fromPostLink postLink:String, completionHandler:((Array<String>) -> Void), errorHandler:(() -> Void)) {
-        let manager = Manager.sharedInstance
-        manager.session.configuration.timeoutIntervalForRequest = requestTimeOutForWeb
-        let request = manager.request(.GET, postLink)
+        let request = Alamofire.request(.GET, postLink)
         request.response { [weak self] (request, response, data, error) in
             let strongSelf = self!
             var fetchedImages = Array<String>()
-            if error == nil {
+            if error?.domain == nil {
                 if data != nil {
                     var str:NSString = data!.stringFromGB18030Data()
                     var error:NSError?
@@ -194,9 +192,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
                 continue
             }
             let imageLink = image.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
-            let manager = Manager.sharedInstance
-            manager.session.configuration.timeoutIntervalForRequest = requestTimeOutForWeb
-            manager.download(.GET, imageLink, destination: { (temporaryURL, response) in
+            Alamofire.download(.GET, imageLink, destination: { (temporaryURL, response) in
                 // 返回下载目标路径的 fileURL
                 let imageURL = NSURL.fileURLWithPath(localImagePath(image))
                 if let directory = imageURL {
