@@ -147,31 +147,31 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
     
     
     func fetchImageLinks(fromPostLink postLink:String, completionHandler:((Array<String>) -> Void), errorHandler:(() -> Void)) {
-        let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-        configuration.timeoutIntervalForRequest = requestTimeOutForWeb
-        let manager = Alamofire.Manager(configuration: configuration)
-        var request = manager.request(.GET, postLink)
+        let manager = Manager.sharedInstance
+        manager.session.configuration.timeoutIntervalForRequest = requestTimeOutForWeb
+        let request = manager.request(.GET, postLink)
         request.response { [weak self] (request, response, data, error) in
             let strongSelf = self!
             var fetchedImages = Array<String>()
             if error == nil {
-                let d = data as! NSData
-                var str:NSString = d.stringFromGB18030Data()
-                var error:NSError?
-                var regexString:String
-                if strongSelf.forumID == 16 {
-                    regexString = "input type='image' src='([^\"]+?)'"
+                if data != nil {
+                    var str:NSString = data!.stringFromGB18030Data()
+                    var error:NSError?
+                    var regexString:String
+                    if strongSelf.forumID == 16 {
+                        regexString = "input type='image' src='([^\"]+?)'"
+                    }
+                    else {
+                        regexString = "img src=\"([^\"]+)\" .+? onload"
+                    }
+                    var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &error)
+                    let matches = regex!.matchesInString(str as String, options: nil, range: NSMakeRange(0, str.length))
+                    for match in matches {
+                        let imageLink = str.substringWithRange(match.rangeAtIndex(1))
+                        fetchedImages.append(imageLink)
+                    }
+                    completionHandler(fetchedImages)
                 }
-                else {
-                    regexString = "img src=\"([^\"]+)\" .+? onload"
-                }
-                var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &error)
-                let matches = regex!.matchesInString(str as String, options: nil, range: NSMakeRange(0, str.length))
-                for match in matches {
-                    let imageLink = str.substringWithRange(match.rangeAtIndex(1))
-                    fetchedImages.append(imageLink)
-                }
-                completionHandler(fetchedImages)
             }
             else {
                 // Handle error
@@ -194,9 +194,8 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
                 continue
             }
             let imageLink = image.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
-            let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-            configuration.timeoutIntervalForRequest = requestTimeOutForWeb
-            let manager = Alamofire.Manager(configuration: configuration)
+            let manager = Manager.sharedInstance
+            manager.session.configuration.timeoutIntervalForRequest = requestTimeOutForWeb
             manager.download(.GET, imageLink, destination: { (temporaryURL, response) in
                 // 返回下载目标路径的 fileURL
                 let imageURL = NSURL.fileURLWithPath(localImagePath(image))

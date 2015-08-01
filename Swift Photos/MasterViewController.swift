@@ -78,14 +78,13 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     func parseDaguerreLink() {
         let link = getDaguerreLink(self.forumID)
-        let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-        configuration.timeoutIntervalForRequest = requestTimeOutForWeb
-        let manager = Alamofire.Manager(configuration: configuration)
-        var request = manager.request(.GET, link + "index.php")
+        let manager = Manager.sharedInstance
+        manager.session.configuration.timeoutIntervalForRequest = requestTimeOutForWeb
         var hud = showHUDInView(self.navigationController!.view, withMessage: NSLocalizedString("Parsing Daguerre Link...", tableName: nil, value: "Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."), afterDelay: 0.0)
+        let request = manager.request(.GET, link + "index.php")
         request.response { [weak self] (request, response, data, error) in
             let strongSelf = self!
-            if (error != nil) {
+            if (error?.domain != nil) {
                 hud.hide(true)
                 let alert = UIAlertController(title: NSLocalizedString("Network error", tableName: nil, value: "Network error", comment: "Network error happened, typically timeout."), message: NSLocalizedString("Failed to reach 1024 in time. Maybe links are dead. You may use a VPN to access 1024.", tableName: nil, value: "Network error", comment: "1024 link down."), preferredStyle: .Alert)
                 let action = UIAlertAction(title: "OK", style: .Default, handler: { [weak self] (action) -> Void in
@@ -96,16 +95,18 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 return
             }
             else {
-                let d = data as! NSData
-                var str:NSString = d.stringFromGB18030Data()
-                var err:NSError?
-                let regexString:String = "<a href=\"([^\"]+?)\">達蓋爾的旗幟</a>"
-                var linkIndex = 0, titleIndex = 0
-                var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &err)
-                let matches = regex?.matchesInString(str as String, options: nil, range: NSMakeRange(0, str.length))
-                if matches!.count > 0 {
-                    let match: AnyObject = matches![0]
-                    strongSelf.daguerreLink = link + str.substringWithRange(match.rangeAtIndex(1))
+                if data != nil {
+                    var str:NSString = data!.stringFromGB18030Data()
+                    var err:NSError?
+                    let regexString:String = "<a href=\"([^\"]+?)\">達蓋爾的旗幟</a>"
+                    var linkIndex = 0, titleIndex = 0
+                    var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &err)
+                    let matches = regex?.matchesInString(str as String, options: nil, range: NSMakeRange(0, str.length))
+                    if matches!.count > 0 {
+                        let match: AnyObject = matches![0]
+                        strongSelf.daguerreLink = link + str.substringWithRange(match.rangeAtIndex(1))
+                    }
+
                 }
                 hud.hide(true)
             }
@@ -122,10 +123,9 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         myActivity.becomeCurrent()
         
         let hud = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
-        let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-        configuration.timeoutIntervalForRequest = requestTimeOutForWeb
-        let manager = Alamofire.Manager(configuration: configuration)
-        var request = manager.request(.GET, link + "&page=\(self.page)")
+        let manager = Manager.sharedInstance
+        manager.session.configuration.timeoutIntervalForRequest = requestTimeOutForWeb
+        let request = manager.request(.GET, link + "&page=\(self.page)")
         request.response { [weak self] (request, response, data, error) in
             let strongSelf = self!
             if data == nil {
@@ -134,37 +134,38 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 return
             }
             if error == nil {
-                let d = data as! NSData
-                var str:NSString = d.stringFromGB18030Data()
-                var err:NSError?
-                var regexString:String
-                var linkIndex = 0, titleIndex = 0
-                if strongSelf.forumID == DaguerreForumID {
-                    //regexString = "<a href=\"([^\"]+?)\"[^>]+?>(<font [^>]+?>)?([^\\d<]+?\\[\\d+[^\\d]+?)(</font>)?</a>"
-                    regexString = "[^\\d\\s]\\s+<h3><a href=\"(htm_data[^\"]+?)\"[^>]+?>(<font [^>]+?>)?(.+?(\\[\\d+[^\\[]+?\\])?)(</font>)?</a></h3>"
-                    linkIndex = 1
-                    titleIndex = 3
+                if data != nil {
+                    var str:NSString = data!.stringFromGB18030Data()
+                    var err:NSError?
+                    var regexString:String
+                    var linkIndex = 0, titleIndex = 0
+                    if strongSelf.forumID == DaguerreForumID {
+                        //regexString = "<a href=\"([^\"]+?)\"[^>]+?>(<font [^>]+?>)?([^\\d<]+?\\[\\d+[^\\d]+?)(</font>)?</a>"
+                        regexString = "[^\\d\\s]\\s+<h3><a href=\"(htm_data[^\"]+?)\"[^>]+?>(<font [^>]+?>)?(.+?(\\[\\d+[^\\[]+?\\])?)(</font>)?</a></h3>"
+                        linkIndex = 1
+                        titleIndex = 3
+                    }
+                    else {
+                        regexString = "<a href=\"(viewthread\\.php[^\"]+?)\">([^\\d<]+?\\d+[^\\d]+?)</a>"
+                        linkIndex = 1
+                        titleIndex = 2
+                    }
+                    var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &err)
+                    let matches = regex!.matchesInString(str as String, options: nil, range: NSMakeRange(0, str.length))
+                    var indexPathes:Array<NSIndexPath> = []
+                    var cellCount = strongSelf.posts.count
+                    for var i = 0; i < matches.count; ++i {
+                        let match: AnyObject = matches[i]
+                        let link = getDaguerreLink(strongSelf.forumID) + str.substringWithRange(match.rangeAtIndex(linkIndex))
+                        let title = str.substringWithRange(match.rangeAtIndex(titleIndex))
+                        strongSelf.posts.append(Post(title: title, link: link))
+                        indexPathes.append(NSIndexPath(forRow:cellCount + i, inSection: 0))
+                        strongSelf.resultsController.posts = strongSelf.posts // Assignment
+                    }
+                    hud.hide(true)
+                    strongSelf.tableView.insertRowsAtIndexPaths(indexPathes, withRowAnimation:.Top)
+                    strongSelf.page++
                 }
-                else {
-                    regexString = "<a href=\"(viewthread\\.php[^\"]+?)\">([^\\d<]+?\\d+[^\\d]+?)</a>"
-                    linkIndex = 1
-                    titleIndex = 2
-                }
-                var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &err)
-                let matches = regex!.matchesInString(str as String, options: nil, range: NSMakeRange(0, str.length))
-                var indexPathes:Array<NSIndexPath> = []
-                var cellCount = strongSelf.posts.count
-                for var i = 0; i < matches.count; ++i {
-                    let match: AnyObject = matches[i]
-                    let link = getDaguerreLink(strongSelf.forumID) + str.substringWithRange(match.rangeAtIndex(linkIndex))
-                    let title = str.substringWithRange(match.rangeAtIndex(titleIndex))
-                    strongSelf.posts.append(Post(title: title, link: link))
-                    indexPathes.append(NSIndexPath(forRow:cellCount + i, inSection: 0))
-                    strongSelf.resultsController.posts = strongSelf.posts // Assignment
-                }
-                hud.hide(true)
-                strongSelf.tableView.insertRowsAtIndexPaths(indexPathes, withRowAnimation:.Top)
-                strongSelf.page++
             }
             else {
                 // Handle error
@@ -292,7 +293,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
     
     override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
-        if (indexPath.row < 0) { return [] }
+        if (indexPath.row < 0) { return nil }
         let preloadAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: NSLocalizedString("Preload", tableName: nil, value: "Preload", comment: "Preload Button.")) { (action, indexPath) -> Void in
             self.cacheImages(forIndexPath: indexPath, withProgressAction: { [weak self] (progress) -> Void in
                 // Update Progress.
@@ -337,7 +338,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
     
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        if indexPath.row < 0 { return false }
+        //if indexPath.row < 0 { return false }
         if imagesCached(forPostLink: posts[indexPath.row].link) { return false }
         return true
     }
@@ -436,33 +437,33 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
     
     func fetchImageLinks(fromPostLink postLink:String, completionHandler:((Array<String>) -> Void), errorHandler:(() -> Void)) {
-        let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-        configuration.timeoutIntervalForRequest = requestTimeOutForWeb
-        let manager = Alamofire.Manager(configuration: configuration)
-        var request = manager.request(.GET, postLink)
+        let manager = Manager.sharedInstance
+        manager.session.configuration.timeoutIntervalForRequest = requestTimeOutForWeb
+        let request = manager.request(.GET, postLink)
         request.response { [weak self] (request, response, data, error) in
             let strongSelf = self!
             var fetchedImages = Array<String>()
             if error == nil {
-                let d = data as! NSData
-                var str:NSString = d.stringFromGB18030Data()
-                var error:NSError?
-                var regexString:String
-                if strongSelf.forumID == DaguerreForumID {
-                    regexString = "input type='image' src='([^\"]+?)'"
+                if data != nil {
+                    var str:NSString = data!.stringFromGB18030Data()
+                    var error:NSError?
+                    var regexString:String
+                    if strongSelf.forumID == DaguerreForumID {
+                        regexString = "input type='image' src='([^\"]+?)'"
+                    }
+                    else {
+                        regexString = "img src=\"([^\"]+)\" .+? onload"
+                    }
+                    var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &error)
+                    let matches = regex!.matchesInString(str as String, options: nil, range: NSMakeRange(0, str.length))
+                    for match in matches {
+                        var imageLink = str.substringWithRange(match.rangeAtIndex(1))
+                        imageLink = imageLink.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
+                        fetchedImages.append(imageLink)
+                        //println("\(imageLink)")
+                    }
+                    completionHandler(fetchedImages)
                 }
-                else {
-                    regexString = "img src=\"([^\"]+)\" .+? onload"
-                }
-                var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &error)
-                let matches = regex!.matchesInString(str as String, options: nil, range: NSMakeRange(0, str.length))
-                for match in matches {
-                    var imageLink = str.substringWithRange(match.rangeAtIndex(1))
-                    imageLink = imageLink.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
-                    fetchedImages.append(imageLink)
-                    //println("\(imageLink)")
-                }
-                completionHandler(fetchedImages)
             }
             else {
                 // Handle error
@@ -490,9 +491,8 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             }
             let imageLink = image.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
             
-            let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-            configuration.timeoutIntervalForRequest = requestTimeOutForWeb
-            let manager = Alamofire.Manager(configuration: configuration)
+            let manager = Manager.sharedInstance
+            manager.session.configuration.timeoutIntervalForRequest = requestTimeOutForWeb
             manager.download(.GET, imageLink, destination: { (temporaryURL, response) in
                 // 返回下载目标路径的 fileURL
                 let imageURL = NSURL.fileURLWithPath(localImagePath(image))
