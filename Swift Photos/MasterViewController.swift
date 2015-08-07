@@ -415,6 +415,9 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     // MARK: Helper
     func loadFirstPageForKey(key:String) {
+        if tableView.editing {
+            tableView.setEditing(false, animated: false)
+        }
         forumID = categories[key]!
         posts = []
         page = 1
