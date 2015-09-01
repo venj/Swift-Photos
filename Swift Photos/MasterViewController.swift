@@ -116,9 +116,11 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         if myActivity != nil {
             myActivity.invalidate()
         }
-        myActivity = NSUserActivity(activityType: "me.venj.Swift-Photos.Continuity")
-        myActivity.webpageURL = NSURL(string: link)
-        myActivity.becomeCurrent()
+        if link != "" {
+            myActivity = NSUserActivity(activityType: "me.venj.Swift-Photos.Continuity")
+            myActivity.webpageURL = NSURL(string: link)
+            myActivity.becomeCurrent()
+        }
         
         let hud = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
         let request = Alamofire.request(.GET, link + "&page=\(self.page)")
