@@ -13,9 +13,9 @@ class CLLinksTableViewTableViewController: UITableViewController {
     let CLLinksCellIdentifier = "CLLinksReuseIdentifier"
 
     required init(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
+        super.init(coder: aDecoder)!
     }
-    
+
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
@@ -28,7 +28,7 @@ class CLLinksTableViewTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = localizedString("Choose 1024 Link", "选择草榴网址")
+        title = localizedString("Choose 1024 Link", comment: "选择草榴网址")
         tableView.registerClass(NSClassFromString("UITableViewCell"), forCellReuseIdentifier: CLLinksCellIdentifier)
     }
 
@@ -49,7 +49,7 @@ class CLLinksTableViewTableViewController: UITableViewController {
 
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(CLLinksCellIdentifier, forIndexPath: indexPath) as! UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier(CLLinksCellIdentifier, forIndexPath: indexPath) 
         
         let clLink = clLinks[indexPath.row]
         cell.textLabel!.text = clLink
@@ -70,7 +70,7 @@ class CLLinksTableViewTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let count = clLinks.count
         for var i = 0; i < count; i++ {
-            let ip = NSIndexPath(forRow: i, inSection: 0);
+            //let ip = NSIndexPath(forRow: i, inSection: 0);
             let cell = tableView.cellForRowAtIndexPath(indexPath)
             if indexPath.row == i {
                 cell?.accessoryType = .Checkmark

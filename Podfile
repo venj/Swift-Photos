@@ -3,7 +3,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!
 
 target "Swift Photos" do
-pod 'Alamofire', '1.3' #'= 1.2.1' # v1.2.2 can not get data, so use 1.2.1 for now.
+pod 'Alamofire', :git => 'https://github.com/Alamofire/Alamofire.git', :tag => '2.0.0-beta.4'
 pod 'MBProgressHUD', '~> 0.9.1'
 pod 'MMAppSwitcher', '~> 0.2.0'
 pod 'InAppSettingsKit', '~> 2.6'

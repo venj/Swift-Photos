@@ -78,37 +78,37 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     func parseDaguerreLink() {
         let link = getDaguerreLink(self.forumID)
-        var hud = showHUDInView(self.navigationController!.view, withMessage: NSLocalizedString("Parsing Daguerre Link...", tableName: nil, value: "Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."), afterDelay: 0.0)
+        let hud = showHUDInView(self.navigationController!.view, withMessage: NSLocalizedString("Parsing Daguerre Link...", tableName: nil, value: "Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."), afterDelay: 0.0)
         let request = Alamofire.request(.GET, link + "index.php")
-        request.response { [weak self] (request, response, data, error) in
+
+        request.responseData { [weak self] (_, _, result) in
             let strongSelf = self!
-            if (error?.domain != nil) {
+            switch result {
+            case .Success(let data):
+                let str:NSString = data.stringFromGB18030Data()
+                let regexString:String = "<a href=\"([^\"]+?)\">達蓋爾的旗幟</a>"
+                do {
+                    let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
+                    let matches = regex.matchesInString(str as String, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.length))
+                    if matches.count > 0 {
+                        let match: AnyObject = matches[0]
+                        strongSelf.daguerreLink = link + str.substringWithRange(match.rangeAtIndex(1))
+                    }
+                }
+                catch let error {
+                    print(error)
+                }
+                hud.hide(true)
+                strongSelf.loadPostList(strongSelf.daguerreLink, forPage: 1)
+            case .Failure(_, _):
                 hud.hide(true)
                 let alert = UIAlertController(title: NSLocalizedString("Network error", tableName: nil, value: "Network error", comment: "Network error happened, typically timeout."), message: NSLocalizedString("Failed to reach 1024 in time. Maybe links are dead. You may use a VPN to access 1024.", tableName: nil, value: "Network error", comment: "1024 link down."), preferredStyle: .Alert)
                 let action = UIAlertAction(title: "OK", style: .Default, handler: { [weak self] (action) -> Void in
                     showHUDInView(self!.navigationController!.view, withMessage: NSLocalizedString("1024 down, use a mirror", tableName: nil, value: "1024 down, use a mirror", comment: ""), afterDelay: 2.0)
-                })
+                    })
                 alert.addAction(action)
                 strongSelf.presentViewController(alert, animated: true, completion: nil)
-                return
             }
-            else {
-                if data != nil {
-                    var str:NSString = data!.stringFromGB18030Data()
-                    var err:NSError?
-                    let regexString:String = "<a href=\"([^\"]+?)\">達蓋爾的旗幟</a>"
-                    var linkIndex = 0, titleIndex = 0
-                    var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &err)
-                    let matches = regex?.matchesInString(str as String, options: nil, range: NSMakeRange(0, str.length))
-                    if matches!.count > 0 {
-                        let match: AnyObject = matches![0]
-                        strongSelf.daguerreLink = link + str.substringWithRange(match.rangeAtIndex(1))
-                    }
-
-                }
-                hud.hide(true)
-            }
-            strongSelf.loadPostList(strongSelf.daguerreLink, forPage: 1)
         }
     }
     
@@ -121,13 +121,13 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         myActivity.becomeCurrent()
         
         let hud = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
-        let request = Alamofire.request(.GET, link + "&page=\(self.page)")
-        request.response { [weak self] (request, response, data, error) in
+        let l = link + "&page=\(self.page)"
+        let request = Alamofire.request(.GET, l)
+        request.responseData { [weak self] (_, _, result) in
             let strongSelf = self!
-            if error?.domain == nil {
-                if data != nil {
-                    var str:NSString = data!.stringFromGB18030Data()
-                    var err:NSError?
+            switch result {
+                case .Success(let data):
+                    let str:NSString = data.stringFromGB18030Data()
                     var regexString:String
                     var linkIndex = 0, titleIndex = 0
                     if strongSelf.forumID == DaguerreForumID {
@@ -141,27 +141,29 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                         linkIndex = 1
                         titleIndex = 2
                     }
-                    var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &err)
-                    let matches = regex!.matchesInString(str as String, options: nil, range: NSMakeRange(0, str.length))
-                    var indexPathes:Array<NSIndexPath> = []
-                    var cellCount = strongSelf.posts.count
-                    for var i = 0; i < matches.count; ++i {
-                        let match: AnyObject = matches[i]
-                        let link = getDaguerreLink(strongSelf.forumID) + str.substringWithRange(match.rangeAtIndex(linkIndex))
-                        let title = str.substringWithRange(match.rangeAtIndex(titleIndex))
-                        strongSelf.posts.append(Post(title: title, link: link))
-                        indexPathes.append(NSIndexPath(forRow:cellCount + i, inSection: 0))
-                        strongSelf.resultsController.posts = strongSelf.posts // Assignment
+                    do {
+                        let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
+                        let matches = regex.matchesInString(str as String, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.length))
+                        var indexPathes:Array<NSIndexPath> = []
+                        let cellCount = strongSelf.posts.count
+                        for var i = 0; i < matches.count; ++i {
+                            let match: AnyObject = matches[i]
+                            let link = getDaguerreLink(strongSelf.forumID) + str.substringWithRange(match.rangeAtIndex(linkIndex))
+                            let title = str.substringWithRange(match.rangeAtIndex(titleIndex))
+                            strongSelf.posts.append(Post(title: title, link: link))
+                            indexPathes.append(NSIndexPath(forRow:cellCount + i, inSection: 0))
+                            strongSelf.resultsController.posts = strongSelf.posts // Assignment
+                        }
+                        hud.hide(true)
+                        strongSelf.tableView.insertRowsAtIndexPaths(indexPathes, withRowAnimation:.Top)
+                        strongSelf.page++
                     }
+                    catch let error {
+                        print(error)
+                    }
+            case .Failure(_, _):
                     hud.hide(true)
-                    strongSelf.tableView.insertRowsAtIndexPaths(indexPathes, withRowAnimation:.Top)
-                    strongSelf.page++
-                }
-            }
-            else {
-                // Handle error
-                hud.hide(true)
-                showHUDInView(self!.navigationController!.view, withMessage: NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."), afterDelay: 1)
+                    showHUDInView(self!.navigationController!.view, withMessage: NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."), afterDelay: 1)
             }
         }
     }
@@ -177,7 +179,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             }
         }
         else {
-            link = baseLink(forumID) + "forumdisplay.php?fid=\(forumID)&page=\(page)"
+            link = baseLink(forumID) + "forumdisplay.php?fid=\(forumID)"
             loadPostList(link, forPage: page)
         }
     }
@@ -215,17 +217,15 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         // Local Data
         if imagesCached(forPostLink: link) {
             let localDir = localDirectoryForPost(link, create: false)
-            let basePath = NSURL(fileURLWithPath: localDir!)?.absoluteString
+            let basePath = NSURL(fileURLWithPath: localDir!).absoluteString
             let fm = NSFileManager.defaultManager()
             var images : [String] = []
-            let files = fm.contentsOfDirectoryAtPath(localDir!, error: nil)!
+            let files = try! fm.contentsOfDirectoryAtPath(localDir!)
             for f in files {
-                if let base = basePath {
-                    images.append(base.stringByAppendingPathComponent(f as! String))
-                }
+                images.append(basePath.vc_stringByAppendingPathComponent(f as String)!)
             }
             self.images = images
-            var photoBrowser = MWPhotoBrowser(delegate: self)
+            let photoBrowser = MWPhotoBrowser(delegate: self)
             self.currentTitle = tableView.cellForRowAtIndexPath(indexPath)!.textLabel!.text!
             photoBrowser.displayActionButton = true
             photoBrowser.zoomPhotosToFill = false
@@ -248,7 +248,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 strongSelf.images = fetchedImages
                 let aCell:UITableViewCell = tableView.cellForRowAtIndexPath(indexPath)!
                 strongSelf.currentTitle = aCell.textLabel!.text!
-                var photoBrowser = MWPhotoBrowser(delegate: self)
+                let photoBrowser = MWPhotoBrowser(delegate: self)
                 photoBrowser.displayActionButton = true
                 photoBrowser.zoomPhotosToFill = false
                 photoBrowser.displayNavArrows = true
@@ -284,7 +284,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         }
     }
     
-    override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
+    override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
         if (indexPath.row < 0) { return nil }
         let preloadAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: NSLocalizedString("Preload", tableName: nil, value: "Preload", comment: "Preload Button.")) { (action, indexPath) -> Void in
             self.cacheImages(forIndexPath: indexPath, withProgressAction: { [weak self] (progress) -> Void in
@@ -343,13 +343,13 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
     
     func photoBrowser(photoBrowser: MWPhotoBrowser!, photoAtIndex index: UInt) -> MWPhotoProtocol! {
-        var p = MWPhoto(URL: NSURL(string: images[Int(index)]))
+        let p = MWPhoto(URL: NSURL(string: images[Int(index)]))
         p.caption = "\(index + 1)/\(images.count)"
         return p
     }
     
     func photoBrowser(photoBrowser: MWPhotoBrowser!, titleForPhotoAtIndex index: UInt) -> String! {
-        var t:NSMutableString = self.currentTitle.mutableCopy() as! NSMutableString
+        let t:NSMutableString = self.currentTitle.mutableCopy() as! NSMutableString
         let range = t.rangeOfString("[", options:.BackwardsSearch)
         // FIXME: Why can't I use NSNotFound here
         if range.location != NSIntegerMax {
@@ -373,7 +373,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             }
         }
         if !sheet.visible {
-            sheet.showFromBarButtonItem(navigationItem.rightBarButtonItems![1] as! UIBarButtonItem, animated: true)
+            sheet.showFromBarButtonItem(navigationItem.rightBarButtonItems![1] , animated: true)
         }
     }
     
@@ -388,7 +388,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             let humanReadableSize = NSString(format: "%.1f MB", Double(totalSize) / (1024 * 1024))
             saveValue(humanReadableSize, forKey: ImageCacheSizeKey)
             
-            let status = LTHPasscodeViewController.doesPasscodeExist() ? localizedString("On", "打开") : localizedString("Off", "关闭")
+            let status = LTHPasscodeViewController.doesPasscodeExist() ? localizedString("On", comment: "打开") : localizedString("Off", comment: "关闭")
             saveValue(status, forKey: PasscodeLockStatus)
             
             strongSelf.settingsViewController = IASKAppSettingsViewController(style: .Grouped)
@@ -400,7 +400,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             settingsHUD.hide(true)
         }
     }
-    
+
     @IBAction func refresh(sender:AnyObject?) {
         let key = title
         currentCLLink = getDaguerreLink(self.forumID)
@@ -430,33 +430,34 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     func fetchImageLinks(fromPostLink postLink:String, completionHandler:((Array<String>) -> Void), errorHandler:(() -> Void)) {
         let request = Alamofire.request(.GET, postLink)
-        request.response { [weak self] (request, response, data, error) in
+        request.responseData { [weak self] (_, _, result) in
             let strongSelf = self!
-            var fetchedImages = Array<String>()
-            if error?.domain == nil {
-                if data != nil {
-                    var str:NSString = data!.stringFromGB18030Data()
-                    var error:NSError?
-                    var regexString:String
-                    if strongSelf.forumID == DaguerreForumID {
-                        regexString = "input type='image' src='([^\"]+?)'"
-                    }
-                    else {
-                        regexString = "img src=\"([^\"]+)\" .+? onload"
-                    }
-                    var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &error)
-                    let matches = regex!.matchesInString(str as String, options: nil, range: NSMakeRange(0, str.length))
+            var fetchedImages = [String]()
+            switch result {
+            case .Success(let data):
+                let str:NSString = data.stringFromGB18030Data()
+                var regexString:String
+                if strongSelf.forumID == DaguerreForumID {
+                    regexString = "input type='image' src='([^\"]+?)'"
+                }
+                else {
+                    regexString = "img src=\"([^\"]+)\" .+? onload"
+                }
+                do {
+                    let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
+                    let matches = regex.matchesInString(str as String, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.length))
                     for match in matches {
                         var imageLink = str.substringWithRange(match.rangeAtIndex(1))
-                        imageLink = imageLink.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
+                        imageLink = imageLink.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
                         fetchedImages.append(imageLink)
-                        //println("\(imageLink)")
+                        //print("\(imageLink)")
                     }
                     completionHandler(fetchedImages)
                 }
-            }
-            else {
-                // Handle error
+                catch let error {
+                    print(error)
+                }
+            case .Failure(_, _):
                 errorHandler()
             }
         }
@@ -468,8 +469,6 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     // Don't care if the request is succeeded or not.
     func fetchImagesToCache(images:[String], withProgressAction progressAction:(Float) -> Void ) {
-        var image = ""
-        let path = ""
         var downloadedImagesCount = 0
         let totalImagesCount = images.count
         for image in images {
@@ -479,14 +478,10 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 progressAction(progress)
                 continue
             }
-            let imageLink = image.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
+            let imageLink = image.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
             Alamofire.download(.GET, imageLink, destination: { (temporaryURL, response) in
                 // 返回下载目标路径的 fileURL
-                let imageURL = NSURL.fileURLWithPath(localImagePath(image))
-                if let directory = imageURL {
-                    return directory
-                }
-                return temporaryURL
+                return NSURL.fileURLWithPath(localImagePath(image))
             }) // For Debug
             .progress { (bytesRead, totalBytesRead, totalBytesExpectedToRead) in
                 if (totalBytesRead == totalBytesExpectedToRead) {
@@ -513,7 +508,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             // prefetch images
             strongSelf.fetchImagesToCache(fetchedImages, withProgressAction:progressAction)
             },
-            errorHandler: { [weak self] in
+            errorHandler: {
             })
     }
     
@@ -525,8 +520,8 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         if buttonIndex != actionSheet.cancelButtonIndex {
             let key = actionSheet.buttonTitleAtIndex(buttonIndex)
             title = key
-            saveValue(key, forKey: LastViewedSectionTitle)
-            loadFirstPageForKey(key)
+            saveValue(key!, forKey: LastViewedSectionTitle)
+            loadFirstPageForKey(key!)
         }
     }
     
@@ -551,17 +546,16 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 let strongSelf = self!
                 hud.hide(true)
                 strongSelf.recalculateCacheSize()
-                showHUDInView(aView!, withMessage: localizedString("Cache Cleared", "缓存已清除"), afterDelay: 1.0)
+                showHUDInView(aView!, withMessage: localizedString("Cache Cleared", comment: "缓存已清除"), afterDelay: 1.0)
                 sender.tableView.reloadData()
             }
         }
         else if specifier.key() == ClearDownloadCacheKey {
             let aView = sender.navigationController?.view
             let hud = MBProgressHUD.showHUDAddedTo(aView, animated: true)
-            clearDownloadCache() { [weak self] in
-                let strongSelf = self!
+            clearDownloadCache() {
                 hud.hide(true)
-                showHUDInView(aView!, withMessage: localizedString("Cache Cleared", "缓存已清除"), afterDelay: 1.0)
+                showHUDInView(aView!, withMessage: localizedString("Cache Cleared", comment: "缓存已清除"), afterDelay: 1.0)
                 sender.tableView.reloadData()
             }
         }
@@ -575,9 +569,12 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         let tempDir = NSTemporaryDirectory();
         //println(tempDir)
         let fm = NSFileManager.defaultManager()
-        if let contents = fm.contentsOfDirectoryAtPath(tempDir, error: nil) {
+        if let contents = try? fm.contentsOfDirectoryAtPath(tempDir) {
             for item in contents {
-                fm.removeItemAtPath(tempDir.stringByAppendingPathComponent(item as! String), error: nil)
+                do {
+                    try fm.removeItemAtPath(tempDir.vc_stringByAppendingPathComponent(item)!)
+                } catch _ {
+                }
             }
         }
         complete()
@@ -585,7 +582,6 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     // MARK: UISearchResultUpdating
     func updateSearchResultsForSearchController(searchController: UISearchController) {
-        let searchString = searchController.searchBar.text
         filteredPosts.removeAll(keepCapacity: true)
     }
     

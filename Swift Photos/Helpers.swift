@@ -44,7 +44,7 @@ func userInterfaceIdiom() -> UIUserInterfaceIdiom {
 }
 
 func showHUDInView(view:UIView, withMessage message: String, afterDelay delay:NSTimeInterval) -> MBProgressHUD {
-    var messageHUD = MBProgressHUD.showHUDAddedTo(view, animated: true)
+    let messageHUD = MBProgressHUD.showHUDAddedTo(view, animated: true)
     messageHUD.mode = MBProgressHUDMode.CustomView
     messageHUD.labelText = message
     if delay != 0.0 {
@@ -66,7 +66,7 @@ func updateVersionNumber() {
 }
 
 func userDocumentPath() -> String {
-    let path = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as! String
+    let path = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] 
     return path
 }
 
@@ -81,16 +81,29 @@ func localImagePath(link:String) -> String {
 func localDirectoryForPost(link:String, create:Bool = true) -> String? {
     let key = SDWebImageManager.sharedManager().cacheKeyForURL(NSURL(string:link))
     let hash = SDImageCache.sharedImageCache().cachePathForKey(key, inPath: "")
-    let path = userDocumentPath().stringByAppendingPathComponent(hash)
+    let path = userDocumentPath().vc_stringByAppendingPathComponent(hash)
     let fm = NSFileManager.defaultManager()
     var isDir:ObjCBool = false
-    let dirExists = fm.fileExistsAtPath(path, isDirectory: &isDir)
+    guard let p = path else {
+        return nil
+    }
+    let dirExists = fm.fileExistsAtPath(p, isDirectory: &isDir)
     if dirExists && !isDir {
-        fm.removeItemAtPath(path, error: nil)
+        do {
+            try fm.removeItemAtPath(p)
+        }
+        catch let error {
+            print(error)
+        }
     }
     else if !dirExists {
         if create {
-            fm.createDirectoryAtPath(path, withIntermediateDirectories: true, attributes: nil, error: nil)
+            do {
+                try fm.createDirectoryAtPath(p, withIntermediateDirectories: true, attributes: nil)
+            }
+            catch let error {
+                print(error)
+            }
         }
         else {
             return nil
@@ -105,9 +118,15 @@ func saveCachedLinksToHomeDirectory(links:Array<String>, forPostLink postLink:St
     for var i = 0; i < links.count; i++ {
         let imagePath = localImagePath(links[i])
         let destDir = localDirectoryForPost(postLink)!
-        let destImageName = destDir.stringByAppendingPathComponent("\(i + 1)")
+        guard let destImageName = destDir.vc_stringByAppendingPathComponent("\(i + 1)") else {
+            return
+        }
         if fm.fileExistsAtPath(imagePath) && !fm.fileExistsAtPath(destImageName) {
-            fm.copyItemAtPath(imagePath, toPath: destImageName, error: nil)
+            do {
+                try fm.copyItemAtPath(imagePath, toPath: destImageName)
+            } catch _ {
+
+            }
         }
     }
 }
@@ -115,7 +134,7 @@ func saveCachedLinksToHomeDirectory(links:Array<String>, forPostLink postLink:St
 func imagesCached(forPostLink link:String) -> Bool {
     if let targetDir = localDirectoryForPost(link, create: false) {
         let fm = NSFileManager.defaultManager()
-        let numberOfFiles = fm.contentsOfDirectoryAtPath(targetDir, error: nil)!.count
+        let numberOfFiles = (try! fm.contentsOfDirectoryAtPath(targetDir)).count
         return numberOfFiles > 0 ? true : false
     }
     else {
@@ -129,7 +148,7 @@ func siteLinks(forumID:Int) -> [String] {
 
 func getDaguerreLink(forumID:Int) -> String {
     if forumID == DaguerreForumID {
-        var link = getValue(CurrentCLLinkKey) as! String?
+        let link = getValue(CurrentCLLinkKey) as! String?
         if let l = link {
             let clearedLink = l.stringByReplacingOccurrencesOfString("(科学上网)", withString: "", options: NSStringCompareOptions.CaseInsensitiveSearch, range: Range(start: l.startIndex, end: l.endIndex))
             return clearedLink
@@ -155,5 +174,14 @@ extension NSData {
         let cfEncoding = CFStringConvertWindowsCodepageToEncoding(54936) //GB18030
         let gbkEncoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding)
         return NSString(data: self, encoding: gbkEncoding)! as String
+    }
+}
+
+extension String {
+    func vc_stringByAppendingPathComponent(component : String) -> String? {
+        guard let url = NSURL(string: self) else {
+            return nil
+        }
+        return url.URLByAppendingPathComponent(component).absoluteString
     }
 }

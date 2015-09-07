@@ -45,7 +45,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(sectionTableIdentifier) as! UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier(sectionTableIdentifier)!
         cell.textLabel?.text = filteredPosts[indexPath.row].title
         cell.textLabel?.font = UIFont.boldSystemFontOfSize(17)
         cell.accessoryType = .DetailDisclosureButton
@@ -65,7 +65,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
         filteredPosts.removeAll(keepCapacity: true)
         let searchString = searchController.searchBar.text
         for post in posts {
-            let range = post.title.rangeOfString(searchString, options: NSStringCompareOptions.CaseInsensitiveSearch)
+            let range = post.title.rangeOfString(searchString!, options: NSStringCompareOptions.CaseInsensitiveSearch)
             if range != nil {
                 self.filteredPosts.append(post)
             }
@@ -80,17 +80,15 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
         // Local Data
         if imagesCached(forPostLink: link) {
             let localDir = localDirectoryForPost(link, create: false)
-            let basePath = NSURL(fileURLWithPath: localDir!)?.absoluteString
+            let basePath = NSURL(fileURLWithPath: localDir!).absoluteString
             let fm = NSFileManager.defaultManager()
             var images : [String] = []
-            let files = fm.contentsOfDirectoryAtPath(localDir!, error: nil)!
+            let files = try! fm.contentsOfDirectoryAtPath(localDir!)
             for f in files {
-                if let base = basePath {
-                    images.append(base.stringByAppendingPathComponent(f as! String))
-                }
+                images.append(basePath.vc_stringByAppendingPathComponent(f as String)!)
             }
             self.images = images
-            var photoBrowser = MWPhotoBrowser(delegate: self)
+            let photoBrowser = MWPhotoBrowser(delegate: self)
             photoBrowser.displayActionButton = true
             photoBrowser.zoomPhotosToFill = false
             photoBrowser.displayNavArrows = true
@@ -113,7 +111,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
                 strongSelf.images = fetchedImages
                 let aCell:UITableViewCell = tableView.cellForRowAtIndexPath(indexPath)!
                 strongSelf.currentTitle = aCell.textLabel!.text!
-                var photoBrowser = MWPhotoBrowser(delegate: self)
+                let photoBrowser = MWPhotoBrowser(delegate: self)
                 photoBrowser.displayActionButton = true
                 photoBrowser.zoomPhotosToFill = false
                 photoBrowser.displayNavArrows = true
@@ -148,31 +146,32 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
     
     func fetchImageLinks(fromPostLink postLink:String, completionHandler:((Array<String>) -> Void), errorHandler:(() -> Void)) {
         let request = Alamofire.request(.GET, postLink)
-        request.response { [weak self] (request, response, data, error) in
+        request.responseData { [weak self] (_, _, result) in
             let strongSelf = self!
-            var fetchedImages = Array<String>()
-            if error?.domain == nil {
-                if data != nil {
-                    var str:NSString = data!.stringFromGB18030Data()
-                    var error:NSError?
-                    var regexString:String
-                    if strongSelf.forumID == 16 {
-                        regexString = "input type='image' src='([^\"]+?)'"
-                    }
-                    else {
-                        regexString = "img src=\"([^\"]+)\" .+? onload"
-                    }
-                    var regex = NSRegularExpression(pattern: regexString, options: .CaseInsensitive, error: &error)
-                    let matches = regex!.matchesInString(str as String, options: nil, range: NSMakeRange(0, str.length))
+            var fetchedImages = [String]()
+            switch result {
+            case .Success(let data):
+                let str:NSString = data.stringFromGB18030Data()
+                var regexString:String
+                if strongSelf.forumID == 16 {
+                    regexString = "input type='image' src='([^\"]+?)'"
+                }
+                else {
+                    regexString = "img src=\"([^\"]+)\" .+? onload"
+                }
+                do {
+                    let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
+                    let matches = regex.matchesInString(str as String, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.length))
                     for match in matches {
                         let imageLink = str.substringWithRange(match.rangeAtIndex(1))
                         fetchedImages.append(imageLink)
                     }
                     completionHandler(fetchedImages)
                 }
-            }
-            else {
-                // Handle error
+                catch let error {
+                    print(error)
+                }
+            case .Failure(_, _):
                 errorHandler()
             }
         }
@@ -180,8 +179,6 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
     
     // Don't care if the request is succeeded or not.
     func fetchImagesToCache(images:[String]) {
-        var image = ""
-        let path = ""
         for image in images {
             if image == images[0] {
                 // Skip the first pic.
@@ -191,14 +188,10 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
                 //println("Cached")
                 continue
             }
-            let imageLink = image.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
+            let imageLink = image.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
             Alamofire.download(.GET, imageLink, destination: { (temporaryURL, response) in
                 // 返回下载目标路径的 fileURL
-                let imageURL = NSURL.fileURLWithPath(localImagePath(image))
-                if let directory = imageURL {
-                    return directory
-                }
-                return temporaryURL
+                return NSURL.fileURLWithPath(localImagePath(image))
             }) // For Debug
                 .progress { (bytesRead, totalBytesRead, totalBytesExpectedToRead) in
                     //if totalBytesRead == totalBytesExpectedToRead {
@@ -217,13 +210,13 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
     }
     
     func photoBrowser(photoBrowser: MWPhotoBrowser!, photoAtIndex index: UInt) -> MWPhotoProtocol! {
-        var p = MWPhoto(URL: NSURL(string: images[Int(index)]))
+        let p = MWPhoto(URL: NSURL(string: images[Int(index)]))
         p.caption = "\(index + 1)/\(images.count)"
         return p
     }
     
     func photoBrowser(photoBrowser: MWPhotoBrowser!, titleForPhotoAtIndex index: UInt) -> String! {
-        var t:NSMutableString = self.currentTitle.mutableCopy() as! NSMutableString
+        let t:NSMutableString = self.currentTitle.mutableCopy() as! NSMutableString
         let range = t.rangeOfString("[", options:.BackwardsSearch)
         // FIXME: Why can't I use NSNotFound here
         if range.location != NSIntegerMax {
