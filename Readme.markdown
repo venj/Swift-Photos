@@ -1,12 +1,14 @@
 美图赏
 =====
 
-开发中...作用，你懂的。
+**项目已经兼容Swift 2.0，需要OS X El Capitan和Xcode 7 beta编译。**
+
+美图欣赏利器。
 
 编译
 ----
 
-你需要安装最新版的Xcode 6和Cocoa Pods。然后执行如下操作：
+你需要安装最新版的Xcode 7 Beta和Cocoa Pods（0.36.2(?)以上版本）。然后执行如下操作：
 
 ```
 $ cp Swift\ Photos/Common.swift.skel Swift\ Photos/Common.swift
@@ -18,15 +20,16 @@ $ pod install
 
 然后打开Swift Photo.xcworkspace，编译安装即可。
 
-自build 78以来，本项目已经不再使用submodule，改为使用CocoaPods的framework功能，需要0.36.2(?)以上版本。
+*已知问题*
 
-已知问题
-
-1. 升级Alamofire到1.2.2之后，无法从web请求获取数据了。不知道是我写的问题还是Alamofire的API更改，所以暂时锁定为1.2.1
-2. MBPhotoBrowser对Objective-C模块编译支持还有问题。如果发生编译错误，可以将报错的行，也就是引用的第三方header文件的#import语句改成使用尖括号，本地的header使用相对路径。
+1. 目前使用了一个比较不严格的特殊字符转义方法，部分图片链接的转义可能会失败。
 
 更新记录
 -------
+
+**2.2(97, 测试版)**
+
+－ Swift 2.0兼容。
 
 **2.2(78, 测试版)**
 
