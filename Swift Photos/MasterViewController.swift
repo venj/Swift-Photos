@@ -146,7 +146,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                     do {
                         let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
                         let matches = regex.matchesInString(str as String, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.length))
-                        var indexPathes:Array<NSIndexPath> = []
+                        var indexPathes:[NSIndexPath] = []
                         let cellCount = strongSelf.posts.count
                         for var i = 0; i < matches.count; ++i {
                             let match: AnyObject = matches[i]
@@ -224,7 +224,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             var images : [String] = []
             let files = try! fm.contentsOfDirectoryAtPath(localDir!)
             for f in files {
-                images.append(basePath.vc_stringByAppendingPathComponent(f as String)!)
+                images.append(basePath.vc_stringByAppendingPathComponent(f as String))
             }
             self.images = images
             let photoBrowser = MWPhotoBrowser(delegate: self)
@@ -433,7 +433,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         saveValue(humanReadableSize, forKey: ImageCacheSizeKey)
     }
     
-    func fetchImageLinks(fromPostLink postLink:String, completionHandler:((Array<String>) -> Void), errorHandler:(() -> Void)) {
+    func fetchImageLinks(fromPostLink postLink:String, completionHandler:(([String]) -> Void), errorHandler:(() -> Void)) {
         let request = Alamofire.request(.GET, postLink)
         request.responseData { [weak self] (_, _, result) in
             let strongSelf = self!
@@ -577,7 +577,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         if let contents = try? fm.contentsOfDirectoryAtPath(tempDir) {
             for item in contents {
                 do {
-                    try fm.removeItemAtPath(tempDir.vc_stringByAppendingPathComponent(item)!)
+                    try fm.removeItemAtPath(tempDir.vc_stringByAppendingPathComponent(item))
                 } catch _ {
                 }
             }

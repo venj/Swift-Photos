@@ -85,7 +85,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
             var images : [String] = []
             let files = try! fm.contentsOfDirectoryAtPath(localDir!)
             for f in files {
-                images.append(basePath.vc_stringByAppendingPathComponent(f as String)!)
+                images.append(basePath.vc_stringByAppendingPathComponent(f as String))
             }
             self.images = images
             let photoBrowser = MWPhotoBrowser(delegate: self)
@@ -144,7 +144,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
     }
     
     
-    func fetchImageLinks(fromPostLink postLink:String, completionHandler:((Array<String>) -> Void), errorHandler:(() -> Void)) {
+    func fetchImageLinks(fromPostLink postLink:String, completionHandler:(([String]) -> Void), errorHandler:(() -> Void)) {
         let request = Alamofire.request(.GET, postLink)
         request.responseData { [weak self] (_, _, result) in
             let strongSelf = self!

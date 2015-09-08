@@ -84,13 +84,10 @@ func localDirectoryForPost(link:String, create:Bool = true) -> String? {
     let path = userDocumentPath().vc_stringByAppendingPathComponent(hash)
     let fm = NSFileManager.defaultManager()
     var isDir:ObjCBool = false
-    guard let p = path else {
-        return nil
-    }
-    let dirExists = fm.fileExistsAtPath(p, isDirectory: &isDir)
+    let dirExists = fm.fileExistsAtPath(path, isDirectory: &isDir)
     if dirExists && !isDir {
         do {
-            try fm.removeItemAtPath(p)
+            try fm.removeItemAtPath(path)
         }
         catch let error {
             print(error)
@@ -99,7 +96,7 @@ func localDirectoryForPost(link:String, create:Bool = true) -> String? {
     else if !dirExists {
         if create {
             do {
-                try fm.createDirectoryAtPath(p, withIntermediateDirectories: true, attributes: nil)
+                try fm.createDirectoryAtPath(path, withIntermediateDirectories: true, attributes: nil)
             }
             catch let error {
                 print(error)
@@ -113,14 +110,12 @@ func localDirectoryForPost(link:String, create:Bool = true) -> String? {
     return path
 }
 
-func saveCachedLinksToHomeDirectory(links:Array<String>, forPostLink postLink:String) {
+func saveCachedLinksToHomeDirectory(links:[String], forPostLink postLink:String) {
     let fm = NSFileManager.defaultManager()
     for var i = 0; i < links.count; i++ {
         let imagePath = localImagePath(links[i])
         let destDir = localDirectoryForPost(postLink)!
-        guard let destImageName = destDir.vc_stringByAppendingPathComponent("\(i + 1)") else {
-            return
-        }
+        let destImageName = destDir.vc_stringByAppendingPathComponent("\(i + 1)")
         if fm.fileExistsAtPath(imagePath) && !fm.fileExistsAtPath(destImageName) {
             do {
                 try fm.copyItemAtPath(imagePath, toPath: destImageName)
@@ -171,16 +166,18 @@ func getDaguerreLink(forumID:Int) -> String {
 extension NSData {
     func stringFromGB18030Data() -> String {
         // CP 936: GBK, CP 54936: GB18030
-        let cfEncoding = CFStringConvertWindowsCodepageToEncoding(54936) //GB18030
-        let gbkEncoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding)
+        //let cfEncoding = CFStringConvertWindowsCodepageToEncoding(54936) //GB18030
+        let cfgb18030encoding = CFStringEncodings.GB_18030_2000.rawValue
+        let gbkEncoding = CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(cfgb18030encoding))
         return NSString(data: self, encoding: gbkEncoding)! as String
     }
 }
 
+// If the string is not a valid url, return component.
 extension String {
-    func vc_stringByAppendingPathComponent(component : String) -> String? {
+    func vc_stringByAppendingPathComponent(component : String) -> String {
         guard let url = NSURL(string: self) else {
-            return nil
+            return component
         }
         return url.URLByAppendingPathComponent(component).absoluteString
     }
