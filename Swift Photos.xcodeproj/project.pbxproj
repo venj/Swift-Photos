@@ -21,6 +21,7 @@
 		256EC98F1B4558F100F20F63 /* ProgressTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256EC98E1B4558F100F20F63 /* ProgressTableViewCell.swift */; };
 		258A1F6D199270320080BB60 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 258A1F6F199270320080BB60 /* Localizable.strings */; };
 		258A1F72199270330080BB60 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 258A1F74199270330080BB60 /* InfoPlist.strings */; };
+		25BA65541BC3FD9A00DDC583 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 25BA65531BC3FD9A00DDC583 /* Launch Screen.storyboard */; settings = {ASSET_TAGS = (); }; };
 		9A873FF76EFF399E66BA6BBE /* Pods_Swift_Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACB431A641C67ABA8F992A31 /* Pods_Swift_Photos.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
@@ -71,6 +72,7 @@
 		258A1F7A199272A00080BB60 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		258A1F7C199272D50080BB60 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		25A22615199CE458008ACB70 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
+		25BA65531BC3FD9A00DDC583 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		ACB431A641C67ABA8F992A31 /* Pods_Swift_Photos.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Swift_Photos.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B78DB1C76E42E858E46576DC /* Pods-Swift Photos.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Swift Photos.release.xcconfig"; path = "Pods/Target Support Files/Pods-Swift Photos/Pods-Swift Photos.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -134,6 +136,7 @@
 				256EC98E1B4558F100F20F63 /* ProgressTableViewCell.swift */,
 				2539A3A41AA1A514004A5619 /* CLLinksTableViewTableViewController.swift */,
 				254486BB1A40151E00F25634 /* SearchResultController.swift */,
+				25BA65531BC3FD9A00DDC583 /* Launch Screen.storyboard */,
 				25142A9E1991F36300CB4C93 /* Main.storyboard */,
 				25142AA11991F36300CB4C93 /* Images.xcassets */,
 				25142A961991F36300CB4C93 /* Supporting Files */,
@@ -266,6 +269,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25BA65541BC3FD9A00DDC583 /* Launch Screen.storyboard in Resources */,
 				25142AA01991F36300CB4C93 /* Main.storyboard in Resources */,
 				258A1F72199270330080BB60 /* InfoPlist.strings in Resources */,
 				258A1F6D199270320080BB60 /* Localizable.strings in Resources */,
