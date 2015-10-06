@@ -26,6 +26,10 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: sectionTableIdentifier)
         self.automaticallyAdjustsScrollViewInsets = false
         tableView.contentInset = UIEdgeInsetsMake(66.0, 0.0, 0.0, 0.0)
+
+        if #available(iOS 9, *) {
+            tableView.cellLayoutMarginsFollowReadableWidth = false
+        }
     }
 
     override func didReceiveMemoryWarning() {

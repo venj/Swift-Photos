@@ -69,6 +69,10 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         self.tableView.tableHeaderView = searchBar
         searchBar.sizeToFit()
         searchBar.placeholder = NSLocalizedString("Search loaded posts", tableName: nil, value: "Search loaded posts", comment: "搜索已加载的帖子")
+
+        if #available(iOS 9, *) {
+            tableView.cellLayoutMarginsFollowReadableWidth = false
+        }
     }
 
     override func didReceiveMemoryWarning() {

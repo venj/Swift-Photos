@@ -30,6 +30,10 @@ class CLLinksTableViewTableViewController: UITableViewController {
         super.viewDidLoad()
         title = localizedString("Choose 1024 Link", comment: "选择草榴网址")
         tableView.registerClass(NSClassFromString("UITableViewCell"), forCellReuseIdentifier: CLLinksCellIdentifier)
+
+        if #available(iOS 9, *) {
+            tableView.cellLayoutMarginsFollowReadableWidth = false
+        }
     }
 
     override func didReceiveMemoryWarning() {
