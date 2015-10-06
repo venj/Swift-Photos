@@ -24,7 +24,7 @@ class CLLinksTableViewTableViewController: UITableViewController {
         super.init(style: style)
     }
     
-    var clLinks = siteLinks(DaguerreForumID)
+    var clLinks : [String]!
     
     override func viewDidLoad() {
         super.viewDidLoad()

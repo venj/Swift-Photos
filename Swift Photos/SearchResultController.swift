@@ -102,25 +102,24 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
         else {
             //remote data
             let hud = MBProgressHUD.showHUDAddedTo(self.view, animated: true)
-            fetchImageLinks(fromPostLink: link, completionHandler: { [weak self] fetchedImages in
-                let strongSelf = self!
+            fetchImageLinks(fromPostLink: link, completionHandler: { [unowned self] fetchedImages in
                 hud.hide(true)
-                strongSelf.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+                self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
                 // Skip non pics
                 if fetchedImages.count == 0 {
                     return
                 }
                 // prefetch images
-                strongSelf.fetchImagesToCache(fetchedImages)
-                strongSelf.images = fetchedImages
+                self.fetchImagesToCache(fetchedImages)
+                self.images = fetchedImages
                 let aCell:UITableViewCell = tableView.cellForRowAtIndexPath(indexPath)!
-                strongSelf.currentTitle = aCell.textLabel!.text!
+                self.currentTitle = aCell.textLabel!.text!
                 let photoBrowser = MWPhotoBrowser(delegate: self)
                 photoBrowser.displayActionButton = true
                 photoBrowser.zoomPhotosToFill = false
                 photoBrowser.displayNavArrows = true
                 let nav = UINavigationController(rootViewController: photoBrowser)
-                strongSelf.presentViewController(nav, animated: true, completion: nil)
+                self.presentViewController(nav, animated: true, completion: nil)
             },
             errorHandler: {
                 hud.hide(true)
@@ -135,10 +134,9 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
         spinWheel.startAnimating()
         
         let link = posts[indexPath.row].link
-        fetchImageLinks(fromPostLink: link, completionHandler: { [weak self] fetchedImages in
-            let strongSelf = self!
+        fetchImageLinks(fromPostLink: link, completionHandler: { [unowned self] fetchedImages in
             saveCachedLinksToHomeDirectory(fetchedImages, forPostLink: link)
-            strongSelf.tableView.reloadData()
+            self.tableView.reloadData()
             spinWheel.stopAnimating()
             cell.accessoryView = nil
             }, errorHandler: {
@@ -150,14 +148,12 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
     
     func fetchImageLinks(fromPostLink postLink:String, completionHandler:(([String]) -> Void), errorHandler:(() -> Void)) {
         let request = Alamofire.request(.GET, postLink)
-        request.responseData { [weak self] (_, _, result) in
-            let strongSelf = self!
+        request.responseData { [unowned self] response in
             var fetchedImages = [String]()
-            switch result {
-            case .Success(let data):
-                let str:NSString = data.stringFromGB18030Data()
+            if response.result.isSuccess {
+                let str:NSString = (response.data?.stringFromGB18030Data())!
                 var regexString:String
-                if strongSelf.forumID == 16 {
+                if self.forumID == 16 {
                     regexString = "input type='image' src='([^\"]+?)'"
                 }
                 else {
@@ -175,7 +171,8 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
                 catch let error {
                     print(error)
                 }
-            case .Failure(_, _):
+            }
+            else {
                 errorHandler()
             }
         }

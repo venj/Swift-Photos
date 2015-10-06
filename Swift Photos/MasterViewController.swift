@@ -84,34 +84,32 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         let link = getDaguerreLink(self.forumID)
         let hud = showHUDInView(self.navigationController!.view, withMessage: NSLocalizedString("Parsing Daguerre Link...", tableName: nil, value: "Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."), afterDelay: 0.0)
         let request = Alamofire.request(.GET, link + "index.php")
-
-        request.responseData { [weak self] (_, _, result) in
-            let strongSelf = self!
-            switch result {
-            case .Success(let data):
-                let str:NSString = data.stringFromGB18030Data()
+        request.responseData { [unowned self] response in
+            if response.result.isSuccess {
+                let str:NSString = (response.data?.stringFromGB18030Data())!
                 let regexString:String = "<a href=\"([^\"]+?)\">達蓋爾的旗幟</a>"
                 do {
                     let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
                     let matches = regex.matchesInString(str as String, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.length))
                     if matches.count > 0 {
                         let match: AnyObject = matches[0]
-                        strongSelf.daguerreLink = link + str.substringWithRange(match.rangeAtIndex(1))
+                        self.daguerreLink = link + str.substringWithRange(match.rangeAtIndex(1))
                     }
                 }
                 catch let error {
                     print(error)
                 }
                 hud.hide(true)
-                strongSelf.loadPostList(strongSelf.daguerreLink, forPage: 1)
-            case .Failure(_, _):
+                self.loadPostList(self.daguerreLink, forPage: 1)
+            }
+            else {
                 hud.hide(true)
                 let alert = UIAlertController(title: NSLocalizedString("Network error", tableName: nil, value: "Network error", comment: "Network error happened, typically timeout."), message: NSLocalizedString("Failed to reach 1024 in time. Maybe links are dead. You may use a VPN to access 1024.", tableName: nil, value: "Network error", comment: "1024 link down."), preferredStyle: .Alert)
-                let action = UIAlertAction(title: "OK", style: .Default, handler: { [weak self] (action) -> Void in
-                    showHUDInView(self!.navigationController!.view, withMessage: NSLocalizedString("1024 down, use a mirror", tableName: nil, value: "1024 down, use a mirror", comment: ""), afterDelay: 2.0)
+                let action = UIAlertAction(title: "OK", style: .Default, handler: { [unowned self] (action) -> Void in
+                    showHUDInView(self.navigationController!.view, withMessage: NSLocalizedString("1024 down, use a mirror", tableName: nil, value: "1024 down, use a mirror", comment: ""), afterDelay: 2.0)
                     })
                 alert.addAction(action)
-                strongSelf.presentViewController(alert, animated: true, completion: nil)
+                self.presentViewController(alert, animated: true, completion: nil)
             }
         }
     }
@@ -129,47 +127,45 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         let hud = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
         let l = link + "&page=\(self.page)"
         let request = Alamofire.request(.GET, l)
-        request.responseData { [weak self] (_, _, result) in
-            let strongSelf = self!
-            switch result {
-                case .Success(let data):
-                    let str:NSString = data.stringFromGB18030Data()
-                    var regexString:String
-                    var linkIndex = 0, titleIndex = 0
-                    if strongSelf.forumID == DaguerreForumID {
-                        //regexString = "<a href=\"([^\"]+?)\"[^>]+?>(<font [^>]+?>)?([^\\d<]+?\\[\\d+[^\\d]+?)(</font>)?</a>"
-                        regexString = "[^\\d\\s]\\s+<h3><a href=\"(htm_data[^\"]+?)\"[^>]+?>(<font [^>]+?>)?(.+?(\\[\\d+[^\\[]+?\\])?)(</font>)?</a></h3>"
-                        linkIndex = 1
-                        titleIndex = 3
+        request.responseData { [unowned self] response in
+            if (response.result.isSuccess) {
+                let str:NSString = (response.data?.stringFromGB18030Data())!
+                var regexString:String
+                var linkIndex = 0, titleIndex = 0
+                if self.forumID == DaguerreForumID {
+                    regexString = "[^\\d\\s]\\s+<h3><a href=\"(htm_data[^\"]+?)\"[^>]+?>(<font [^>]+?>)?(.+?(\\[\\d+[^\\[]+?\\])?)(</font>)?</a></h3>"
+                    linkIndex = 1
+                    titleIndex = 3
+                }
+                else {
+                    regexString = "<a href=\"(viewthread\\.php[^\"]+?)\">([^\\d<]+?\\d+[^\\d]+?)</a>"
+                    linkIndex = 1
+                    titleIndex = 2
+                }
+                do {
+                    let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
+                    let matches = regex.matchesInString(str as String, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.length))
+                    var indexPathes:[NSIndexPath] = []
+                    let cellCount = self.posts.count
+                    for var i = 0; i < matches.count; ++i {
+                        let match: AnyObject = matches[i]
+                        let link = getDaguerreLink(self.forumID) + str.substringWithRange(match.rangeAtIndex(linkIndex))
+                        let title = str.substringWithRange(match.rangeAtIndex(titleIndex))
+                        self.posts.append(Post(title: title, link: link))
+                        indexPathes.append(NSIndexPath(forRow:cellCount + i, inSection: 0))
+                        self.resultsController.posts = self.posts // Assignment
                     }
-                    else {
-                        regexString = "<a href=\"(viewthread\\.php[^\"]+?)\">([^\\d<]+?\\d+[^\\d]+?)</a>"
-                        linkIndex = 1
-                        titleIndex = 2
-                    }
-                    do {
-                        let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
-                        let matches = regex.matchesInString(str as String, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.length))
-                        var indexPathes:[NSIndexPath] = []
-                        let cellCount = strongSelf.posts.count
-                        for var i = 0; i < matches.count; ++i {
-                            let match: AnyObject = matches[i]
-                            let link = getDaguerreLink(strongSelf.forumID) + str.substringWithRange(match.rangeAtIndex(linkIndex))
-                            let title = str.substringWithRange(match.rangeAtIndex(titleIndex))
-                            strongSelf.posts.append(Post(title: title, link: link))
-                            indexPathes.append(NSIndexPath(forRow:cellCount + i, inSection: 0))
-                            strongSelf.resultsController.posts = strongSelf.posts // Assignment
-                        }
-                        hud.hide(true)
-                        strongSelf.tableView.insertRowsAtIndexPaths(indexPathes, withRowAnimation:.Top)
-                        strongSelf.page++
-                    }
-                    catch let error {
-                        print(error)
-                    }
-            case .Failure(_, _):
                     hud.hide(true)
-                    showHUDInView(self!.navigationController!.view, withMessage: NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."), afterDelay: 1)
+                    self.tableView.insertRowsAtIndexPaths(indexPathes, withRowAnimation:.Top)
+                    self.page++
+                }
+                catch let error {
+                    print(error)
+                }
+            }
+            else {
+                hud.hide(true)
+                showHUDInView(self.navigationController!.view, withMessage: NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."), afterDelay: 1)
             }
         }
     }
@@ -241,34 +237,33 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         else {
             //remote data
             let hud = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
-            fetchImageLinks(fromPostLink: link, completionHandler: { [weak self] fetchedImages in
-                let strongSelf = self!
+            fetchImageLinks(fromPostLink: link, completionHandler: { [unowned self] fetchedImages in
                 hud.hide(true)
-                strongSelf.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+                self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
                 // Skip non pics
                 if fetchedImages.count == 0 {
                     return
                 }
                 // prefetch images
-                strongSelf.fetchImagesToCache(fetchedImages, withProgressAction: { (progress) -> Void in })
-                strongSelf.images = fetchedImages
+                self.fetchImagesToCache(fetchedImages, withProgressAction: { (progress) -> Void in })
+                self.images = fetchedImages
                 let aCell:UITableViewCell = tableView.cellForRowAtIndexPath(indexPath)!
-                strongSelf.currentTitle = aCell.textLabel!.text!
+                self.currentTitle = aCell.textLabel!.text!
                 let photoBrowser = MWPhotoBrowser(delegate: self)
                 photoBrowser.displayActionButton = true
                 photoBrowser.zoomPhotosToFill = false
                 photoBrowser.displayNavArrows = true
-                strongSelf.navigationController?.pushViewController(photoBrowser, animated: true)
-                if strongSelf.myActivity != nil {
-                    strongSelf.myActivity.invalidate()
+                self.navigationController?.pushViewController(photoBrowser, animated: true)
+                if self.myActivity != nil {
+                    self.myActivity.invalidate()
                 }
-                strongSelf.myActivity = NSUserActivity(activityType: "me.venj.Swift-Photos.Continuity")
-                strongSelf.myActivity.webpageURL = NSURL(string: link)
-                strongSelf.myActivity.becomeCurrent()
+                self.myActivity = NSUserActivity(activityType: "me.venj.Swift-Photos.Continuity")
+                self.myActivity.webpageURL = NSURL(string: link)
+                self.myActivity.becomeCurrent()
                 },
-                errorHandler: { [weak self] in
+                errorHandler: { [unowned self] in
                     hud.hide(true)
-                    showHUDInView(self!.navigationController!.view, withMessage: NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."), afterDelay: 1)
+                    showHUDInView(self.navigationController!.view, withMessage: NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."), afterDelay: 1)
             })
         }
     }
@@ -293,10 +288,10 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
         if (indexPath.row < 0) { return nil }
         let preloadAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: NSLocalizedString("Preload", tableName: nil, value: "Preload", comment: "Preload Button.")) { (action, indexPath) -> Void in
-            self.cacheImages(forIndexPath: indexPath, withProgressAction: { [weak self] (progress) -> Void in
+            self.cacheImages(forIndexPath: indexPath, withProgressAction: { [unowned self] (progress) -> Void in
                 // Update Progress.
                 let cell = tableView.cellForRowAtIndexPath(indexPath) as? ProgressTableViewCell
-                self?.posts[indexPath.row].progress = progress
+                self.posts[indexPath.row].progress = progress
                 if let c = cell {
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
                         c.progress = progress
@@ -310,16 +305,15 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         preloadAction.backgroundColor = UIColor.iOS8purpleColor()
         //Save
         let link = posts[indexPath.row].link
-        let saveAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: NSLocalizedString("Save", tableName: nil, value: "Save", comment: "Save Button.")) { [weak self] (action, indexPath) -> Void in
+        let saveAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: NSLocalizedString("Save", tableName: nil, value: "Save", comment: "Save Button.")) { [unowned self] (action, indexPath) -> Void in
             let cell = tableView.cellForRowAtIndexPath(indexPath)!
             let spinWheel = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
             cell.accessoryView = spinWheel
             spinWheel.startAnimating()
             
-            self?.fetchImageLinks(fromPostLink: link, completionHandler: { [weak self] fetchedImages in
-                let strongSelf = self!
+            self.fetchImageLinks(fromPostLink: link, completionHandler: { [unowned self] fetchedImages in
                 saveCachedLinksToHomeDirectory(fetchedImages, forPostLink: link)
-                strongSelf.tableView.reloadData()
+                self.tableView.reloadData()
                 spinWheel.stopAnimating()
                 cell.accessoryView = nil
                 }, errorHandler: {
@@ -389,20 +383,19 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         }
         
         let settingsHUD = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
-        SDImageCache.sharedImageCache().calculateSizeWithCompletionBlock() { [weak self] (fileCount:UInt, totalSize:UInt) in
-            let strongSelf = self!
+        SDImageCache.sharedImageCache().calculateSizeWithCompletionBlock() { [unowned self] (fileCount:UInt, totalSize:UInt) in
             let humanReadableSize = NSString(format: "%.1f MB", Double(totalSize) / (1024 * 1024))
             saveValue(humanReadableSize, forKey: ImageCacheSizeKey)
             
             let status = LTHPasscodeViewController.doesPasscodeExist() ? localizedString("On", comment: "打开") : localizedString("Off", comment: "关闭")
             saveValue(status, forKey: PasscodeLockStatus)
             
-            strongSelf.settingsViewController = IASKAppSettingsViewController(style: .Grouped)
-            strongSelf.settingsViewController.delegate = self
-            strongSelf.settingsViewController.showCreditsFooter = false
-            let settingsNavigationController = UINavigationController(rootViewController: strongSelf.settingsViewController)
+            self.settingsViewController = IASKAppSettingsViewController(style: .Grouped)
+            self.settingsViewController.delegate = self
+            self.settingsViewController.showCreditsFooter = false
+            let settingsNavigationController = UINavigationController(rootViewController: self.settingsViewController)
             settingsNavigationController.modalPresentationStyle = .FormSheet
-            strongSelf.presentViewController(settingsNavigationController, animated: true) {}
+            self.presentViewController(settingsNavigationController, animated: true) {}
             settingsHUD.hide(true)
         }
     }
@@ -439,14 +432,12 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     func fetchImageLinks(fromPostLink postLink:String, completionHandler:(([String]) -> Void), errorHandler:(() -> Void)) {
         let request = Alamofire.request(.GET, postLink)
-        request.responseData { [weak self] (_, _, result) in
-            let strongSelf = self!
+        request.responseData { [unowned self] response in
             var fetchedImages = [String]()
-            switch result {
-            case .Success(let data):
-                let str:NSString = data.stringFromGB18030Data()
+            if response.result.isSuccess {
+                let str:NSString = (response.data?.stringFromGB18030Data())!
                 var regexString:String
-                if strongSelf.forumID == DaguerreForumID {
+                if self.forumID == DaguerreForumID {
                     regexString = "input type='image' src='([^\"]+?)'"
                 }
                 else {
@@ -459,14 +450,14 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                         var imageLink = str.substringWithRange(match.rangeAtIndex(1))
                         imageLink = imageLink.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
                         fetchedImages.append(imageLink)
-                        //print("\(imageLink)")
                     }
                     completionHandler(fetchedImages)
                 }
                 catch let error {
                     print(error)
                 }
-            case .Failure(_, _):
+            }
+            else {
                 errorHandler()
             }
         }
@@ -507,15 +498,14 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     func cacheImages(forIndexPath indexPath: NSIndexPath, withProgressAction progressAction:(Float) -> Void) {
         let link = posts[indexPath.row].link
-        fetchImageLinks(fromPostLink: link, completionHandler: { [weak self] fetchedImages in
-            let strongSelf = self!
-            strongSelf.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        fetchImageLinks(fromPostLink: link, completionHandler: { [unowned self] fetchedImages in
+            self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
             // Skip non pics
             if fetchedImages.count == 0 {
                 return
             }
             // prefetch images
-            strongSelf.fetchImagesToCache(fetchedImages, withProgressAction:progressAction)
+            self.fetchImagesToCache(fetchedImages, withProgressAction:progressAction)
             },
             errorHandler: {
             })
@@ -551,10 +541,9 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         else if specifier.key() == ClearCacheNowKey {
             let aView = sender.navigationController?.view
             let hud = MBProgressHUD.showHUDAddedTo(aView, animated: true)
-            SDImageCache.sharedImageCache().clearDiskOnCompletion() { [weak self] in
-                let strongSelf = self!
+            SDImageCache.sharedImageCache().clearDiskOnCompletion() { [unowned self] in
                 hud.hide(true)
-                strongSelf.recalculateCacheSize()
+                self.recalculateCacheSize()
                 showHUDInView(aView!, withMessage: localizedString("Cache Cleared", comment: "缓存已清除"), afterDelay: 1.0)
                 sender.tableView.reloadData()
             }
@@ -569,11 +558,42 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             }
         }
         else if specifier.key() == CurrentCLLinkKey {
-            let linksController = CLLinksTableViewTableViewController(style:.Grouped);
-            sender.navigationController?.pushViewController(linksController, animated: true)
+            // Load links from web.
+            fetchCLLinks({ (links) -> () in
+                let linksController = CLLinksTableViewTableViewController(style:.Grouped);
+                guard let l = links else { return }
+                if l.count == 0 {
+                    linksController.clLinks = siteLinks(DaguerreForumID)
+                }
+                else {
+                    linksController.clLinks = l
+                }
+
+                sender.navigationController?.pushViewController(linksController, animated: true)
+            })
+
         }
     }
-    
+
+    func fetchCLLinks( complete: (links : [String]?)->() ) {
+        let hud = MBProgressHUD.showHUDAddedTo(self.view.window, animated: true)
+        let textLink = "ht" + "tp" + "://" + "ww" + "w" + ".su" + "ki" + "ap" + "p" + "s.co" + "m/c" + "l.t" + "xt"
+        let request = Alamofire.request(.GET, textLink)
+        request.responseString { [unowned self] response in
+            if response.result.isSuccess {
+                hud.hide(true)
+                let str = response.result.value
+                let links = str?.componentsSeparatedByString(";")
+                complete(links: links)
+            }
+            else {
+                hud.hide(true)
+                showHUDInView(self.view.window!, withMessage: NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."), afterDelay: 1)
+                complete(links: [String]())
+            }
+        }
+    }
+
     func clearDownloadCache( complete: ()->() ) {
         let tempDir = NSTemporaryDirectory();
         //println(tempDir)
