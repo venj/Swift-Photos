@@ -30,6 +30,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     var searchController:UISearchController!
     var resultsController:SearchResultController!
     var myActivity : NSUserActivity!
+    private var settingsController : UIViewController?
     
     let categories = [NSLocalizedString("Daguerre's Flag", tableName: nil, value: "Daguerre's Flag", comment: "達蓋爾的旗幟"): 16,
                       NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图"): 53,
@@ -559,6 +560,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         }
         else if specifier.key() == CurrentCLLinkKey {
             // Load links from web.
+            settingsController = sender
             fetchCLLinks({ (links) -> () in
                 let linksController = CLLinksTableViewTableViewController(style:.Grouped);
                 guard let l = links else { return }
@@ -576,19 +578,19 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
 
     func fetchCLLinks( complete: (links : [String]?)->() ) {
-        let hud = MBProgressHUD.showHUDAddedTo(self.view.window, animated: true)
+        let hud = MBProgressHUD.showHUDAddedTo(settingsController!.navigationController!.view, animated: true)
         let textLink = "ht" + "tp" + "://" + "ww" + "w" + ".su" + "ki" + "ap" + "p" + "s.co" + "m/c" + "l.t" + "xt"
         let request = Alamofire.request(.GET, textLink)
         request.responseString { [unowned self] response in
             if response.result.isSuccess {
                 hud.hide(true)
                 let str = response.result.value
-                let links = str?.componentsSeparatedByString(";")
+                let links = str?.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).componentsSeparatedByString(";")
                 complete(links: links)
             }
             else {
                 hud.hide(true)
-                showHUDInView(self.view.window!, withMessage: NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."), afterDelay: 1)
+                showHUDInView(self.settingsController!.navigationController!.view, withMessage: NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."), afterDelay: 1)
                 complete(links: [String]())
             }
         }
