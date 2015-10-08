@@ -162,7 +162,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
                     let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
                     let matches = regex.matchesInString(str, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.characters.count))
                     for match in matches {
-                        let imageLink = str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(1)))
+                        let imageLink = str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(1))!)
                         fetchedImages.append(imageLink)
                     }
                     completionHandler?(fetchedImages)

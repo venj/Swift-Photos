@@ -89,13 +89,13 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         request.responseData { [unowned self] response in
             if response.result.isSuccess {
                 guard let str = response.data?.stringFromGB18030Data() else { return }
-                let regexString:String = "<a href=\"([^\"]+?)\">達蓋爾的旗幟</a>"
+                let regexString = "<a href=\"([^\"]+)\">達蓋爾的旗幟</a>"
                 do {
                     let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
                     let matches = regex.matchesInString(str, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.characters.count))
                     if matches.count > 0 {
-                        let match: AnyObject = matches[0]
-                        self.daguerreLink = link + str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(1)))
+                        let match = matches[0]
+                        self.daguerreLink = link + str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(1))!)
                     }
                 }
                 catch let error {
@@ -154,8 +154,8 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                     let cellCount = self.posts.count
                     for var i = 0; i < matches.count; ++i {
                         let match: AnyObject = matches[i]
-                        let link = getDaguerreLink(self.forumID) + str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(linkIndex)))
-                        let title = str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(titleIndex)))
+                        let link = getDaguerreLink(self.forumID) + str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(linkIndex))!)
+                        let title = str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(titleIndex))!)
                         self.posts.append(Post(title: title, link: link))
                         indexPathes.append(NSIndexPath(forRow:cellCount + i, inSection: 0))
                         self.resultsController.posts = self.posts // Assignment
@@ -447,7 +447,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                     let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
                     let matches = regex.matchesInString(str, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.characters.count))
                     for match in matches {
-                        var imageLink = str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(1)))
+                        var imageLink = str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(1))!)
                         imageLink = imageLink.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
                         fetchedImages.append(imageLink)
                     }

@@ -155,13 +155,17 @@ func getDaguerreLink(forumID:Int) -> String {
 }
 
 extension String {
-    func rangeFromNSRange(range: NSRange) -> Range<String.Index> {
-        // Convert an NSRange to Range<String.Index>
-        let start = self.startIndex.advancedBy(range.location)
-        let end = start.advancedBy(range.length)
-        return Range<String.Index>(start: start, end: end)
+    func rangeFromNSRange(range : NSRange) -> Range<String.Index>? {
+        let from16 = utf16.startIndex.advancedBy(range.location, limit: utf16.endIndex)
+        let to16 = from16.advancedBy(range.length, limit: utf16.endIndex)
+        if let from = String.Index(from16, within: self),
+            let to = String.Index(to16, within: self) {
+                return from ..< to
+        }
+        return nil
     }
 }
+
 
 extension NSData {
     func stringFromGB18030Data() -> String? {
