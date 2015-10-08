@@ -8,8 +8,8 @@
 
 import UIKit
 import MMAppSwitcher
-import MBProgressHUD
 import SDWebImage
+import PKHUD
 
 let CurrentVersionKey = "kCurrentVersionKey"
 let ClearCacheOnExitKey = "kClearCacheOnExitKey"
@@ -43,18 +43,15 @@ func userInterfaceIdiom() -> UIUserInterfaceIdiom {
     return UIDevice.currentDevice().userInterfaceIdiom
 }
 
-func showHUDInView(view:UIView, withMessage message: String, afterDelay delay:NSTimeInterval) -> MBProgressHUD {
-    let messageHUD = MBProgressHUD.showHUDAddedTo(view, animated: true)
-    messageHUD.mode = MBProgressHUDMode.CustomView
-    messageHUD.labelText = message
-    if delay != 0.0 {
-        messageHUD.hide(true, afterDelay: delay)
-    }
-    return messageHUD
-}
-
 func localizedString(key:String, comment:String) -> String {
     return NSLocalizedString(key, tableName: nil, value: key, comment: comment)
+}
+
+func showHUD() -> PKHUD {
+    let hud = PKHUD.sharedHUD
+    hud.contentView = PKHUDProgressView()
+    hud.show()
+    return hud
 }
 
 func updateVersionNumber() {

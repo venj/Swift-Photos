@@ -9,7 +9,6 @@
 import UIKit
 import Alamofire
 import MWPhotoBrowser
-import MBProgressHUD
 import SDWebImage
 
 class SearchResultController: UITableViewController, UISearchResultsUpdating, MWPhotoBrowserDelegate {
@@ -101,9 +100,9 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
         }
         else {
             //remote data
-            let hud = MBProgressHUD.showHUDAddedTo(self.view, animated: true)
+            let hud = showHUD()
             fetchImageLinks(fromPostLink: link, completionHandler: { [unowned self] fetchedImages in
-                hud.hide(true)
+                hud.hide()
                 self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
                 // Skip non pics
                 if fetchedImages.count == 0 {
@@ -122,7 +121,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
                 self.presentViewController(nav, animated: true, completion: nil)
             },
             errorHandler: {
-                hud.hide(true)
+                hud.hide()
             })
         }
     }
@@ -226,6 +225,4 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
         }
         return self.currentTitle
     }
-    
-
 }

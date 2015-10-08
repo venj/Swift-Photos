@@ -5,13 +5,14 @@ PODS:
   - InAppSettingsKit (2.6)
   - iOS8Colors (0.1.2):
     - HexColors (~> 2.2.1)
-  - LTHPasscodeViewController (3.3.3)
+  - LTHPasscodeViewController (3.6.6)
   - MBProgressHUD (0.9.1)
   - MMAppSwitcher (0.2.0)
   - MWPhotoBrowser (2.1.1):
     - DACircularProgress (~> 2.3)
     - MBProgressHUD (~> 0.9)
     - SDWebImage (!= 3.7.2, ~> 3.7)
+  - PKHUD (2.2.3)
   - Reveal-iOS-SDK (1.5.1)
   - SDWebImage (3.7.3):
     - SDWebImage/Core (= 3.7.3)
@@ -21,10 +22,10 @@ DEPENDENCIES:
   - Alamofire (~> 3.0.0-beta.3)
   - InAppSettingsKit (~> 2.6)
   - iOS8Colors (~> 0.1.2)
-  - LTHPasscodeViewController (~> 3.3.2)
-  - MBProgressHUD (~> 0.9.1)
+  - LTHPasscodeViewController (~> 3.6.6)
   - MMAppSwitcher (~> 0.2.0)
   - MWPhotoBrowser (~> 2.1.1)
+  - PKHUD (~> 2.2.3)
   - Reveal-iOS-SDK (~> 1.5.1)
   - SDWebImage (~> 3.7.2)
 
@@ -34,10 +35,11 @@ SPEC CHECKSUMS:
   HexColors: abfd172e329dab59888614ccba6f216cec59289d
   InAppSettingsKit: cc56d3ec45f11352a16d5b210da8a3fa1b9d05ed
   iOS8Colors: 1f6023790704b9119727bf14408182ca33faf31b
-  LTHPasscodeViewController: 01d2c19b6e2aefcd34f4a63d880cf3718da27fdc
+  LTHPasscodeViewController: a3e58128587c8b44d38a0634e989808cb852fc55
   MBProgressHUD: c47f2c166c126cf2ce36498d80f33e754d4e93ad
   MMAppSwitcher: 6e813046b201593d1a1d06188a6f6336f06b7be2
   MWPhotoBrowser: ba0d0c09ffda3a7ea10093518738c502c1c7141c
+  PKHUD: 47339a6fdb917015ce79b1a0480e31ea6955c11d
   Reveal-iOS-SDK: c9c55cad2729c85f6ced415f1b21857c9a2d8ef9
   SDWebImage: 1d2b1a1efda1ade1b00b6f8498865f8ddedc8a84
 

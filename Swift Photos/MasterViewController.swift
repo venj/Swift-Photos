@@ -10,7 +10,7 @@ import UIKit
 import Alamofire
 import MMAppSwitcher
 import MWPhotoBrowser
-import MBProgressHUD
+import PKHUD
 import InAppSettingsKit
 import SDWebImage
 import LTHPasscodeViewController
@@ -83,7 +83,9 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     func parseDaguerreLink() {
         let link = getDaguerreLink(self.forumID)
-        let hud = showHUDInView(self.navigationController!.view, withMessage: NSLocalizedString("Parsing Daguerre Link...", tableName: nil, value: "Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."), afterDelay: 0.0)
+        let hud = PKHUD.sharedHUD
+        hud.contentView = PKHUDTextView(text: NSLocalizedString("Parsing Daguerre Link...", tableName: nil, value: "Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."))
+        hud.show()
         let request = Alamofire.request(.GET, link + "index.php")
         request.responseData { [unowned self] response in
             if response.result.isSuccess {
@@ -100,15 +102,18 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 catch let error {
                     print(error)
                 }
-                hud.hide(true)
+                hud.hide()
                 self.loadPostList(self.daguerreLink, forPage: 1)
             }
             else {
-                hud.hide(true)
+                hud.hide()
                 let alert = UIAlertController(title: NSLocalizedString("Network error", tableName: nil, value: "Network error", comment: "Network error happened, typically timeout."), message: NSLocalizedString("Failed to reach 1024 in time. Maybe links are dead. You may use a VPN to access 1024.", tableName: nil, value: "Network error", comment: "1024 link down."), preferredStyle: .Alert)
-                let action = UIAlertAction(title: "OK", style: .Default, handler: { [unowned self] (action) -> Void in
-                    showHUDInView(self.navigationController!.view, withMessage: NSLocalizedString("1024 down, use a mirror", tableName: nil, value: "1024 down, use a mirror", comment: ""), afterDelay: 2.0)
+                let action = UIAlertAction(title: "OK", style: .Default, handler: { (action) in
+                    dispatch_async(dispatch_get_main_queue(), {
+                        hud.contentView = PKHUDTextView(text: NSLocalizedString("1024 down, use a mirror", tableName: nil, value: "1024 down, use a mirror", comment: ""))
+                        hud.hide(afterDelay: 2.0)
                     })
+                })
                 alert.addAction(action)
                 self.presentViewController(alert, animated: true, completion: nil)
             }
@@ -124,8 +129,8 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             myActivity.webpageURL = NSURL(string: link)
             myActivity.becomeCurrent()
         }
-        
-        let hud = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
+
+        let hud = showHUD()
         let l = link + "&page=\(self.page)"
         let request = Alamofire.request(.GET, l)
         request.responseData { [unowned self] response in
@@ -156,7 +161,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                         indexPathes.append(NSIndexPath(forRow:cellCount + i, inSection: 0))
                         self.resultsController.posts = self.posts // Assignment
                     }
-                    hud.hide(true)
+                    hud.hide()
                     self.tableView.insertRowsAtIndexPaths(indexPathes, withRowAnimation:.Top)
                     self.page++
                 }
@@ -165,8 +170,11 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 }
             }
             else {
-                hud.hide(true)
-                showHUDInView(self.navigationController!.view, withMessage: NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."), afterDelay: 1)
+                hud.hide()
+                dispatch_async(dispatch_get_main_queue(), {
+                    hud.contentView = PKHUDTextView(text: NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."))
+                    hud.hide(afterDelay: 1.0)
+                })
             }
         }
     }
@@ -237,9 +245,9 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         }
         else {
             //remote data
-            let hud = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
+            let hud = showHUD()
             fetchImageLinks(fromPostLink: link, completionHandler: { [unowned self] fetchedImages in
-                hud.hide(true)
+                hud.hide()
                 self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
                 // Skip non pics
                 if fetchedImages.count == 0 {
@@ -261,10 +269,13 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 self.myActivity = NSUserActivity(activityType: "me.venj.Swift-Photos.Continuity")
                 self.myActivity.webpageURL = NSURL(string: link)
                 self.myActivity.becomeCurrent()
-                },
-                errorHandler: { [unowned self] in
-                    hud.hide(true)
-                    showHUDInView(self.navigationController!.view, withMessage: NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."), afterDelay: 1)
+            },
+            errorHandler: {
+                hud.hide()
+                dispatch_async(dispatch_get_main_queue(), {
+                    hud.contentView = PKHUDTextView(text:NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."))
+                    hud.hide(afterDelay: 1.0)
+                })
             })
         }
     }
@@ -382,8 +393,8 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         if getValue(CurrentCLLinkKey) == nil {
             getDaguerreLink(self.forumID)
         }
-        
-        let settingsHUD = MBProgressHUD.showHUDAddedTo(navigationController?.view, animated: true)
+
+        let hud = showHUD()
         SDImageCache.sharedImageCache().calculateSizeWithCompletionBlock() { [unowned self] (fileCount:UInt, totalSize:UInt) in
             let humanReadableSize = NSString(format: "%.1f MB", Double(totalSize) / (1024 * 1024))
             saveValue(humanReadableSize, forKey: ImageCacheSizeKey)
@@ -397,7 +408,8 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             let settingsNavigationController = UINavigationController(rootViewController: self.settingsViewController)
             settingsNavigationController.modalPresentationStyle = .FormSheet
             self.presentViewController(settingsNavigationController, animated: true) {}
-            settingsHUD.hide(true)
+            //settingsHUD.hide(true)
+            hud.hide()
         }
     }
 
@@ -540,22 +552,24 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             }
         }
         else if specifier.key() == ClearCacheNowKey {
-            let aView = sender.navigationController?.view
-            let hud = MBProgressHUD.showHUDAddedTo(aView, animated: true)
+            let hud = showHUD()
             SDImageCache.sharedImageCache().clearDiskOnCompletion() { [unowned self] in
-                hud.hide(true)
                 self.recalculateCacheSize()
-                showHUDInView(aView!, withMessage: localizedString("Cache Cleared", comment: "缓存已清除"), afterDelay: 1.0)
-                sender.tableView.reloadData()
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    hud.contentView = PKHUDTextView(text: localizedString("Cache Cleared", comment: "缓存已清除"))
+                    hud.hide(afterDelay: 1.0)
+                    sender.tableView.reloadData()
+                })
             }
         }
         else if specifier.key() == ClearDownloadCacheKey {
-            let aView = sender.navigationController?.view
-            let hud = MBProgressHUD.showHUDAddedTo(aView, animated: true)
+            let hud = showHUD()
             clearDownloadCache() {
-                hud.hide(true)
-                showHUDInView(aView!, withMessage: localizedString("Cache Cleared", comment: "缓存已清除"), afterDelay: 1.0)
-                sender.tableView.reloadData()
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    hud.contentView = PKHUDTextView(text: localizedString("Cache Cleared", comment: "缓存已清除"))
+                    hud.hide(afterDelay: 1.0)
+                    sender.tableView.reloadData()
+                })
             }
         }
         else if specifier.key() == CurrentCLLinkKey {
@@ -578,20 +592,23 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
 
     func fetchCLLinks( complete: (links : [String]?)->() ) {
-        let hud = MBProgressHUD.showHUDAddedTo(settingsController!.navigationController!.view, animated: true)
+        let hud = showHUD()
         let textLink = "ht" + "tp" + "://" + "ww" + "w" + ".su" + "ki" + "ap" + "p" + "s.co" + "m/c" + "l.t" + "xt"
         let request = Alamofire.request(.GET, textLink)
-        request.responseString { [unowned self] response in
+        request.responseString { (response) in
             if response.result.isSuccess {
-                hud.hide(true)
+                hud.hide()
                 let str = response.result.value
                 let links = str?.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).componentsSeparatedByString(";")
                 complete(links: links)
             }
             else {
-                hud.hide(true)
-                showHUDInView(self.settingsController!.navigationController!.view, withMessage: NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."), afterDelay: 1)
-                complete(links: [String]())
+                hud.hide()
+                dispatch_async(dispatch_get_main_queue(), {
+                    hud.contentView = PKHUDTextView(text:NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."))
+                    hud.hide(afterDelay: 1.0)
+                    complete(links: [String]())
+                })
             }
         }
     }
