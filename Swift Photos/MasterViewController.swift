@@ -295,13 +295,12 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         let preloadAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: localizedString("Preload", comment: "Preload Button.")) { (action, indexPath) in
             self.cacheImages(forIndexPath: indexPath, withProgressAction: { [unowned self] (progress) in
                 // Update Progress.
-                let cell = tableView.cellForRowAtIndexPath(indexPath) as? ProgressTableViewCell
+                // FIXME: If the cell is preloading, and we switch to another section, the progress will keep updating.
+                guard let cell = tableView.cellForRowAtIndexPath(indexPath) as? ProgressTableViewCell else { return }
                 self.posts[indexPath.row].progress = progress
-                if let c = cell {
-                    dispatch_async(dispatch_get_main_queue(), {
-                        c.progress = progress
-                    })
-                }
+                dispatch_async(dispatch_get_main_queue(), {
+                    cell.progress = progress
+                })
             })
             if tableView.editing {
                 tableView.setEditing(false, animated: true)
@@ -438,7 +437,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 guard let str = response.data?.stringFromGB18030Data() else { errorHandler?() ; return }
                 var regexString:String
                 if self.forumID == DaguerreForumID {
-                    regexString = "input type='image' src='([^\"]+?)'"
+                    regexString = "input.+?src='([^\"]+?)'"
                 }
                 else {
                     regexString = "img src=\"([^\"]+)\" .+? onload"
