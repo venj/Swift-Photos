@@ -1,20 +1,18 @@
 美图赏
 =====
 
-**项目已经兼容Swift 2.0，需要OS X El Capitan和Xcode 7 beta编译。**
+**项目已经兼容Swift 2.0，需要Xcode 7+编译。**
 
 美图欣赏利器。
 
 编译
 ----
 
-你需要安装最新版的Xcode 7 Beta和Cocoa Pods（0.36.2(?)以上版本）。然后执行如下操作：
+你需要安装最新版的Xcode 7+和Cocoa Pods（0.36.2(?)以上版本）。然后执行如下操作：
 
 ```
 $ cp Swift\ Photos/Common.swift.skel Swift\ Photos/Common.swift
 (编辑，并填入正确的网址。)
-$ git submodule init
-$ git submodule update
 $ pod install
 ```
 
@@ -27,9 +25,14 @@ $ pod install
 更新记录
 -------
 
+**2.2(107, 测试版)**
+
+- 更换了HUD和密码控件
+- 大量代码重构
+
 **2.2(97, 测试版)**
 
-－ Swift 2.0兼容。
+- Swift 2.0兼容。
 
 **2.2(78, 测试版)**
 

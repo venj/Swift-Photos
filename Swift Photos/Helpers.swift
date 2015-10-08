@@ -33,12 +33,6 @@ func saveValue(value:AnyObject, forKey key:String) {
     defaults.synchronize()
 }
 
-func systemMajorVersion() -> Int {
-    let ver = UIDevice.currentDevice().systemVersion
-    let majorVersion = (ver.componentsSeparatedByString(".")[0] as NSString).integerValue
-    return majorVersion
-}
-
 func userInterfaceIdiom() -> UIUserInterfaceIdiom {
     return UIDevice.currentDevice().userInterfaceIdiom
 }
@@ -160,13 +154,22 @@ func getDaguerreLink(forumID:Int) -> String {
     }
 }
 
+extension String {
+    func rangeFromNSRange(range: NSRange) -> Range<String.Index> {
+        // Convert an NSRange to Range<String.Index>
+        let start = self.startIndex.advancedBy(range.location)
+        let end = start.advancedBy(range.length)
+        return Range<String.Index>(start: start, end: end)
+    }
+}
+
 extension NSData {
-    func stringFromGB18030Data() -> String {
+    func stringFromGB18030Data() -> String? {
         // CP 936: GBK, CP 54936: GB18030
         //let cfEncoding = CFStringConvertWindowsCodepageToEncoding(54936) //GB18030
         let cfgb18030encoding = CFStringEncodings.GB_18030_2000.rawValue
         let gbkEncoding = CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(cfgb18030encoding))
-        return NSString(data: self, encoding: gbkEncoding)! as String
+        return String(data: self, encoding: gbkEncoding)
     }
 }
 

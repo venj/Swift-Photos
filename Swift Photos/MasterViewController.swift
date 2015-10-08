@@ -17,9 +17,9 @@ import PasscodeLock
 
 class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSettingsDelegate, MWPhotoBrowserDelegate, UISearchControllerDelegate {
     
-    var posts:[Post] = []
-    var filteredPosts:[Post] = []
-    var images:[String] = []
+    var posts:[Post] = [Post]()
+    var filteredPosts:[Post] = [Post]()
+    var images:[String] = [String]()
     var page = 1
     var forumID = DaguerreForumID
     var daguerreLink:String = ""
@@ -32,15 +32,15 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     var myActivity : NSUserActivity!
     private var settingsController : UIViewController?
     
-    let categories = [NSLocalizedString("Daguerre's Flag", tableName: nil, value: "Daguerre's Flag", comment: "達蓋爾的旗幟"): 16,
-                      NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图"): 53,
-                      NSLocalizedString("Sexy Beauty", tableName: nil, value: "Sexy Beauty", comment: "激情贴图"): 70,
-                      NSLocalizedString("Cam Shot", tableName: nil, value: "Cam Shot", comment: "走光偷拍"): 81,
-                      NSLocalizedString("Selfies", tableName: nil, value: "Selfies", comment: "网友自拍"): 59,
-                      NSLocalizedString("Hentai Manga", tableName: nil, value: "Hentai Manga", comment: "动漫漫画"): 46,
-                      NSLocalizedString("Celebrities", tableName: nil, value: "Celebrities", comment: "明星八卦"): 79,
-                      NSLocalizedString("Alternatives", tableName: nil, value: "Alternatives", comment: "另类贴图"): 60]
-    
+    let categories = [localizedString("Daguerre's Flag", comment: "達蓋爾的旗幟"): 16,
+                      localizedString("Young Beauty", comment: "唯美贴图"): 53,
+                      localizedString("Sexy Beauty", comment: "激情贴图"): 70,
+                      localizedString("Cam Shot", comment: "走光偷拍"): 81,
+                      localizedString("Selfies", comment: "网友自拍"): 59,
+                      localizedString("Hentai Manga", comment: "动漫漫画"): 46,
+                      localizedString("Celebrities", comment: "明星八卦"): 79,
+                      localizedString("Alternatives", comment: "另类贴图"): 60]
+
     override func awakeFromNib() {
         super.awakeFromNib()
     }
@@ -48,15 +48,15 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        let savedTitle: AnyObject! = getValue(LastViewedSectionTitle)
-        if let t: AnyObject = savedTitle {
-            categories[(t as! String)] != nil ? title = (savedTitle as! String) : setDefaultTitle()
+        let savedTitle: String? = getValue(LastViewedSectionTitle) as? String
+        if let t: String = savedTitle {
+            categories[t] != nil ? title = savedTitle : setDefaultTitle()
         }
         else {
             setDefaultTitle()
         }
-        let categoryButton = UIBarButtonItem(title: NSLocalizedString("Categories", tableName: nil, value: "Categories", comment: "分类"), style: .Plain, target: self, action: "showSections:")
-        let settingsButton = UIBarButtonItem(title: NSLocalizedString("Settings", tableName: nil, value: "Settings", comment: "设置"), style: .Plain, target: self, action: "showSettings:")
+        let categoryButton = UIBarButtonItem(title: localizedString("Categories", comment: "分类"), style: .Plain, target: self, action: "showSections:")
+        let settingsButton = UIBarButtonItem(title: localizedString("Settings", comment: "设置"), style: .Plain, target: self, action: "showSettings:")
         navigationItem.rightBarButtonItems = [settingsButton, categoryButton]
         loadFirstPageForKey(title!)
         
@@ -68,7 +68,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         let searchBar = searchController.searchBar
         self.tableView.tableHeaderView = searchBar
         searchBar.sizeToFit()
-        searchBar.placeholder = NSLocalizedString("Search loaded posts", tableName: nil, value: "Search loaded posts", comment: "搜索已加载的帖子")
+        searchBar.placeholder = localizedString("Search loaded posts", comment: "搜索已加载的帖子")
 
         if #available(iOS 9, *) {
             tableView.cellLayoutMarginsFollowReadableWidth = false
@@ -83,19 +83,19 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     func parseDaguerreLink() {
         let link = getDaguerreLink(self.forumID)
         let hud = PKHUD.sharedHUD
-        hud.contentView = PKHUDTextView(text: NSLocalizedString("Parsing Daguerre Link...", tableName: nil, value: "Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."))
+        hud.contentView = PKHUDTextView(text: localizedString("Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."))
         hud.show()
         let request = Alamofire.request(.GET, link + "index.php")
         request.responseData { [unowned self] response in
             if response.result.isSuccess {
-                let str:NSString = (response.data?.stringFromGB18030Data())!
+                guard let str = response.data?.stringFromGB18030Data() else { return }
                 let regexString:String = "<a href=\"([^\"]+?)\">達蓋爾的旗幟</a>"
                 do {
                     let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
-                    let matches = regex.matchesInString(str as String, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.length))
+                    let matches = regex.matchesInString(str, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.characters.count))
                     if matches.count > 0 {
                         let match: AnyObject = matches[0]
-                        self.daguerreLink = link + str.substringWithRange(match.rangeAtIndex(1))
+                        self.daguerreLink = link + str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(1)))
                     }
                 }
                 catch let error {
@@ -106,10 +106,10 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             }
             else {
                 hud.hide()
-                let alert = UIAlertController(title: NSLocalizedString("Network error", tableName: nil, value: "Network error", comment: "Network error happened, typically timeout."), message: NSLocalizedString("Failed to reach 1024 in time. Maybe links are dead. You may use a VPN to access 1024.", tableName: nil, value: "Network error", comment: "1024 link down."), preferredStyle: .Alert)
-                let action = UIAlertAction(title: "OK", style: .Default, handler: { (action) in
+                let alert = UIAlertController(title: localizedString("Network error", comment: "Network error happened, typically timeout."), message: localizedString("Failed to reach 1024 in time. Maybe links are dead. You may use a VPN to access 1024.", comment: "1024 link down."), preferredStyle: .Alert)
+                let action = UIAlertAction(title: "OK", style: .Default, handler: { _ in
                     dispatch_async(dispatch_get_main_queue(), {
-                        hud.contentView = PKHUDTextView(text: NSLocalizedString("1024 down, use a mirror", tableName: nil, value: "1024 down, use a mirror", comment: ""))
+                        hud.contentView = PKHUDTextView(text: localizedString("1024 down, use a mirror", comment: ""))
                         hud.hide(afterDelay: 2.0)
                     })
                 })
@@ -134,7 +134,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         let request = Alamofire.request(.GET, l)
         request.responseData { [unowned self] response in
             if (response.result.isSuccess) {
-                let str:NSString = (response.data?.stringFromGB18030Data())!
+                guard let str = response.data?.stringFromGB18030Data() else { return }
                 var regexString:String
                 var linkIndex = 0, titleIndex = 0
                 if self.forumID == DaguerreForumID {
@@ -149,13 +149,13 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 }
                 do {
                     let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
-                    let matches = regex.matchesInString(str as String, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.length))
-                    var indexPathes:[NSIndexPath] = []
+                    let matches = regex.matchesInString(str, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.characters.count))
+                    var indexPathes:[NSIndexPath] = [NSIndexPath]()
                     let cellCount = self.posts.count
                     for var i = 0; i < matches.count; ++i {
                         let match: AnyObject = matches[i]
-                        let link = getDaguerreLink(self.forumID) + str.substringWithRange(match.rangeAtIndex(linkIndex))
-                        let title = str.substringWithRange(match.rangeAtIndex(titleIndex))
+                        let link = getDaguerreLink(self.forumID) + str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(linkIndex)))
+                        let title = str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(titleIndex)))
                         self.posts.append(Post(title: title, link: link))
                         indexPathes.append(NSIndexPath(forRow:cellCount + i, inSection: 0))
                         self.resultsController.posts = self.posts // Assignment
@@ -171,7 +171,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             else {
                 hud.hide()
                 dispatch_async(dispatch_get_main_queue(), {
-                    hud.contentView = PKHUDTextView(text: NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."))
+                    hud.contentView = PKHUDTextView(text: localizedString("Request timeout.", comment: "Request timeout hud."))
                     hud.hide(afterDelay: 1.0)
                 })
             }
@@ -223,13 +223,13 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let link = posts[indexPath.row].link
-        self.images = []
+        self.images = [String]()
         // Local Data
         if imagesCached(forPostLink: link) {
             let localDir = localDirectoryForPost(link, create: false)
             let basePath = NSURL(fileURLWithPath: localDir!).absoluteString
             let fm = NSFileManager.defaultManager()
-            var images : [String] = []
+            var images : [String] = [String]()
             let files = try! fm.contentsOfDirectoryAtPath(localDir!)
             for f in files {
                 images.append(basePath.vc_stringByAppendingPathComponent(f as String))
@@ -253,7 +253,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                     return
                 }
                 // prefetch images
-                self.fetchImagesToCache(fetchedImages, withProgressAction: { (progress) -> Void in })
+                self.fetchImagesToCache(fetchedImages, withProgressAction: { (progress) in })
                 self.images = fetchedImages
                 let aCell:UITableViewCell = tableView.cellForRowAtIndexPath(indexPath)!
                 self.currentTitle = aCell.textLabel!.text!
@@ -272,7 +272,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             errorHandler: {
                 hud.hide()
                 dispatch_async(dispatch_get_main_queue(), {
-                    hud.contentView = PKHUDTextView(text:NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."))
+                    hud.contentView = PKHUDTextView(text:localizedString("Request timeout.", comment: "Request timeout hud."))
                     hud.hide(afterDelay: 1.0)
                 })
             })
@@ -285,26 +285,20 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         }
         
         // Seperator inset fix from Stack Overflow: http://stackoverflow.com/questions/25770119/ios-8-uitableview-separator-inset-0-not-working
-        if cell.respondsToSelector("setSeparatorInset:") {
-            cell.separatorInset = UIEdgeInsetsZero
-        }
-        if cell.respondsToSelector("setPreservesSuperviewLayoutMargins:") {
-            cell.preservesSuperviewLayoutMargins = false
-        }
-        if cell.respondsToSelector("setLayoutMargins:") {
-            cell.layoutMargins = UIEdgeInsetsZero
-        }
+        // iOS 8 and up
+        cell.preservesSuperviewLayoutMargins = false
+        cell.layoutMargins = UIEdgeInsetsZero
     }
     
     override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
         if (indexPath.row < 0) { return nil }
-        let preloadAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: NSLocalizedString("Preload", tableName: nil, value: "Preload", comment: "Preload Button.")) { (action, indexPath) -> Void in
-            self.cacheImages(forIndexPath: indexPath, withProgressAction: { [unowned self] (progress) -> Void in
+        let preloadAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: localizedString("Preload", comment: "Preload Button.")) { (action, indexPath) in
+            self.cacheImages(forIndexPath: indexPath, withProgressAction: { [unowned self] (progress) in
                 // Update Progress.
                 let cell = tableView.cellForRowAtIndexPath(indexPath) as? ProgressTableViewCell
                 self.posts[indexPath.row].progress = progress
                 if let c = cell {
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    dispatch_async(dispatch_get_main_queue(), {
                         c.progress = progress
                     })
                 }
@@ -316,7 +310,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         preloadAction.backgroundColor = UIColor.iOS8purpleColor()
         //Save
         let link = posts[indexPath.row].link
-        let saveAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: NSLocalizedString("Save", tableName: nil, value: "Save", comment: "Save Button.")) { [unowned self] (action, indexPath) -> Void in
+        let saveAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: localizedString("Save", comment: "Save Button.")) { [unowned self] (_, indexPath) in
             let cell = tableView.cellForRowAtIndexPath(indexPath)!
             let spinWheel = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
             cell.accessoryView = spinWheel
@@ -327,9 +321,9 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 self.tableView.reloadData()
                 spinWheel.stopAnimating()
                 cell.accessoryView = nil
-                }, errorHandler: {
-                    spinWheel.stopAnimating()
-                    cell.accessoryView = nil
+            }, errorHandler: {
+                spinWheel.stopAnimating()
+                cell.accessoryView = nil
             })
             
             if tableView.editing {
@@ -341,7 +335,6 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     }
     
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        //if indexPath.row < 0 { return false }
         if imagesCached(forPostLink: posts[indexPath.row].link) { return false }
         return true
     }
@@ -362,8 +355,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     func photoBrowser(photoBrowser: MWPhotoBrowser!, titleForPhotoAtIndex index: UInt) -> String! {
         let t:NSMutableString = self.currentTitle.mutableCopy() as! NSMutableString
         let range = t.rangeOfString("[", options:.BackwardsSearch)
-        // FIXME: Why can't I use NSNotFound here
-        if range.location != NSIntegerMax {
+        if range.location != NSNotFound {
             t.insertString("\(index + 1)/", atIndex: range.location + 1)
             return t as String
         }
@@ -373,14 +365,10 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     // MARK: Actions
     @IBAction func showSections(sender:AnyObject?) {
         if sheet == nil {
-            let majorVersion = systemMajorVersion()
-            let cancelTitle = NSLocalizedString("Cancel", tableName: nil, value: "Cancel", comment: "Cancel button. (General)")
-            sheet = UIActionSheet(title: NSLocalizedString("Please select a category", tableName: nil, value: "Please select a category", comment: "ActionSheet title."), delegate: self, cancelButtonTitle: majorVersion != 7 ? cancelTitle : nil, destructiveButtonTitle: nil)
+            let cancelTitle = localizedString("Cancel", comment: "Cancel button. (General)")
+            sheet = UIActionSheet(title: localizedString("Please select a category", comment: "ActionSheet title."), delegate: self, cancelButtonTitle: cancelTitle, destructiveButtonTitle: nil)
             for key in categories.keys {
                 sheet.addButtonWithTitle(key)
-            }
-            if majorVersion == 7 && userInterfaceIdiom() == .Phone {
-                sheet.addButtonWithTitle(cancelTitle)
             }
         }
         if !sheet.visible {
@@ -408,7 +396,6 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             let settingsNavigationController = UINavigationController(rootViewController: self.settingsViewController)
             settingsNavigationController.modalPresentationStyle = .FormSheet
             self.presentViewController(settingsNavigationController, animated: true) {}
-            //settingsHUD.hide(true)
             hud.hide()
         }
     }
@@ -431,7 +418,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             tableView.setEditing(false, animated: false)
         }
         forumID = categories[key]!
-        posts = []
+        posts = [Post]()
         page = 1
         tableView.reloadData()
         loadPostListForPage(page)
@@ -443,12 +430,12 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         saveValue(humanReadableSize, forKey: ImageCacheSizeKey)
     }
     
-    func fetchImageLinks(fromPostLink postLink:String, completionHandler:(([String]) -> Void), errorHandler:(() -> Void)) {
+    func fetchImageLinks(fromPostLink postLink:String, completionHandler:(([String]) -> Void)?, errorHandler:(() -> Void)?) {
         let request = Alamofire.request(.GET, postLink)
         request.responseData { [unowned self] response in
             var fetchedImages = [String]()
             if response.result.isSuccess {
-                let str:NSString = (response.data?.stringFromGB18030Data())!
+                guard let str = response.data?.stringFromGB18030Data() else { errorHandler?() ; return }
                 var regexString:String
                 if self.forumID == DaguerreForumID {
                     regexString = "input type='image' src='([^\"]+?)'"
@@ -458,53 +445,53 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 }
                 do {
                     let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
-                    let matches = regex.matchesInString(str as String, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.length))
+                    let matches = regex.matchesInString(str, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.characters.count))
                     for match in matches {
-                        var imageLink = str.substringWithRange(match.rangeAtIndex(1))
+                        var imageLink = str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(1)))
                         imageLink = imageLink.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
                         fetchedImages.append(imageLink)
                     }
-                    completionHandler(fetchedImages)
+                    completionHandler?(fetchedImages)
                 }
                 catch let error {
                     print(error)
                 }
             }
             else {
-                errorHandler()
+                errorHandler?()
             }
         }
     }
     
     func setDefaultTitle() {
-        title = NSLocalizedString("Young Beauty", tableName: nil, value: "Young Beauty", comment: "唯美贴图")
+        title = localizedString("Young Beauty", comment: "唯美贴图")
     }
     
     // Don't care if the request is succeeded or not.
-    func fetchImagesToCache(images:[String], withProgressAction progressAction:(Float) -> Void ) {
+    func fetchImagesToCache(images:[String], withProgressAction progressAction:((Float) -> Void)? ) {
         var downloadedImagesCount = 0
         let totalImagesCount = images.count
         for image in images {
             if SDWebImageManager.sharedManager().cachedImageExistsForURL(NSURL(string: image)) {
                 downloadedImagesCount++
                 let progress = Float(downloadedImagesCount) / Float(totalImagesCount)
-                progressAction(progress)
+                progressAction?(progress)
                 continue
             }
             let imageLink = image.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
-            Alamofire.download(.GET, imageLink, destination: { (temporaryURL, response) in
+            Alamofire.download(.GET, imageLink, destination: { (_, _) in
                 // 返回下载目标路径的 fileURL
                 return NSURL.fileURLWithPath(localImagePath(image))
             }) // For Debug
-            .progress { (bytesRead, totalBytesRead, totalBytesExpectedToRead) in
+            .progress { (_, totalBytesRead, totalBytesExpectedToRead) in
                 if (totalBytesRead == totalBytesExpectedToRead) {
                     downloadedImagesCount += 1
                     let progress = Float(downloadedImagesCount) / Float(totalImagesCount)
-                    progressAction(progress)
+                    progressAction?(progress)
                 }
             } // For Debug
-            .response { (request, response, _, error) in
-                //println(response)
+            .response { (_, response, _, _) in
+                //print(response)
             }
         }
     }
@@ -520,15 +507,11 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             // prefetch images
             self.fetchImagesToCache(fetchedImages, withProgressAction:progressAction)
             },
-            errorHandler: {
-            })
+            errorHandler: nil)
     }
     
     // MARK: ActionSheet Delegates
     func actionSheet(actionSheet: UIActionSheet, didDismissWithButtonIndex buttonIndex: Int) {
-        if systemMajorVersion() == 7 && buttonIndex == (actionSheet.numberOfButtons - 1) && userInterfaceIdiom() == .Phone {
-            return
-        }
         if buttonIndex != actionSheet.cancelButtonIndex {
             let key = actionSheet.buttonTitleAtIndex(buttonIndex)
             title = key
@@ -571,7 +554,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             let hud = showHUD()
             SDImageCache.sharedImageCache().clearDiskOnCompletion() { [unowned self] in
                 self.recalculateCacheSize()
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                dispatch_async(dispatch_get_main_queue(), {
                     hud.contentView = PKHUDTextView(text: localizedString("Cache Cleared", comment: "缓存已清除"))
                     hud.hide(afterDelay: 1.0)
                     sender.tableView.reloadData()
@@ -581,7 +564,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         else if specifier.key() == ClearDownloadCacheKey {
             let hud = showHUD()
             clearDownloadCache() {
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                dispatch_async(dispatch_get_main_queue(), {
                     hud.contentView = PKHUDTextView(text: localizedString("Cache Cleared", comment: "缓存已清除"))
                     hud.hide(afterDelay: 1.0)
                     sender.tableView.reloadData()
@@ -621,7 +604,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             else {
                 hud.hide()
                 dispatch_async(dispatch_get_main_queue(), {
-                    hud.contentView = PKHUDTextView(text:NSLocalizedString("Request timeout.", tableName: nil, value: "Request timeout.", comment: "Request timeout hud."))
+                    hud.contentView = PKHUDTextView(text:localizedString("Request timeout.", comment: "Request timeout hud."))
                     hud.hide(afterDelay: 1.0)
                     complete(links: [String]())
                 })

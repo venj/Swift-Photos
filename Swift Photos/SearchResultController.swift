@@ -145,12 +145,12 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
     }
     
     
-    func fetchImageLinks(fromPostLink postLink:String, completionHandler:(([String]) -> Void), errorHandler:(() -> Void)) {
+    func fetchImageLinks(fromPostLink postLink:String, completionHandler:(([String]) -> Void)?, errorHandler:(() -> Void)?) {
         let request = Alamofire.request(.GET, postLink)
         request.responseData { [unowned self] response in
             var fetchedImages = [String]()
             if response.result.isSuccess {
-                let str:NSString = (response.data?.stringFromGB18030Data())!
+                guard let str = response.data?.stringFromGB18030Data() else { errorHandler?() ; return }
                 var regexString:String
                 if self.forumID == 16 {
                     regexString = "input type='image' src='([^\"]+?)'"
@@ -160,19 +160,19 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
                 }
                 do {
                     let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
-                    let matches = regex.matchesInString(str as String, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.length))
+                    let matches = regex.matchesInString(str, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.characters.count))
                     for match in matches {
-                        let imageLink = str.substringWithRange(match.rangeAtIndex(1))
+                        let imageLink = str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(1)))
                         fetchedImages.append(imageLink)
                     }
-                    completionHandler(fetchedImages)
+                    completionHandler?(fetchedImages)
                 }
                 catch let error {
                     print(error)
                 }
             }
             else {
-                errorHandler()
+                errorHandler?()
             }
         }
     }
@@ -218,8 +218,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
     func photoBrowser(photoBrowser: MWPhotoBrowser!, titleForPhotoAtIndex index: UInt) -> String! {
         let t:NSMutableString = self.currentTitle.mutableCopy() as! NSMutableString
         let range = t.rangeOfString("[", options:.BackwardsSearch)
-        // FIXME: Why can't I use NSNotFound here
-        if range.location != NSIntegerMax {
+        if range.location != NSNotFound {
             t.insertString("\(index + 1)/", atIndex: range.location + 1)
             return t as String
         }
