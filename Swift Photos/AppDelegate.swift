@@ -9,19 +9,26 @@
 import UIKit
 import Alamofire
 import MMAppSwitcher
-import LTHPasscodeViewController
 import SDWebImage
+import PasscodeLock
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, MMAppSwitcherDataSource, LTHPasscodeViewControllerDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, MMAppSwitcherDataSource {
                             
     var window: UIWindow?
+
+    lazy var passcodeLockPresenter: PasscodeLockPresenter = {
+        let configuration = PasscodeLockConfiguration()
+        let presenter = PasscodeLockPresenter(mainWindow: self.window, configuration: configuration)
+        return presenter
+    }()
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject : AnyObject]?) -> Bool {
         // Set Application-Wide request timeout
         Manager.sharedInstance.session.configuration.timeoutIntervalForRequest = requestTimeOutForWeb
         MMAppSwitcher.sharedInstance().setDataSource(self)
         updateVersionNumber()
+        passcodeLockPresenter.presentPasscodeLock()
         return true
     }
     
@@ -48,11 +55,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MMAppSwitcherDataSource, 
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
         window?.rootViewController?.dismissViewControllerAnimated(false, completion: nil)
+        passcodeLockPresenter.presentPasscodeLock()
     }
 
     func applicationWillEnterForeground(application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-        showPassLock()
     }
 
     func applicationDidBecomeActive(application: UIApplication) {
@@ -60,13 +67,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MMAppSwitcherDataSource, 
 
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    }
-    
-    // MARK: Helper
-    func showPassLock() {
-        if LTHPasscodeViewController.doesPasscodeExist() {
-            LTHPasscodeViewController.sharedUser().showLockScreenWithAnimation(true, withLogout: false, andLogoutTitle: nil)
-        }
     }
 
     // MARK: MMAppSwitcher

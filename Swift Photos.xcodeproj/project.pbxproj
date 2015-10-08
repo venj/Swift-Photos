@@ -18,6 +18,8 @@
 		2539A3A51AA1A514004A5619 /* CLLinksTableViewTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2539A3A41AA1A514004A5619 /* CLLinksTableViewTableViewController.swift */; };
 		253BF0EB1994A232007B3702 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253BF0EA1994A232007B3702 /* Helpers.swift */; };
 		254486BC1A40151E00F25634 /* SearchResultController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254486BB1A40151E00F25634 /* SearchResultController.swift */; };
+		254EE8CB1BC61854003427CC /* UserDefaultsPasscodeRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254EE8C91BC61854003427CC /* UserDefaultsPasscodeRepository.swift */; settings = {ASSET_TAGS = (); }; };
+		254EE8CC1BC61854003427CC /* PasscodeLockConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254EE8CA1BC61854003427CC /* PasscodeLockConfiguration.swift */; settings = {ASSET_TAGS = (); }; };
 		256EC98F1B4558F100F20F63 /* ProgressTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256EC98E1B4558F100F20F63 /* ProgressTableViewCell.swift */; };
 		258A1F6D199270320080BB60 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 258A1F6F199270320080BB60 /* Localizable.strings */; };
 		258A1F72199270330080BB60 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 258A1F74199270330080BB60 /* InfoPlist.strings */; };
@@ -66,6 +68,8 @@
 		2539A3A41AA1A514004A5619 /* CLLinksTableViewTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLLinksTableViewTableViewController.swift; sourceTree = "<group>"; };
 		253BF0EA1994A232007B3702 /* Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		254486BB1A40151E00F25634 /* SearchResultController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchResultController.swift; sourceTree = "<group>"; };
+		254EE8C91BC61854003427CC /* UserDefaultsPasscodeRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaultsPasscodeRepository.swift; sourceTree = "<group>"; };
+		254EE8CA1BC61854003427CC /* PasscodeLockConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeLockConfiguration.swift; sourceTree = "<group>"; };
 		256EC98E1B4558F100F20F63 /* ProgressTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressTableViewCell.swift; sourceTree = "<group>"; };
 		258A1F6E199270320080BB60 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		258A1F73199270330080BB60 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
@@ -128,6 +132,7 @@
 		25142A951991F36200CB4C93 /* Swift Photos */ = {
 			isa = PBXGroup;
 			children = (
+				254EE8CD1BC61859003427CC /* PasscodeLock Helpers */,
 				25142ABB199203DC00CB4C93 /* Common.swift */,
 				253BF0EA1994A232007B3702 /* Helpers.swift */,
 				25142A981991F36300CB4C93 /* AppDelegate.swift */,
@@ -171,6 +176,15 @@
 				25142AAC1991F36300CB4C93 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		254EE8CD1BC61859003427CC /* PasscodeLock Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				254EE8C91BC61854003427CC /* UserDefaultsPasscodeRepository.swift */,
+				254EE8CA1BC61854003427CC /* PasscodeLockConfiguration.swift */,
+			);
+			name = "PasscodeLock Helpers";
 			sourceTree = "<group>";
 		};
 		A91B2573DAA64693A6C420F9 /* Frameworks */ = {
@@ -343,7 +357,9 @@
 				254486BC1A40151E00F25634 /* SearchResultController.swift in Sources */,
 				253BF0EB1994A232007B3702 /* Helpers.swift in Sources */,
 				25142A9B1991F36300CB4C93 /* MasterViewController.swift in Sources */,
+				254EE8CC1BC61854003427CC /* PasscodeLockConfiguration.swift in Sources */,
 				2539A3A51AA1A514004A5619 /* CLLinksTableViewTableViewController.swift in Sources */,
+				254EE8CB1BC61854003427CC /* UserDefaultsPasscodeRepository.swift in Sources */,
 				25142A991991F36300CB4C93 /* AppDelegate.swift in Sources */,
 				25142ABC199203DC00CB4C93 /* Common.swift in Sources */,
 				256EC98F1B4558F100F20F63 /* ProgressTableViewCell.swift in Sources */,

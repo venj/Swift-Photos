@@ -13,7 +13,7 @@ import MWPhotoBrowser
 import PKHUD
 import InAppSettingsKit
 import SDWebImage
-import LTHPasscodeViewController
+import PasscodeLock
 
 class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSettingsDelegate, MWPhotoBrowserDelegate, UISearchControllerDelegate {
     
@@ -48,7 +48,6 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        (UIApplication.sharedApplication().delegate as! AppDelegate).showPassLock()
         let savedTitle: AnyObject! = getValue(LastViewedSectionTitle)
         if let t: AnyObject = savedTitle {
             categories[(t as! String)] != nil ? title = (savedTitle as! String) : setDefaultTitle()
@@ -398,8 +397,9 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         SDImageCache.sharedImageCache().calculateSizeWithCompletionBlock() { [unowned self] (fileCount:UInt, totalSize:UInt) in
             let humanReadableSize = NSString(format: "%.1f MB", Double(totalSize) / (1024 * 1024))
             saveValue(humanReadableSize, forKey: ImageCacheSizeKey)
-            
-            let status = LTHPasscodeViewController.doesPasscodeExist() ? localizedString("On", comment: "打开") : localizedString("Off", comment: "关闭")
+
+            let passcodeRepo = UserDefaultsPasscodeRepository()
+            let status = passcodeRepo.hasPasscode ? localizedString("On", comment: "打开") : localizedString("Off", comment: "关闭")
             saveValue(status, forKey: PasscodeLockStatus)
             
             self.settingsViewController = IASKAppSettingsViewController(style: .Grouped)
@@ -544,12 +544,28 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     func settingsViewController(sender: IASKAppSettingsViewController!, buttonTappedForSpecifier specifier: IASKSpecifier!) {
         if specifier.key() == PasscodeLockConfig {
-            if !LTHPasscodeViewController.doesPasscodeExist() {
-                LTHPasscodeViewController.sharedUser().showForEnablingPasscodeInViewController(sender, asModal: false)
+            let passcodeVC: PasscodeLockViewController
+            let repository = UserDefaultsPasscodeRepository()
+            let configuration = PasscodeLockConfiguration(repository: repository)
+            if !repository.hasPasscode {
+                passcodeVC = PasscodeLockViewController(state: .SetPasscode, configuration: configuration)
+                passcodeVC.successCallback = { lock in
+                    let status = localizedString("On", comment: "打开")
+                    saveValue(status, forKey: PasscodeLockStatus)
+                }
             }
             else {
-                LTHPasscodeViewController.sharedUser().showForDisablingPasscodeInViewController(sender, asModal: false)
+                passcodeVC = PasscodeLockViewController(state: .RemovePasscode, configuration: configuration)
+                passcodeVC.successCallback = { lock in
+                    lock.repository.deletePasscode()
+                    let status = localizedString("Off", comment: "关闭")
+                    saveValue(status, forKey: PasscodeLockStatus)
+                }
             }
+            passcodeVC.dismissCompletionCallback = {
+                sender.tableView.reloadData()
+            }
+            sender.navigationController?.pushViewController(passcodeVC, animated: true)
         }
         else if specifier.key() == ClearCacheNowKey {
             let hud = showHUD()
