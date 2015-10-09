@@ -23,6 +23,7 @@
 		256EC98F1B4558F100F20F63 /* ProgressTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256EC98E1B4558F100F20F63 /* ProgressTableViewCell.swift */; };
 		258A1F6D199270320080BB60 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 258A1F6F199270320080BB60 /* Localizable.strings */; };
 		258A1F72199270330080BB60 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 258A1F74199270330080BB60 /* InfoPlist.strings */; };
+		259F3A191BC7AD6D00A519CE /* PasscodeLock.strings in Resources */ = {isa = PBXBuildFile; fileRef = 259F3A1B1BC7AD6D00A519CE /* PasscodeLock.strings */; };
 		25BA65541BC3FD9A00DDC583 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 25BA65531BC3FD9A00DDC583 /* Launch Screen.storyboard */; settings = {ASSET_TAGS = (); }; };
 		9A873FF76EFF399E66BA6BBE /* Pods_Swift_Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACB431A641C67ABA8F992A31 /* Pods_Swift_Photos.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
@@ -75,6 +76,8 @@
 		258A1F73199270330080BB60 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		258A1F7A199272A00080BB60 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		258A1F7C199272D50080BB60 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		259F3A1A1BC7AD6D00A519CE /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/PasscodeLock.strings; sourceTree = "<group>"; };
+		259F3A1D1BC7AD7300A519CE /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/PasscodeLock.strings"; sourceTree = "<group>"; };
 		25A22615199CE458008ACB70 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		25BA65531BC3FD9A00DDC583 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		ACB431A641C67ABA8F992A31 /* Pods_Swift_Photos.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Swift_Photos.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -152,6 +155,7 @@
 		25142A961991F36300CB4C93 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				259F3A1B1BC7AD6D00A519CE /* PasscodeLock.strings */,
 				251B99E31999B13B00F8A67A /* InAppSettings.bundle */,
 				258A1F74199270330080BB60 /* InfoPlist.strings */,
 				258A1F6F199270320080BB60 /* Localizable.strings */,
@@ -289,6 +293,7 @@
 				258A1F6D199270320080BB60 /* Localizable.strings in Resources */,
 				251B99E41999B13B00F8A67A /* InAppSettings.bundle in Resources */,
 				25142AA21991F36300CB4C93 /* Images.xcassets in Resources */,
+				259F3A191BC7AD6D00A519CE /* PasscodeLock.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -413,6 +418,15 @@
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
+		259F3A1B1BC7AD6D00A519CE /* PasscodeLock.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				259F3A1A1BC7AD6D00A519CE /* Base */,
+				259F3A1D1BC7AD7300A519CE /* zh-Hans */,
+			);
+			name = PasscodeLock.strings;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -451,7 +465,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -487,7 +501,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;

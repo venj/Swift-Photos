@@ -3,7 +3,7 @@
 
 **项目已经兼容Swift 2.0，需要Xcode 7+编译。**
 
-美图欣赏利器。
+美图欣赏利器。Deployment Target现在最低为iOS 8.1。
 
 编译
 ----

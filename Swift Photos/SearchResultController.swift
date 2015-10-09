@@ -10,6 +10,7 @@ import UIKit
 import Alamofire
 import MWPhotoBrowser
 import SDWebImage
+import FlatUIColors
 
 class SearchResultController: UITableViewController, UISearchResultsUpdating, MWPhotoBrowserDelegate {
     
@@ -55,7 +56,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
         
         let link = posts[indexPath.row].link
         if imagesCached(forPostLink: link) {
-            cell.textLabel?.textColor = UIColor.iOS8darkBlueColor()
+            cell.textLabel?.textColor = FlatUIColors.belizeHoleColor()
         }
         else {
             cell.textLabel?.textColor = UIColor.blackColor()

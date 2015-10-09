@@ -1,10 +1,8 @@
 PODS:
   - Alamofire (3.0.0-beta.3)
   - DACircularProgress (2.3.1)
-  - HexColors (2.2.1)
+  - FlatUIColors (0.3.0)
   - InAppSettingsKit (2.6)
-  - iOS8Colors (0.1.2):
-    - HexColors (~> 2.2.1)
   - MBProgressHUD (0.9.1)
   - MMAppSwitcher (0.2.0)
   - MWPhotoBrowser (2.1.1):
@@ -20,8 +18,8 @@ PODS:
 
 DEPENDENCIES:
   - Alamofire (~> 3.0.0-beta.3)
+  - FlatUIColors (from `https://github.com/brynbellomy/FlatUIColors.git`)
   - InAppSettingsKit (~> 2.6)
-  - iOS8Colors (~> 0.1.2)
   - MMAppSwitcher (~> 0.2.0)
   - MWPhotoBrowser (~> 2.1.1)
   - PasscodeLock (from `https://github.com/ziogaschr/SwiftPasscodeLock.git`, branch
@@ -31,11 +29,16 @@ DEPENDENCIES:
   - SDWebImage (~> 3.7.2)
 
 EXTERNAL SOURCES:
+  FlatUIColors:
+    :git: https://github.com/brynbellomy/FlatUIColors.git
   PasscodeLock:
     :branch: cocoapods-swift2
     :git: https://github.com/ziogaschr/SwiftPasscodeLock.git
 
 CHECKOUT OPTIONS:
+  FlatUIColors:
+    :commit: 432438324267fdf356df8c9665126942e76b0653
+    :git: https://github.com/brynbellomy/FlatUIColors.git
   PasscodeLock:
     :commit: 0502dcfa18554440d885cfec3bf4de4e977ad686
     :git: https://github.com/ziogaschr/SwiftPasscodeLock.git
@@ -43,9 +46,8 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   Alamofire: c89149e58431f6f94527e8c01f920456afe39bd0
   DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
-  HexColors: abfd172e329dab59888614ccba6f216cec59289d
+  FlatUIColors: 99c998119dc370e8e141d498d3a23dbed43c1d1c
   InAppSettingsKit: cc56d3ec45f11352a16d5b210da8a3fa1b9d05ed
-  iOS8Colors: 1f6023790704b9119727bf14408182ca33faf31b
   MBProgressHUD: c47f2c166c126cf2ce36498d80f33e754d4e93ad
   MMAppSwitcher: 6e813046b201593d1a1d06188a6f6336f06b7be2
   MWPhotoBrowser: ba0d0c09ffda3a7ea10093518738c502c1c7141c

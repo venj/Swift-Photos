@@ -14,6 +14,7 @@ import PKHUD
 import InAppSettingsKit
 import SDWebImage
 import PasscodeLock
+import FlatUIColors
 
 class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSettingsDelegate, MWPhotoBrowserDelegate, UISearchControllerDelegate {
     
@@ -211,7 +212,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         let post = posts[indexPath.row]
         let link = post.link
         if imagesCached(forPostLink: link) {
-            cell.textLabel?.textColor = UIColor.iOS8darkBlueColor()
+            cell.textLabel?.textColor = FlatUIColors.belizeHoleColor()
         }
         else {
             cell.textLabel?.textColor = UIColor.blackColor()
@@ -306,7 +307,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 tableView.setEditing(false, animated: true)
             }
         }
-        preloadAction.backgroundColor = UIColor.iOS8purpleColor()
+        preloadAction.backgroundColor = FlatUIColors.wisteriaColor()
         //Save
         let link = posts[indexPath.row].link
         let saveAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: localizedString("Save", comment: "Save Button.")) { [unowned self] (_, indexPath) in
@@ -329,7 +330,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 tableView.setEditing(false, animated: true)
             }
         }
-        saveAction.backgroundColor = UIColor.iOS8orangeColor()
+        saveAction.backgroundColor = UIColor.orangeColor()
         return [preloadAction, saveAction]
     }
     

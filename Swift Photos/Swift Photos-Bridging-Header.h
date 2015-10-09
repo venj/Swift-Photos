@@ -9,4 +9,3 @@
 #import <SDWebImage/SDImageCache.h>
 #import <SDWebImage/SDWebImageManager.h>
 #import <MWPhotoBrowser/MWPhotoBrowser.h>
-#import <iOS8Colors/UIColor+iOS8Colors.h>
