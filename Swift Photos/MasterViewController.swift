@@ -528,28 +528,38 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     func settingsViewController(sender: IASKAppSettingsViewController!, buttonTappedForSpecifier specifier: IASKSpecifier!) {
         if specifier.key() == PasscodeLockConfig {
-            let passcodeVC: PasscodeLockViewController
             let repository = UserDefaultsPasscodeRepository()
             let configuration = PasscodeLockConfiguration(repository: repository)
             if !repository.hasPasscode {
-                passcodeVC = PasscodeLockViewController(state: .SetPasscode, configuration: configuration)
+                let passcodeVC = PasscodeLockViewController(state: .SetPasscode, configuration: configuration)
                 passcodeVC.successCallback = { lock in
                     let status = localizedString("On", comment: "打开")
                     saveValue(status, forKey: PasscodeLockStatus)
                 }
+                passcodeVC.dismissCompletionCallback = {
+                    sender.tableView.reloadData()
+                }
+                sender.navigationController?.pushViewController(passcodeVC, animated: true)
             }
             else {
-                passcodeVC = PasscodeLockViewController(state: .RemovePasscode, configuration: configuration)
-                passcodeVC.successCallback = { lock in
-                    lock.repository.deletePasscode()
-                    let status = localizedString("Off", comment: "关闭")
-                    saveValue(status, forKey: PasscodeLockStatus)
-                }
+                let alert = UIAlertController(title: localizedString("Disable passcode", comment: "Disable passcode lock alert title"), message: localizedString("You are going to disable passcode lock. Continue?", comment: "Disable passcode lock alert body"), preferredStyle: .Alert)
+                let confirmAction = UIAlertAction(title: localizedString("Continue", comment: "继续"), style: .Default, handler: { _ in
+                    let passcodeVC = PasscodeLockViewController(state: .RemovePasscode, configuration: configuration)
+                    passcodeVC.successCallback = { lock in
+                        lock.repository.deletePasscode()
+                        let status = localizedString("Off", comment: "关闭")
+                        saveValue(status, forKey: PasscodeLockStatus)
+                    }
+                    passcodeVC.dismissCompletionCallback = {
+                        sender.tableView.reloadData()
+                    }
+                    sender.navigationController?.pushViewController(passcodeVC, animated: true)
+                })
+                alert.addAction(confirmAction)
+                let cancelAction = UIAlertAction(title: localizedString("Cancel", comment: "取消"), style: .Cancel, handler: nil)
+                alert.addAction(cancelAction)
+                sender.presentViewController(alert, animated: true, completion: nil)
             }
-            passcodeVC.dismissCompletionCallback = {
-                sender.tableView.reloadData()
-            }
-            sender.navigationController?.pushViewController(passcodeVC, animated: true)
         }
         else if specifier.key() == ClearCacheNowKey {
             let hud = showHUD()

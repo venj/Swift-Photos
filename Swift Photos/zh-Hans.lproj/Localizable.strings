@@ -69,3 +69,15 @@
 
 /* 保存 */
 "Save" = "保存";
+
+/* 继续 */
+"Continue" = "继续";
+
+/* 取消 */
+"Cancel" = "取消";
+
+/* Disable passcode lock alert title */
+"Disable passcode" = "关闭密码";
+
+/* Disable passcode lock alert body */
+"You are going to disable passcode lock. Continue?" = "您即将关闭密码。是否继续？";

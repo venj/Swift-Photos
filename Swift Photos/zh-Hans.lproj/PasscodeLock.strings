@@ -16,7 +16,7 @@
 
 /* Confirm Passcode State */
 "PasscodeLockConfirmTitle" = "确认密码";
-"PasscodeLockConfirmDescription" = "请在此输入密码。";
+"PasscodeLockConfirmDescription" = "请再次输入密码。";
 
 /* Change Passcode State */
 "PasscodeLockChangeTitle" = "输入旧密码";
