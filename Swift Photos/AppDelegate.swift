@@ -70,8 +70,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MMAppSwitcherDataSource {
 
     // MARK: MMAppSwitcher
     
-    func viewForCard() -> UIView! {
-        let view = UIView()
+    func appSwitcher(appSwitcher: MMAppSwitcher!, viewForCardWithSize size: CGSize) -> UIView! {
+        let frame = CGRectMake(0.0, 0.0, size.width, size.height)
+        let view = UIView(frame: frame)
         view.backgroundColor = UIColor.whiteColor()
         return view
     }
