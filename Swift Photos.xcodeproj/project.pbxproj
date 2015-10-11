@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2504163E1BCA1AE8001D7A32 /* PasscodeLockView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 250416401BCA1AE8001D7A32 /* PasscodeLockView.xib */; };
+		250416431BCA279E001D7A32 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 250416451BCA279E001D7A32 /* Launch Screen.storyboard */; };
 		25142A991991F36300CB4C93 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25142A981991F36300CB4C93 /* AppDelegate.swift */; };
 		25142A9B1991F36300CB4C93 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25142A9A1991F36300CB4C93 /* MasterViewController.swift */; };
 		25142AA01991F36300CB4C93 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 25142A9E1991F36300CB4C93 /* Main.storyboard */; };
@@ -24,7 +26,6 @@
 		258A1F6D199270320080BB60 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 258A1F6F199270320080BB60 /* Localizable.strings */; };
 		258A1F72199270330080BB60 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 258A1F74199270330080BB60 /* InfoPlist.strings */; };
 		259F3A191BC7AD6D00A519CE /* PasscodeLock.strings in Resources */ = {isa = PBXBuildFile; fileRef = 259F3A1B1BC7AD6D00A519CE /* PasscodeLock.strings */; };
-		25BA65541BC3FD9A00DDC583 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 25BA65531BC3FD9A00DDC583 /* Launch Screen.storyboard */; settings = {ASSET_TAGS = (); }; };
 		9A873FF76EFF399E66BA6BBE /* Pods_Swift_Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACB431A641C67ABA8F992A31 /* Pods_Swift_Photos.framework */; };
 /* End PBXBuildFile section */
 
@@ -53,6 +54,10 @@
 
 /* Begin PBXFileReference section */
 		159302F48931E7271AABEB5B /* Pods-Swift Photos.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Swift Photos.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Swift Photos/Pods-Swift Photos.debug.xcconfig"; sourceTree = "<group>"; };
+		2504163F1BCA1AE8001D7A32 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/PasscodeLockView.xib; sourceTree = "<group>"; };
+		250416421BCA1AEB001D7A32 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/PasscodeLockView.strings"; sourceTree = "<group>"; };
+		250416441BCA279E001D7A32 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = "Base.lproj/Launch Screen.storyboard"; sourceTree = "<group>"; };
+		250416471BCA27A0001D7A32 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Launch Screen.strings"; sourceTree = "<group>"; };
 		25142A931991F36200CB4C93 /* Swift Photos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Swift Photos.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		25142A971991F36300CB4C93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		25142A981991F36300CB4C93 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -79,7 +84,6 @@
 		259F3A1A1BC7AD6D00A519CE /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/PasscodeLock.strings; sourceTree = "<group>"; };
 		259F3A1D1BC7AD7300A519CE /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/PasscodeLock.strings"; sourceTree = "<group>"; };
 		25A22615199CE458008ACB70 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
-		25BA65531BC3FD9A00DDC583 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		ACB431A641C67ABA8F992A31 /* Pods_Swift_Photos.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Swift_Photos.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B78DB1C76E42E858E46576DC /* Pods-Swift Photos.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Swift Photos.release.xcconfig"; path = "Pods/Target Support Files/Pods-Swift Photos/Pods-Swift Photos.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -144,7 +148,8 @@
 				256EC98E1B4558F100F20F63 /* ProgressTableViewCell.swift */,
 				2539A3A41AA1A514004A5619 /* CLLinksTableViewTableViewController.swift */,
 				254486BB1A40151E00F25634 /* SearchResultController.swift */,
-				25BA65531BC3FD9A00DDC583 /* Launch Screen.storyboard */,
+				250416401BCA1AE8001D7A32 /* PasscodeLockView.xib */,
+				250416451BCA279E001D7A32 /* Launch Screen.storyboard */,
 				25142A9E1991F36300CB4C93 /* Main.storyboard */,
 				25142AA11991F36300CB4C93 /* Images.xcassets */,
 				25142A961991F36300CB4C93 /* Supporting Files */,
@@ -287,9 +292,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				25BA65541BC3FD9A00DDC583 /* Launch Screen.storyboard in Resources */,
+				250416431BCA279E001D7A32 /* Launch Screen.storyboard in Resources */,
 				25142AA01991F36300CB4C93 /* Main.storyboard in Resources */,
 				258A1F72199270330080BB60 /* InfoPlist.strings in Resources */,
+				2504163E1BCA1AE8001D7A32 /* PasscodeLockView.xib in Resources */,
 				258A1F6D199270320080BB60 /* Localizable.strings in Resources */,
 				251B99E41999B13B00F8A67A /* InAppSettings.bundle in Resources */,
 				25142AA21991F36300CB4C93 /* Images.xcassets in Resources */,
@@ -391,6 +397,24 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		250416401BCA1AE8001D7A32 /* PasscodeLockView.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2504163F1BCA1AE8001D7A32 /* Base */,
+				250416421BCA1AEB001D7A32 /* zh-Hans */,
+			);
+			name = PasscodeLockView.xib;
+			sourceTree = "<group>";
+		};
+		250416451BCA279E001D7A32 /* Launch Screen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				250416441BCA279E001D7A32 /* Base */,
+				250416471BCA27A0001D7A32 /* zh-Hans */,
+			);
+			name = "Launch Screen.storyboard";
+			sourceTree = "<group>";
+		};
 		25142A9E1991F36300CB4C93 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
