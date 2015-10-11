@@ -13,7 +13,6 @@ pod 'MMAppSwitcher', :git => 'https://github.com/venj/MMAppSwitcher.git', :branc
 pod 'InAppSettingsKit', '~> 2.6'
 pod 'MWPhotoBrowser', '~> 2.1.1'
 pod 'SDWebImage', '~> 3.7.2'
-pod 'Reveal-iOS-SDK', '~> 1.5.1', :configurations => ['Debug']
 end
 
 target "Swift PhotosTests" do

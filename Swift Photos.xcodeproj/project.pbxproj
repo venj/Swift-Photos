@@ -57,7 +57,6 @@
 		2504163F1BCA1AE8001D7A32 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/PasscodeLockView.xib; sourceTree = "<group>"; };
 		250416421BCA1AEB001D7A32 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/PasscodeLockView.strings"; sourceTree = "<group>"; };
 		250416441BCA279E001D7A32 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = "Base.lproj/Launch Screen.storyboard"; sourceTree = "<group>"; };
-		250416471BCA27A0001D7A32 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Launch Screen.strings"; sourceTree = "<group>"; };
 		25142A931991F36200CB4C93 /* Swift Photos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Swift Photos.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		25142A971991F36300CB4C93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		25142A981991F36300CB4C93 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -410,7 +409,6 @@
 			isa = PBXVariantGroup;
 			children = (
 				250416441BCA279E001D7A32 /* Base */,
-				250416471BCA27A0001D7A32 /* zh-Hans */,
 			);
 			name = "Launch Screen.storyboard";
 			sourceTree = "<group>";
@@ -545,7 +543,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "me.venj.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "5921dad5-5744-4711-90f6-505bab5c9d3c";
+				PROVISIONING_PROFILE = "b7621b5a-408b-4e9b-992f-ea0eaa7b2cdb";
 				SWIFT_OBJC_BRIDGING_HEADER = "Swift Photos/Swift Photos-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -565,7 +563,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "me.venj.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "76654030-a6ea-4247-a87c-3bb00c40f4bc";
+				PROVISIONING_PROFILE = "cb358a3d-2559-4bec-89d1-bc5ee3b63987";
 				SWIFT_OBJC_BRIDGING_HEADER = "Swift Photos/Swift Photos-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

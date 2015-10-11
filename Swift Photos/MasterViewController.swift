@@ -32,7 +32,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     var resultsController:SearchResultController!
     var myActivity : NSUserActivity!
     private var settingsController : UIViewController?
-    
+
     let categories = [localizedString("Daguerre's Flag", comment: "達蓋爾的旗幟"): 16,
                       localizedString("Young Beauty", comment: "唯美贴图"): 53,
                       localizedString("Sexy Beauty", comment: "激情贴图"): 70,
@@ -42,6 +42,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                       localizedString("Celebrities", comment: "明星八卦"): 79,
                       localizedString("Alternatives", comment: "另类贴图"): 60]
 
+    // MARK: - ViewController life cycle
     override func awakeFromNib() {
         super.awakeFromNib()
     }
@@ -447,7 +448,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                     let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
                     let matches = regex.matchesInString(str, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.characters.count))
                     for match in matches {
-                        var imageLink = str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(2))!)
+                        var imageLink = str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(self.forumID == DaguerreForumID ? 2 : 1))!)
                         imageLink = imageLink.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
                         fetchedImages.append(imageLink)
                     }

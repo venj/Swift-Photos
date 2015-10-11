@@ -35,7 +35,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MMAppSwitcherDataSource {
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-        MMAppSwitcher.sharedInstance().setNeedsUpdate()
+        let repository = UserDefaultsPasscodeRepository()
+        if !repository.hasPasscode {
+            MMAppSwitcher.sharedInstance().setNeedsUpdate()
+        }
         
         if NSUserDefaults.standardUserDefaults().objectForKey(ClearCacheOnExitKey)?.boolValue == true {
             let app = UIApplication.sharedApplication()
@@ -69,13 +72,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MMAppSwitcherDataSource {
     }
 
     // MARK: MMAppSwitcher
-
-    func appSwitcher(appSwitcher: MMAppSwitcher!, viewForCardWithSize size: CGSize) -> UIView! {
-        let frame = CGRectMake(0.0, 0.0, size.width, size.height)
-        let view = UIView(frame: frame)
-        view.backgroundColor = UIColor.whiteColor()
-        return view
-    }
 
     func viewForCard() -> UIView! {
         let view = UIView()
