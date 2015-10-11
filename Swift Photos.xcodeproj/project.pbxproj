@@ -25,7 +25,7 @@
 		258A1F72199270330080BB60 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 258A1F74199270330080BB60 /* InfoPlist.strings */; };
 		259F3A191BC7AD6D00A519CE /* PasscodeLock.strings in Resources */ = {isa = PBXBuildFile; fileRef = 259F3A1B1BC7AD6D00A519CE /* PasscodeLock.strings */; };
 		25BA65541BC3FD9A00DDC583 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 25BA65531BC3FD9A00DDC583 /* Launch Screen.storyboard */; settings = {ASSET_TAGS = (); }; };
-		9A873FF76EFF399E66BA6BBE /* Pods_Swift_Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACB431A641C67ABA8F992A31 /* Pods_Swift_Photos.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		9A873FF76EFF399E66BA6BBE /* Pods_Swift_Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACB431A641C67ABA8F992A31 /* Pods_Swift_Photos.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */

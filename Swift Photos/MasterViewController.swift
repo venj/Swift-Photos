@@ -438,7 +438,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                 guard let str = response.data?.stringFromGB18030Data() else { errorHandler?() ; return }
                 var regexString:String
                 if self.forumID == DaguerreForumID {
-                    regexString = "input.+?src='([^\"]+?)'"
+                    regexString = "input.+?src=('|\")([^\"']+?)('|\")"
                 }
                 else {
                     regexString = "img src=\"([^\"]+)\" .+? onload"
@@ -447,7 +447,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
                     let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
                     let matches = regex.matchesInString(str, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.characters.count))
                     for match in matches {
-                        var imageLink = str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(1))!)
+                        var imageLink = str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(2))!)
                         imageLink = imageLink.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
                         fetchedImages.append(imageLink)
                     }

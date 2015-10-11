@@ -4,12 +4,12 @@ use_frameworks!
 
 target "Swift Photos" do
 # Swift
-pod 'Alamofire', '~> 3.0.0-beta.3'
+pod 'Alamofire', '~> 3.0.0'
 pod 'PKHUD', '~> 2.2.3'
 pod 'PasscodeLock', :git => 'https://github.com/ziogaschr/SwiftPasscodeLock.git', :branch => 'cocoapods-swift2'
 pod 'FlatUIColors', :git => 'https://github.com/brynbellomy/FlatUIColors.git'
 # Objective-C
-pod 'MMAppSwitcher', '~> 0.2.0'
+pod 'MMAppSwitcher', :git => 'https://github.com/venj/MMAppSwitcher.git', :branch => "master"
 pod 'InAppSettingsKit', '~> 2.6'
 pod 'MWPhotoBrowser', '~> 2.1.1'
 pod 'SDWebImage', '~> 3.7.2'

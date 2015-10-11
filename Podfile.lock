@@ -1,10 +1,10 @@
 PODS:
-  - Alamofire (3.0.0-beta.3)
+  - Alamofire (3.0.0)
   - DACircularProgress (2.3.1)
   - FlatUIColors (0.3.0)
   - InAppSettingsKit (2.6)
   - MBProgressHUD (0.9.1)
-  - MMAppSwitcher (0.2.0)
+  - MMAppSwitcher (0.1.0)
   - MWPhotoBrowser (2.1.1):
     - DACircularProgress (~> 2.3)
     - MBProgressHUD (~> 0.9)
@@ -17,10 +17,10 @@ PODS:
   - SDWebImage/Core (3.7.3)
 
 DEPENDENCIES:
-  - Alamofire (~> 3.0.0-beta.3)
+  - Alamofire (~> 3.0.0)
   - FlatUIColors (from `https://github.com/brynbellomy/FlatUIColors.git`)
   - InAppSettingsKit (~> 2.6)
-  - MMAppSwitcher (~> 0.2.0)
+  - MMAppSwitcher (from `https://github.com/venj/MMAppSwitcher.git`, branch `master`)
   - MWPhotoBrowser (~> 2.1.1)
   - PasscodeLock (from `https://github.com/ziogaschr/SwiftPasscodeLock.git`, branch
     `cocoapods-swift2`)
@@ -31,6 +31,9 @@ DEPENDENCIES:
 EXTERNAL SOURCES:
   FlatUIColors:
     :git: https://github.com/brynbellomy/FlatUIColors.git
+  MMAppSwitcher:
+    :branch: master
+    :git: https://github.com/venj/MMAppSwitcher.git
   PasscodeLock:
     :branch: cocoapods-swift2
     :git: https://github.com/ziogaschr/SwiftPasscodeLock.git
@@ -39,21 +42,24 @@ CHECKOUT OPTIONS:
   FlatUIColors:
     :commit: 432438324267fdf356df8c9665126942e76b0653
     :git: https://github.com/brynbellomy/FlatUIColors.git
+  MMAppSwitcher:
+    :commit: 3aee031a6a425dcc46f46cae50215d7bd023547c
+    :git: https://github.com/venj/MMAppSwitcher.git
   PasscodeLock:
     :commit: 0502dcfa18554440d885cfec3bf4de4e977ad686
     :git: https://github.com/ziogaschr/SwiftPasscodeLock.git
 
 SPEC CHECKSUMS:
-  Alamofire: c89149e58431f6f94527e8c01f920456afe39bd0
+  Alamofire: b61782387f81bcc538a0284cf2bb5d7995cd0a80
   DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
   FlatUIColors: 99c998119dc370e8e141d498d3a23dbed43c1d1c
   InAppSettingsKit: cc56d3ec45f11352a16d5b210da8a3fa1b9d05ed
   MBProgressHUD: c47f2c166c126cf2ce36498d80f33e754d4e93ad
-  MMAppSwitcher: 6e813046b201593d1a1d06188a6f6336f06b7be2
+  MMAppSwitcher: d90bcd02e336d0beb91b2ba8adaa282dd5838378
   MWPhotoBrowser: ba0d0c09ffda3a7ea10093518738c502c1c7141c
   PasscodeLock: 8c3df88c757658f12868abb5b741be2d7b444622
   PKHUD: 47339a6fdb917015ce79b1a0480e31ea6955c11d
   Reveal-iOS-SDK: c9c55cad2729c85f6ced415f1b21857c9a2d8ef9
   SDWebImage: 1d2b1a1efda1ade1b00b6f8498865f8ddedc8a84
 
-COCOAPODS: 0.38.2
+COCOAPODS: 0.39.0
