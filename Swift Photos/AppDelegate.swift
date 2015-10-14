@@ -25,6 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MMAppSwitcherDataSource {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject : AnyObject]?) -> Bool {
         // Set Application-Wide request timeout
+        UIApplication.sharedApplication().statusBarStyle = .LightContent
         Manager.sharedInstance.session.configuration.timeoutIntervalForRequest = requestTimeOutForWeb
         MMAppSwitcher.sharedInstance().setDataSource(self)
         updateVersionNumber()

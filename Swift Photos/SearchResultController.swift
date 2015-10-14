@@ -69,10 +69,8 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
         filteredPosts.removeAll(keepCapacity: true)
         let searchString = searchController.searchBar.text
         for post in posts {
-            let range = post.title.rangeOfString(searchString!, options: NSStringCompareOptions.CaseInsensitiveSearch)
-            if range != nil {
-                self.filteredPosts.append(post)
-            }
+            guard let _ = post.title.rangeOfString(searchString!, options: NSStringCompareOptions.CaseInsensitiveSearch) else { continue }
+            self.filteredPosts.append(post)
         }
         self.tableView.reloadData()
     }
@@ -154,7 +152,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
                 guard let str = response.data?.stringFromGB18030Data() else { errorHandler?() ; return }
                 var regexString:String
                 if self.forumID == 16 {
-                    regexString = "input type='image' src='([^\"]+?)'"
+                    regexString = "input.+?src=('|\")([^\"']+?)('|\")"
                 }
                 else {
                     regexString = "img src=\"([^\"]+)\" .+? onload"
@@ -163,7 +161,8 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
                     let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
                     let matches = regex.matchesInString(str, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.characters.count))
                     for match in matches {
-                        let imageLink = str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(1))!)
+                        var imageLink = str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(self.forumID == DaguerreForumID ? 2 : 1))!)
+                        imageLink = imageLink.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
                         fetchedImages.append(imageLink)
                     }
                     completionHandler?(fetchedImages)

@@ -7,6 +7,7 @@ target "Swift Photos" do
 pod 'Alamofire', '~> 3.0.0'
 pod 'PKHUD', '~> 2.2.3'
 pod 'PasscodeLock', :git => 'https://github.com/ziogaschr/SwiftPasscodeLock.git', :branch => 'cocoapods-swift2'
+pod 'UIColor_Hex_Swift', '~> 1.2' # Color hex string to UIColor
 pod 'FlatUIColors', :git => 'https://github.com/brynbellomy/FlatUIColors.git'
 # Objective-C
 pod 'MMAppSwitcher', :git => 'https://github.com/venj/MMAppSwitcher.git', :branch => "master"

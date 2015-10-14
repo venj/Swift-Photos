@@ -72,16 +72,23 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
         searchBar.sizeToFit()
         searchBar.placeholder = localizedString("Search loaded posts", comment: "搜索已加载的帖子")
 
+        navigationController?.navigationBar.barTintColor = UIColor(rgba: "#E56C9D")
+        navigationController?.navigationBar.tintColor = UIColor.whiteColor()
+        navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.whiteColor()]
+
+
+        //navigationItem.
+
         if #available(iOS 9, *) {
             tableView.cellLayoutMarginsFollowReadableWidth = false
         }
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
+
     func parseDaguerreLink() {
         let link = getDaguerreLink(self.forumID)
         let hud = PKHUD.sharedHUD

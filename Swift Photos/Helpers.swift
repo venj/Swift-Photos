@@ -186,3 +186,10 @@ extension String {
         return url.URLByAppendingPathComponent(component).absoluteString
     }
 }
+
+// Statusbar color navigationcontroller
+extension UINavigationController {
+    override public func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return self.topViewController!.preferredStatusBarStyle();
+    }
+}

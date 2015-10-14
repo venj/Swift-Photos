@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import FlatUIColors
 
 class ProgressTableViewCell: UITableViewCell {
     var progress:Float = 0 {
@@ -19,10 +18,10 @@ class ProgressTableViewCell: UITableViewCell {
                 self.progressView.alpha = 0.0
             }
             if progress >= 1.0 {
-                self.progressView.tintColor = FlatUIColors.nephritisColor()
+                self.progressView.tintColor = UIColor.flatGreenColor()
             }
             else {
-                self.progressView.tintColor = FlatUIColors.belizeHoleColor()
+                self.progressView.tintColor = UIColor.flatDarkBlueColor()
             }
             self.progressView.progress = progress
         }
