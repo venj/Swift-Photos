@@ -16,7 +16,7 @@ import SDWebImage
 import PasscodeLock
 import FlatUIColors
 
-class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSettingsDelegate, MWPhotoBrowserDelegate, UISearchControllerDelegate {
+class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhotoBrowserDelegate, UISearchControllerDelegate, UIPopoverPresentationControllerDelegate {
     
     var posts:[Post] = [Post]()
     var filteredPosts:[Post] = [Post]()
@@ -372,16 +372,19 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
     
     // MARK: Actions
     @IBAction func showSections(sender:AnyObject?) {
-        if sheet == nil {
-            let cancelTitle = localizedString("Cancel", comment: "Cancel button. (General)")
-            sheet = UIActionSheet(title: localizedString("Please select a category", comment: "ActionSheet title."), delegate: self, cancelButtonTitle: cancelTitle, destructiveButtonTitle: nil)
-            for key in categories.keys {
-                sheet.addButtonWithTitle(key)
-            }
+        let sectionsController = UIAlertController(title: localizedString("Please select a category", comment: "ActionSheet title."), message: "", preferredStyle: .ActionSheet)
+        sectionsController.popoverPresentationController?.delegate = self
+        for key in categories.keys {
+            let act = UIAlertAction(title: key, style: .Default, handler: { [unowned self] _ in
+                saveValue(key, forKey: LastViewedSectionTitle)
+                self.title = key
+                self.loadFirstPageForKey(key)
+            })
+            sectionsController.addAction(act)
         }
-        if !sheet.visible {
-            sheet.showFromBarButtonItem(navigationItem.rightBarButtonItems![1] , animated: true)
-        }
+        let cancelAction = UIAlertAction(title: localizedString("Cancel", comment: "Cancel button. (General)"), style: .Cancel, handler: nil)
+        sectionsController.addAction(cancelAction)
+        self.presentViewController(sectionsController, animated: true, completion:nil)
     }
     
     @IBAction func showSettings(sender:AnyObject?) {
@@ -419,7 +422,12 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             loadFirstPageForKey(key!)
         }
     }
-    
+
+    // MARK: - UIPopoverPresentationControllerDelegate
+    func prepareForPopoverPresentation(popoverPresentationController: UIPopoverPresentationController) {
+        popoverPresentationController.barButtonItem = navigationItem.rightBarButtonItems?[1]
+    }
+
     // MARK: Helper
     func loadFirstPageForKey(key:String) {
         if tableView.editing {
@@ -517,17 +525,7 @@ class MasterViewController: UITableViewController, UIActionSheetDelegate, IASKSe
             },
             errorHandler: nil)
     }
-    
-    // MARK: ActionSheet Delegates
-    func actionSheet(actionSheet: UIActionSheet, didDismissWithButtonIndex buttonIndex: Int) {
-        if buttonIndex != actionSheet.cancelButtonIndex {
-            let key = actionSheet.buttonTitleAtIndex(buttonIndex)
-            title = key
-            saveValue(key!, forKey: LastViewedSectionTitle)
-            loadFirstPageForKey(key!)
-        }
-    }
-    
+
     // MARK: Settings
     func settingsViewControllerDidEnd(sender: IASKAppSettingsViewController!) {
         sender.dismissViewControllerAnimated(true) {}
