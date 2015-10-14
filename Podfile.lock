@@ -11,6 +11,7 @@ PODS:
     - SDWebImage (!= 3.7.2, ~> 3.7)
   - PasscodeLock (1.0.1)
   - PKHUD (2.2.3)
+  - Reveal-iOS-SDK (1.5.1)
   - SDWebImage (3.7.3):
     - SDWebImage/Core (= 3.7.3)
   - SDWebImage/Core (3.7.3)
@@ -25,6 +26,7 @@ DEPENDENCIES:
   - PasscodeLock (from `https://github.com/ziogaschr/SwiftPasscodeLock.git`, branch
     `cocoapods-swift2`)
   - PKHUD (~> 2.2.3)
+  - Reveal-iOS-SDK (~> 1.5.1)
   - SDWebImage (~> 3.7.2)
   - UIColor_Hex_Swift (~> 1.2)
 
@@ -59,6 +61,7 @@ SPEC CHECKSUMS:
   MWPhotoBrowser: ba0d0c09ffda3a7ea10093518738c502c1c7141c
   PasscodeLock: 8c3df88c757658f12868abb5b741be2d7b444622
   PKHUD: 47339a6fdb917015ce79b1a0480e31ea6955c11d
+  Reveal-iOS-SDK: c9c55cad2729c85f6ced415f1b21857c9a2d8ef9
   SDWebImage: 1d2b1a1efda1ade1b00b6f8498865f8ddedc8a84
   UIColor_Hex_Swift: a1eff7380ffffed64b1540268e958ecdaa5fbd72
 
