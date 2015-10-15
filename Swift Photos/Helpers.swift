@@ -185,6 +185,17 @@ extension String {
         }
         return url.URLByAppendingPathComponent(component).absoluteString
     }
+
+    // More generic encoding replacement
+    func htmlEncodingCleanup() -> String {
+        let encodings = ["gbk", "GBK", "gb2312", "GB2312", "gb18030", "GB18030"]
+        var s = self
+        for enc in encodings {
+            if !s.containsString(enc) { continue }
+            s = s.stringByReplacingOccurrencesOfString(enc, withString: "utf-8")
+        }
+        return s
+    }
 }
 
 // Statusbar color navigationcontroller

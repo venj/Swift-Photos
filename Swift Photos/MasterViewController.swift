@@ -99,19 +99,18 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         request.responseData { [unowned self] response in
             if response.result.isSuccess {
                 guard let str = response.data?.stringFromGB18030Data() else { return }
-                let regexString = "<a href=\"([^\"]+)\">達蓋爾的旗幟</a>"
+                let xpath: String = "//h2/a"
                 do {
-                    let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
-                    let matches = regex.matchesInString(str, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.characters.count))
-                    if matches.count > 0 {
-                        let match = matches[0]
-                        self.daguerreLink = link + str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(1))!)
+                    let document = try HTMLDocument(string: str.htmlEncodingCleanup())
+                    for element in document.xpath(xpath) {
+                        guard let path = element["href"] else { continue }
+                        if element.stringValue == "達蓋爾的旗幟" {
+                            self.daguerreLink = link + path
+                            break
+                        }
                     }
                 }
-                catch let error {
-                    print(error)
-                }
-                hud.hide()
+                catch _ {}
                 self.loadPostList(self.daguerreLink, forPage: 1)
             }
             else {
@@ -145,37 +144,32 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         request.responseData { [unowned self] response in
             if (response.result.isSuccess) {
                 guard let str = response.data?.stringFromGB18030Data() else { return }
-                var regexString:String
-                var linkIndex = 0, titleIndex = 0
-                if self.forumID == DaguerreForumID {
-                    regexString = "[^\\d\\s]\\s+<h3><a href=\"(htm_data[^\"]+?)\"[^>]+?>(<font [^>]+?>)?(.+?(\\[\\d+[^\\[]+?\\])?)(</font>)?</a></h3>"
-                    linkIndex = 1
-                    titleIndex = 3
-                }
-                else {
-                    regexString = "<a href=\"(viewthread\\.php[^\"]+?)\">([^\\d<]+?\\d+[^\\d]+?)</a>"
-                    linkIndex = 1
-                    titleIndex = 2
-                }
+                let xpath: String = "//a"
                 do {
-                    let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
-                    let matches = regex.matchesInString(str, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.characters.count))
+                    let document = try HTMLDocument(string: str.htmlEncodingCleanup())
+                    let elements = document.xpath(xpath)
                     var indexPathes:[NSIndexPath] = [NSIndexPath]()
                     let cellCount = self.posts.count
-                    for var i = 0; i < matches.count; ++i {
-                        let match: AnyObject = matches[i]
-                        let link = getDaguerreLink(self.forumID) + str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(linkIndex))!)
-                        let title = str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(titleIndex))!)
-                        self.posts.append(Post(title: title, link: link))
-                        indexPathes.append(NSIndexPath(forRow:cellCount + i, inSection: 0))
-                        self.resultsController.posts = self.posts // Assignment
+                    var i = 0
+                    for element in elements {
+                        guard let link = element["href"] else { continue }
+                        let filterString = ( (self.forumID == DaguerreForumID) ? "htm_data" : "viewthread.php" )
+                        guard let _ = link.rangeOfString(filterString) else { continue }
+                        let title = element.stringValue
+                        //FIXME: 4 is much based on experience, and ↑ either
+                        if title.characters.count < 4 { continue }
+                        if title.containsString("↑") { continue }
+                        self.posts.append(Post(title: title, link: getDaguerreLink(self.forumID) + link))
+                        // Note the i++ here. It is much of a hack just for save one line.
+                        indexPathes.append(NSIndexPath(forRow:cellCount + (i++), inSection: 0))
                     }
-                    hud.hide()
+                    self.resultsController.posts = self.posts // Assignment
                     self.tableView.insertRowsAtIndexPaths(indexPathes, withRowAnimation:.Top)
                     self.page++
+                    hud.hide()
                 }
-                catch let error {
-                    print(error)
+                catch _ {
+                    hud.hide() // If any exception, hide the hud
                 }
             }
             else {
@@ -458,7 +452,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                 guard let str = response.data?.stringFromGB18030Data() else { errorHandler?() ; return }
                 let xpath: String = ( (self.forumID == DaguerreForumID) ? "//input" : "//img" )
                 do {
-                    let document = try HTMLDocument(string: self.process(str))
+                    let document = try HTMLDocument(string: str.htmlEncodingCleanup())
                     let elements = document.xpath(xpath)
                     for element in elements {
                         if self.forumID != DaguerreForumID && element["onload"] == nil { continue }
@@ -521,18 +515,6 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             self.fetchImagesToCache(fetchedImages, withProgressAction:progressAction)
             },
             errorHandler: nil)
-    }
-
-    // More generic encoding replacement
-    func process(string: String) -> String {
-        var str = string
-        let encodings = ["gbk", "GBK", "gb2312", "GB2312", "gb18030", "GB18030"]
-        for enc in encodings {
-            guard let range = string.rangeOfString(enc) else { continue }
-            str.replaceRange(range, with: "utf-8")
-            break
-        }
-        return str
     }
 
     // MARK: Settings

@@ -11,6 +11,7 @@ import Alamofire
 import MWPhotoBrowser
 import SDWebImage
 import FlatUIColors
+import Fuzi
 
 class SearchResultController: UITableViewController, UISearchResultsUpdating, MWPhotoBrowserDelegate {
     
@@ -77,7 +78,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
     
     // MARK: - Table View Delegate
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let link = posts[indexPath.row].link
+        let link = filteredPosts[indexPath.row].link
         self.images = []
         // Local Data
         if imagesCached(forPostLink: link) {
@@ -142,34 +143,26 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
                 cell.accessoryView = nil
         })
     }
-    
-    
+
     func fetchImageLinks(fromPostLink postLink:String, completionHandler:(([String]) -> Void)?, errorHandler:(() -> Void)?) {
         let request = Alamofire.request(.GET, postLink)
         request.responseData { [unowned self] response in
             var fetchedImages = [String]()
             if response.result.isSuccess {
                 guard let str = response.data?.stringFromGB18030Data() else { errorHandler?() ; return }
-                var regexString:String
-                if self.forumID == 16 {
-                    regexString = "input.+?src=('|\")([^\"']+?)('|\")"
-                }
-                else {
-                    regexString = "img src=\"([^\"]+)\" .+? onload"
-                }
+                let xpath: String = ( (self.forumID == DaguerreForumID) ? "//input" : "//img" )
                 do {
-                    let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
-                    let matches = regex.matchesInString(str, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.characters.count))
-                    for match in matches {
-                        var imageLink = str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(self.forumID == DaguerreForumID ? 2 : 1))!)
+                    let document = try HTMLDocument(string: str.htmlEncodingCleanup())
+                    let elements = document.xpath(xpath)
+                    for element in elements {
+                        if self.forumID != DaguerreForumID && element["onload"] == nil { continue }
+                        guard var imageLink = element["src"] else { continue }
                         imageLink = imageLink.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
                         fetchedImages.append(imageLink)
                     }
                     completionHandler?(fetchedImages)
                 }
-                catch let error {
-                    print(error)
-                }
+                catch _ {}
             }
             else {
                 errorHandler?()
