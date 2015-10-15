@@ -455,41 +455,20 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         request.responseData { [unowned self] response in
             var fetchedImages = [String]()
             if response.result.isSuccess {
-                guard var str = response.data?.stringFromGB18030Data() else { errorHandler?() ; return }
-                var regexString:String
-                if self.forumID == DaguerreForumID {
-                    do {
-                        guard let range = str.rangeOfString("gb2312") else { return }
-                        str.replaceRange(range, with: "utf-8")
-                        let document = try HTMLDocument(string: str)
-                        let elements = document.xpath("//input")
-                        for element in elements {
-                            guard var imageLink = element["src"] else { continue }
-                            imageLink = imageLink.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
-                            fetchedImages.append(imageLink)
-                        }
-                        completionHandler?(fetchedImages)
+                guard let str = response.data?.stringFromGB18030Data() else { errorHandler?() ; return }
+                let xpath: String = ( (self.forumID == DaguerreForumID) ? "//input" : "//img" )
+                do {
+                    let document = try HTMLDocument(string: self.process(str))
+                    let elements = document.xpath(xpath)
+                    for element in elements {
+                        if self.forumID != DaguerreForumID && element["onload"] == nil { continue }
+                        guard var imageLink = element["src"] else { continue }
+                        imageLink = imageLink.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
+                        fetchedImages.append(imageLink)
                     }
-                    catch let error {
-                        print(error)
-                    }
+                    completionHandler?(fetchedImages)
                 }
-                else {
-                    regexString = "img src=\"([^\"]+)\" .+? onload"
-                    do {
-                        let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
-                        let matches = regex.matchesInString(str, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.characters.count))
-                        for match in matches {
-                            var imageLink = str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(self.forumID == DaguerreForumID ? 2 : 1))!)
-                            imageLink = imageLink.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
-                            fetchedImages.append(imageLink)
-                        }
-                        completionHandler?(fetchedImages)
-                    }
-                    catch let error {
-                        print(error)
-                    }
-                }
+                catch _ {}
             }
             else {
                 errorHandler?()
@@ -542,6 +521,18 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             self.fetchImagesToCache(fetchedImages, withProgressAction:progressAction)
             },
             errorHandler: nil)
+    }
+
+    // More generic encoding replacement
+    func process(string: String) -> String {
+        var str = string
+        let encodings = ["gbk", "GBK", "gb2312", "GB2312", "gb18030", "GB18030"]
+        for enc in encodings {
+            guard let range = string.rangeOfString(enc) else { continue }
+            str.replaceRange(range, with: "utf-8")
+            break
+        }
+        return str
     }
 
     // MARK: Settings
