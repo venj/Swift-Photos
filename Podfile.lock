@@ -5,7 +5,7 @@ PODS:
   - Fuzi (0.1.1)
   - InAppSettingsKit (2.6)
   - MBProgressHUD (0.9.1)
-  - MMAppSwitcher (0.1.0)
+  - MMAppSwitcher (0.3.0)
   - MWPhotoBrowser (2.1.1):
     - DACircularProgress (~> 2.3)
     - MBProgressHUD (~> 0.9)
@@ -47,7 +47,7 @@ CHECKOUT OPTIONS:
     :commit: 432438324267fdf356df8c9665126942e76b0653
     :git: https://github.com/brynbellomy/FlatUIColors.git
   MMAppSwitcher:
-    :commit: 3aee031a6a425dcc46f46cae50215d7bd023547c
+    :commit: 8907ce78f11307bef19e9752c6a207e153349344
     :git: https://github.com/venj/MMAppSwitcher.git
   PasscodeLock:
     :commit: 0502dcfa18554440d885cfec3bf4de4e977ad686
@@ -60,7 +60,7 @@ SPEC CHECKSUMS:
   Fuzi: 5efa21fb0ba3d7fdfb9baef49a194235f2cde341
   InAppSettingsKit: cc56d3ec45f11352a16d5b210da8a3fa1b9d05ed
   MBProgressHUD: c47f2c166c126cf2ce36498d80f33e754d4e93ad
-  MMAppSwitcher: d90bcd02e336d0beb91b2ba8adaa282dd5838378
+  MMAppSwitcher: 11d6f3c08fc70fe1f1386223f89d4f96f95e8061
   MWPhotoBrowser: ba0d0c09ffda3a7ea10093518738c502c1c7141c
   PasscodeLock: 8c3df88c757658f12868abb5b741be2d7b444622
   PKHUD: 47339a6fdb917015ce79b1a0480e31ea6955c11d

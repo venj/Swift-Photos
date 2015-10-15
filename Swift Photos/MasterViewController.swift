@@ -660,9 +660,9 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                             saveCachedLinksToHomeDirectory($0, forPostLink: post.link)
                         })
                     }
-                    dispatch_async(dispatch_get_main_queue()) {
-                        self.tableView.reloadData()
-                    }
+                }
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.tableView.reloadData()
                     hud.hide()
                 }
             })
