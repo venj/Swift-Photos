@@ -144,21 +144,26 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         request.responseData { [unowned self] response in
             if (response.result.isSuccess) {
                 guard let str = response.data?.stringFromGB18030Data() else { return }
-                let xpath: String = "//a"
+                let xpath: String = ( (self.forumID == DaguerreForumID) ? "//tr" : "//a" )
                 do {
                     let document = try HTMLDocument(string: str.htmlEncodingCleanup())
                     let elements = document.xpath(xpath)
                     var indexPathes:[NSIndexPath] = [NSIndexPath]()
                     let cellCount = self.posts.count
                     var i = 0
-                    for element in elements {
+                    for e in elements {
+                        var element = e
+                        if self.forumID == DaguerreForumID {
+                            if e.stringValue.containsString("↑") { continue }
+                            guard let elem = e.css("td h3 a").first else { continue }
+                            element = elem
+                        }
                         guard let link = element["href"] else { continue }
                         let filterString = ( (self.forumID == DaguerreForumID) ? "htm_data" : "viewthread.php" )
                         guard let _ = link.rangeOfString(filterString) else { continue }
                         let title = element.stringValue
-                        //FIXME: 4 is much based on experience, and ↑ either
+                        //FIXME: 4 is much based on experience
                         if title.characters.count < 4 { continue }
-                        if title.containsString("↑") { continue }
                         self.posts.append(Post(title: title, link: getDaguerreLink(self.forumID) + link))
                         // Note the i++ here. It is much of a hack just for save one line.
                         indexPathes.append(NSIndexPath(forRow:cellCount + (i++), inSection: 0))
