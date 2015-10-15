@@ -81,3 +81,12 @@
 
 /* Disable passcode lock alert body */
 "You are going to disable passcode lock. Continue?" = "您即将关闭密码。是否继续？";
+
+/* Shake Detected */
+"Shake Detected" = "检测到设备摇动";
+
+/* Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!! */
+"Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!" = "你确定要保存所有预加载的图片吗？\n这有时会需要很长时间才能完成！！！";
+
+/* Save All */
+"Save All" = "全部保存";

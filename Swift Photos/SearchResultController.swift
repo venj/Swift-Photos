@@ -144,7 +144,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
         })
     }
 
-    func fetchImageLinks(fromPostLink postLink:String, completionHandler:(([String]) -> Void)?, errorHandler:(() -> Void)?) {
+    func fetchImageLinks(fromPostLink postLink:String, completionHandler:(([String]) -> Void)? = nil, errorHandler:(() -> Void)? = nil) {
         let request = Alamofire.request(.GET, postLink)
         request.responseData { [unowned self] response in
             var fetchedImages = [String]()

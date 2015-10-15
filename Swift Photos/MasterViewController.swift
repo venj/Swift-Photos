@@ -449,7 +449,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         saveValue(humanReadableSize, forKey: ImageCacheSizeKey)
     }
     
-    func fetchImageLinks(fromPostLink postLink:String, completionHandler:(([String]) -> Void)?, errorHandler:(() -> Void)?) {
+    func fetchImageLinks(fromPostLink postLink:String, completionHandler:(([String]) -> Void)? = nil, errorHandler:(() -> Void)? = nil) {
         let request = Alamofire.request(.GET, postLink)
         request.responseData { [unowned self] response in
             var fetchedImages = [String]()
@@ -646,6 +646,31 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     
     func didPresentSearchController(searchController: UISearchController) {
         resultsController.forumID = self.forumID
+    }
+
+    // MARK: - Shake
+    override func motionBegan(motion: UIEventSubtype, withEvent event: UIEvent?) {
+        if motion == .MotionShake {
+            let alert = UIAlertController(title: localizedString("Shake Detected", comment: "Shake Detected"), message: localizedString("Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!", comment: "Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!"), preferredStyle: .Alert)
+            let saveAllAction = UIAlertAction(title: localizedString("Save All", comment: "Save All"), style: .Default, handler: { [unowned self] (_) in
+                let hud = showHUD()
+                for post in self.posts {
+                    if post.progress == 1.0 {
+                        self.fetchImageLinks(fromPostLink: post.link, completionHandler: {
+                            saveCachedLinksToHomeDirectory($0, forPostLink: post.link)
+                        })
+                    }
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.tableView.reloadData()
+                    }
+                    hud.hide()
+                }
+            })
+            alert.addAction(saveAllAction)
+            let cancelAction = UIAlertAction(title: localizedString("Cancel", comment: "Cancel"), style: .Cancel, handler: nil)
+            alert.addAction(cancelAction)
+            self.presentViewController(alert, animated: true, completion: nil)
+        }
     }
 }
 

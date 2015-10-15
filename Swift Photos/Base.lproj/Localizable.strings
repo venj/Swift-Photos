@@ -81,3 +81,12 @@
 
 /* Disable passcode lock alert body */
 "You are going to disable passcode lock. Continue?" = "You are going to disable passcode lock. Continue?";
+
+/* Shake Detected */
+"Shake Detected" = "Shake Detected";
+
+/* Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!! */
+"Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!" = "Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!";
+
+/* Save All */
+"Save All" = "Save All";
