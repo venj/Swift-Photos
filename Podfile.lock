@@ -2,6 +2,7 @@ PODS:
   - Alamofire (3.0.0)
   - DACircularProgress (2.3.1)
   - FlatUIColors (0.3.0)
+  - Fuzi (0.1.1)
   - InAppSettingsKit (2.6)
   - MBProgressHUD (0.9.1)
   - MMAppSwitcher (0.1.0)
@@ -20,6 +21,7 @@ PODS:
 DEPENDENCIES:
   - Alamofire (~> 3.0.0)
   - FlatUIColors (from `https://github.com/brynbellomy/FlatUIColors.git`)
+  - Fuzi (~> 0.1.1)
   - InAppSettingsKit (~> 2.6)
   - MMAppSwitcher (from `https://github.com/venj/MMAppSwitcher.git`, branch `master`)
   - MWPhotoBrowser (~> 2.1.1)
@@ -55,6 +57,7 @@ SPEC CHECKSUMS:
   Alamofire: b61782387f81bcc538a0284cf2bb5d7995cd0a80
   DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
   FlatUIColors: 99c998119dc370e8e141d498d3a23dbed43c1d1c
+  Fuzi: 5efa21fb0ba3d7fdfb9baef49a194235f2cde341
   InAppSettingsKit: cc56d3ec45f11352a16d5b210da8a3fa1b9d05ed
   MBProgressHUD: c47f2c166c126cf2ce36498d80f33e754d4e93ad
   MMAppSwitcher: d90bcd02e336d0beb91b2ba8adaa282dd5838378

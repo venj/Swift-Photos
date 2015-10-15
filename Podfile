@@ -9,8 +9,9 @@ pod 'PKHUD', '~> 2.2.3'
 pod 'PasscodeLock', :git => 'https://github.com/ziogaschr/SwiftPasscodeLock.git', :branch => 'cocoapods-swift2'
 pod 'UIColor_Hex_Swift', '~> 1.2' # Color hex string to UIColor
 pod 'FlatUIColors', :git => 'https://github.com/brynbellomy/FlatUIColors.git'
+pod 'Fuzi', '~> 0.1.1'
 # Objective-C
-pod 'MMAppSwitcher', :git => 'https://github.com/venj/MMAppSwitcher.git', :branch => "master"
+pod 'MMAppSwitcher', :git => 'https://github.com/venj/MMAppSwitcher.git', :branch => 'master'
 pod 'InAppSettingsKit', '~> 2.6'
 pod 'MWPhotoBrowser', '~> 2.1.1'
 pod 'SDWebImage', '~> 3.7.2'

@@ -15,6 +15,7 @@ import InAppSettingsKit
 import SDWebImage
 import PasscodeLock
 import FlatUIColors
+import Fuzi
 
 class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhotoBrowserDelegate, UISearchControllerDelegate, UIPopoverPresentationControllerDelegate {
     
@@ -374,6 +375,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     @IBAction func showSections(sender:AnyObject?) {
         let sectionsController = UIAlertController(title: localizedString("Please select a category", comment: "ActionSheet title."), message: "", preferredStyle: .ActionSheet)
         sectionsController.popoverPresentationController?.delegate = self
+
         for key in categories.keys {
             let act = UIAlertAction(title: key, style: .Default, handler: { [unowned self] _ in
                 saveValue(key, forKey: LastViewedSectionTitle)
@@ -384,7 +386,9 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         }
         let cancelAction = UIAlertAction(title: localizedString("Cancel", comment: "Cancel button. (General)"), style: .Cancel, handler: nil)
         sectionsController.addAction(cancelAction)
-        self.presentViewController(sectionsController, animated: true, completion:nil)
+        self.presentViewController(sectionsController, animated: true) {
+            sectionsController.popoverPresentationController?.passthroughViews = nil
+        }
     }
     
     @IBAction func showSettings(sender:AnyObject?) {
@@ -451,26 +455,40 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         request.responseData { [unowned self] response in
             var fetchedImages = [String]()
             if response.result.isSuccess {
-                guard let str = response.data?.stringFromGB18030Data() else { errorHandler?() ; return }
+                guard var str = response.data?.stringFromGB18030Data() else { errorHandler?() ; return }
                 var regexString:String
                 if self.forumID == DaguerreForumID {
-                    regexString = "input.+?src=('|\")([^\"']+?)('|\")"
+                    do {
+                        guard let range = str.rangeOfString("gb2312") else { return }
+                        str.replaceRange(range, with: "utf-8")
+                        let document = try HTMLDocument(string: str)
+                        let elements = document.xpath("//input")
+                        for element in elements {
+                            guard var imageLink = element["src"] else { continue }
+                            imageLink = imageLink.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
+                            fetchedImages.append(imageLink)
+                        }
+                        completionHandler?(fetchedImages)
+                    }
+                    catch let error {
+                        print(error)
+                    }
                 }
                 else {
                     regexString = "img src=\"([^\"]+)\" .+? onload"
-                }
-                do {
-                    let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
-                    let matches = regex.matchesInString(str, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.characters.count))
-                    for match in matches {
-                        var imageLink = str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(self.forumID == DaguerreForumID ? 2 : 1))!)
-                        imageLink = imageLink.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
-                        fetchedImages.append(imageLink)
+                    do {
+                        let regex = try NSRegularExpression(pattern: regexString, options: .CaseInsensitive)
+                        let matches = regex.matchesInString(str, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, str.characters.count))
+                        for match in matches {
+                            var imageLink = str.substringWithRange(str.rangeFromNSRange(match.rangeAtIndex(self.forumID == DaguerreForumID ? 2 : 1))!)
+                            imageLink = imageLink.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
+                            fetchedImages.append(imageLink)
+                        }
+                        completionHandler?(fetchedImages)
                     }
-                    completionHandler?(fetchedImages)
-                }
-                catch let error {
-                    print(error)
+                    catch let error {
+                        print(error)
+                    }
                 }
             }
             else {
