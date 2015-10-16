@@ -449,32 +449,51 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         saveValue(humanReadableSize, forKey: ImageCacheSizeKey)
     }
     
-    func fetchImageLinks(fromPostLink postLink:String, completionHandler:(([String]) -> Void)? = nil, errorHandler:(() -> Void)? = nil) {
-        let request = Alamofire.request(.GET, postLink)
-        request.responseData { [unowned self] response in
-            var fetchedImages = [String]()
-            if response.result.isSuccess {
-                guard let str = response.data?.stringFromGB18030Data() else { errorHandler?() ; return }
-                let xpath: String = ( (self.forumID == DaguerreForumID) ? "//input" : "//img" )
-                do {
-                    let document = try HTMLDocument(string: str.htmlEncodingCleanup())
-                    let elements = document.xpath(xpath)
-                    for element in elements {
-                        if self.forumID != DaguerreForumID && element["onload"] == nil { continue }
-                        guard var imageLink = element["src"] else { continue }
-                        imageLink = imageLink.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
-                        fetchedImages.append(imageLink)
-                    }
+    func fetchImageLinks(fromPostLink postLink:String, async: Bool = true, completionHandler:(([String]) -> Void)? = nil, errorHandler:(() -> Void)? = nil) {
+        var fetchedImages = [String]()
+        if !async {
+            guard let url = NSURL(string: postLink) else { return }
+            let request = NSURLRequest(URL: url, cachePolicy: .ReloadIgnoringLocalCacheData, timeoutInterval: requestTimeOutForWeb)
+            do {
+                let data = try NSURLConnection.sendSynchronousRequest(request, returningResponse:nil)
+                guard let str = data.stringFromGB18030Data() else { return }
+                fetchedImages = readImageLinks(str)
+                completionHandler?(fetchedImages)
+            }
+            catch _ {}
+        }
+        else {
+            let request = Alamofire.request(.GET, postLink)
+            request.responseData { [unowned self] response in
+                if response.result.isSuccess {
+                    guard let str = response.data?.stringFromGB18030Data() else { errorHandler?() ; return }
+                    fetchedImages = self.readImageLinks(str)
                     completionHandler?(fetchedImages)
                 }
-                catch _ {}
-            }
-            else {
-                errorHandler?()
+                else {
+                    errorHandler?()
+                }
             }
         }
     }
-    
+
+    func readImageLinks(str: String) -> [String] {
+        var fetchedImages = [String]()
+        let xpath: String = ( (self.forumID == DaguerreForumID) ? "//input" : "//img" )
+        do {
+            let document = try HTMLDocument(string: str.htmlEncodingCleanup())
+            let elements = document.xpath(xpath)
+            for element in elements {
+                if self.forumID != DaguerreForumID && element["onload"] == nil { continue }
+                guard var imageLink = element["src"] else { continue }
+                imageLink = imageLink.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
+                fetchedImages.append(imageLink)
+            }
+        }
+        catch _ {}
+        return fetchedImages
+    }
+
     func setDefaultTitle() {
         title = localizedString("Young Beauty", comment: "唯美贴图")
     }
@@ -654,17 +673,19 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             let alert = UIAlertController(title: localizedString("Shake Detected", comment: "Shake Detected"), message: localizedString("Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!", comment: "Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!"), preferredStyle: .Alert)
             let saveAllAction = UIAlertAction(title: localizedString("Save All", comment: "Save All"), style: .Default, handler: { [unowned self] (_) in
                 let hud = showHUD()
-                for post in self.posts {
-                    if post.progress == 1.0 {
-                        self.fetchImageLinks(fromPostLink: post.link, completionHandler: {
-                            saveCachedLinksToHomeDirectory($0, forPostLink: post.link)
-                        })
+                dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), { [unowned self] in
+                    for post in self.posts {
+                        if post.progress == 1.0 {
+                            self.fetchImageLinks(fromPostLink: post.link, async: false, completionHandler: {
+                                saveCachedLinksToHomeDirectory($0, forPostLink: post.link)
+                            })
+                        }
                     }
-                }
-                dispatch_async(dispatch_get_main_queue()) {
-                    self.tableView.reloadData()
-                    hud.hide()
-                }
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.tableView.reloadData()
+                        hud.hide()
+                    }
+                })
             })
             alert.addAction(saveAllAction)
             let cancelAction = UIAlertAction(title: localizedString("Cancel", comment: "Cancel"), style: .Cancel, handler: nil)
