@@ -232,6 +232,12 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let link = posts[indexPath.row].link
         self.images = [String]()
+        // Continuity for both local and remote data
+        if let url = NSURL(string: link) {
+            self.myActivity = NSUserActivity(activityType: "me.venj.Swift-Photos.Continuity")
+            self.myActivity.webpageURL = url
+            self.myActivity.becomeCurrent()
+        }
         // Local Data
         if imagesCached(forPostLink: link) {
             let localDir = localDirectoryForPost(link, create: false)
@@ -273,9 +279,6 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                 if self.myActivity != nil {
                     self.myActivity.invalidate()
                 }
-                self.myActivity = NSUserActivity(activityType: "me.venj.Swift-Photos.Continuity")
-                self.myActivity.webpageURL = NSURL(string: link)
-                self.myActivity.becomeCurrent()
             },
             errorHandler: {
                 hud.hide()
@@ -300,49 +303,75 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     
     override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
         if (indexPath.row < 0) { return nil }
-        let preloadAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: localizedString("Preload", comment: "Preload Button.")) { (action, indexPath) in
-            self.cacheImages(forIndexPath: indexPath, withProgressAction: { [unowned self] (progress) in
-                // Update Progress.
-                // FIXME: If the cell is preloading, and we switch to another section, the progress will keep updating.
-                guard let cell = tableView.cellForRowAtIndexPath(indexPath) as? ProgressTableViewCell else { return }
-                self.posts[indexPath.row].progress = progress
-                dispatch_async(dispatch_get_main_queue(), {
-                    cell.progress = progress
+        let post = posts[indexPath.row]
+        if !post.imageCached {
+            // Preload
+            let preloadAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: localizedString("Preload", comment: "Preload Button.")) { (action, indexPath) in
+                self.cacheImages(forIndexPath: indexPath, withProgressAction: { (progress) in
+                    // Update Progress.
+                    // FIXME: If the cell is preloading, and we switch to another section, the progress will keep updating.
+                    guard let cell = tableView.cellForRowAtIndexPath(indexPath) as? ProgressTableViewCell else { return }
+                    post.progress = progress
+                    dispatch_async(dispatch_get_main_queue(), {
+                        cell.progress = progress
+                    })
                 })
-            })
-            if tableView.editing {
-                tableView.setEditing(false, animated: true)
+                if tableView.editing {
+                    tableView.setEditing(false, animated: true)
+                }
             }
-        }
-        preloadAction.backgroundColor = FlatUIColors.wisteriaColor()
-        //Save
-        let link = posts[indexPath.row].link
-        let saveAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: localizedString("Save", comment: "Save Button.")) { [unowned self] (_, indexPath) in
-            let cell = tableView.cellForRowAtIndexPath(indexPath)!
-            let spinWheel = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
-            cell.accessoryView = spinWheel
-            spinWheel.startAnimating()
-            
-            self.fetchImageLinks(fromPostLink: link, completionHandler: { [unowned self] fetchedImages in
-                saveCachedLinksToHomeDirectory(fetchedImages, forPostLink: link)
-                self.tableView.reloadData()
-                spinWheel.stopAnimating()
-                cell.accessoryView = nil
-            }, errorHandler: {
-                spinWheel.stopAnimating()
-                cell.accessoryView = nil
-            })
-            
-            if tableView.editing {
-                tableView.setEditing(false, animated: true)
+            preloadAction.backgroundColor = FlatUIColors.wisteriaColor()
+            //Save
+            let link = post.link
+            let saveAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: localizedString("Save", comment: "Save Button.")) { [unowned self] (_, indexPath) in
+                let cell = tableView.cellForRowAtIndexPath(indexPath)!
+                let spinWheel = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
+                cell.accessoryView = spinWheel
+                spinWheel.startAnimating()
+
+                self.fetchImageLinks(fromPostLink: link, completionHandler: { [unowned self] fetchedImages in
+                    saveCachedLinksToHomeDirectory(fetchedImages, forPostLink: link)
+                    self.tableView.reloadData()
+                    spinWheel.stopAnimating()
+                    cell.accessoryView = nil
+                }, errorHandler: {
+                    spinWheel.stopAnimating()
+                    cell.accessoryView = nil
+                })
+
+                if tableView.editing {
+                    tableView.setEditing(false, animated: true)
+                }
             }
+            saveAction.backgroundColor = UIColor.orangeColor()
+            return [preloadAction, saveAction]
         }
-        saveAction.backgroundColor = UIColor.orangeColor()
-        return [preloadAction, saveAction]
+        else {
+            // Reset cache
+            let link = post.link
+            let deleteAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: localizedString("Delete", comment: "Delete")) { [unowned self] (_, indexPath) in
+                let cell = tableView.cellForRowAtIndexPath(indexPath)!
+                let spinWheel = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
+                cell.accessoryView = spinWheel
+                spinWheel.startAnimating()
+
+                removeSavedImagesForLink(link, completionHandler: { [unowned self] in
+                    spinWheel.stopAnimating()
+                    cell.accessoryView = nil
+                    post.progress = 0
+                    self.tableView.reloadData()
+                })
+
+                if tableView.editing {
+                    tableView.setEditing(false, animated: true)
+                }
+            }
+            deleteAction.backgroundColor = FlatUIColors.alizarinColor()
+            return [deleteAction]
+        }
     }
     
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        if imagesCached(forPostLink: posts[indexPath.row].link) { return false }
         return true
     }
     
