@@ -10,6 +10,11 @@ class Post {
     var title:String!
     var link:String!
     var progress:Float = 0
+    var imageCached:Bool {
+        get {
+            return imagesCached(forPostLink:link)
+        }
+    }
     
     init(title:String, link:String) {
         self.title = title

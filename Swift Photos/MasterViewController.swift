@@ -218,8 +218,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         cell.textLabel?.text = posts[indexPath.row].title
         cell.textLabel?.backgroundColor = UIColor.clearColor()
         let post = posts[indexPath.row]
-        let link = post.link
-        if imagesCached(forPostLink: link) {
+        if post.imageCached {
             cell.textLabel?.textColor = FlatUIColors.belizeHoleColor()
         }
         else {
@@ -675,7 +674,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                 let hud = showHUD()
                 dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), { [unowned self] in
                     for post in self.posts {
-                        if post.progress == 1.0 {
+                        if post.progress == 1.0 && !post.imageCached {
                             self.fetchImageLinks(fromPostLink: post.link, async: false, completionHandler: {
                                 saveCachedLinksToHomeDirectory($0, forPostLink: post.link)
                             })
