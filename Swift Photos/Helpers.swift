@@ -119,22 +119,6 @@ func saveCachedLinksToHomeDirectory(links:[String], forPostLink postLink:String)
     }
 }
 
-func removeSavedImagesForLink(link:String, completionHandler:(() -> Void)? = nil, errorHandler:(() -> Void)? = nil) {
-    guard let localPath = localDirectoryForPost(link) else { return }
-    let fm = NSFileManager.defaultManager()
-    var isDir:ObjCBool = false
-    let dirExists = fm.fileExistsAtPath(localPath, isDirectory: &isDir)
-    if dirExists && isDir {
-        do {
-            try fm.removeItemAtPath(localPath)
-            completionHandler?()
-        }
-        catch _ {
-            errorHandler?()
-        }
-    }
-}
-
 func imagesCached(forPostLink link:String) -> Bool {
     if let targetDir = localDirectoryForPost(link, create: false) {
         let fm = NSFileManager.defaultManager()

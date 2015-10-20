@@ -350,16 +350,13 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             // Reset cache
             let link = post.link
             let deleteAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: localizedString("Delete", comment: "Delete")) { [unowned self] (_, indexPath) in
-                let cell = tableView.cellForRowAtIndexPath(indexPath)!
-                let spinWheel = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
-                cell.accessoryView = spinWheel
-                spinWheel.startAnimating()
-
-                removeSavedImagesForLink(link, completionHandler: { [unowned self] in
-                    spinWheel.stopAnimating()
-                    cell.accessoryView = nil
-                    post.progress = 0
-                    self.tableView.reloadData()
+                let hud = showHUD()
+                self.removeImagesForLink(link, completionHandler: {
+                    hud.hide()
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1_000_000), dispatch_get_main_queue(), {
+                        post.progress = 0
+                        self.tableView.reloadData()
+                    })
                 })
 
                 if tableView.editing {
@@ -501,6 +498,38 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                 else {
                     errorHandler?()
                 }
+            }
+        }
+    }
+
+    func removeImagesForLink(link:String, completionHandler:(() -> Void)? = nil, errorHandler:(() -> Void)? = nil) {
+        // Remove saved images
+        guard let localPath = localDirectoryForPost(link) else { return }
+        let fm = NSFileManager.defaultManager()
+        var isDir:ObjCBool = false
+        let dirExists = fm.fileExistsAtPath(localPath, isDirectory: &isDir)
+        if dirExists && isDir {
+            do {
+                try fm.removeItemAtPath(localPath)
+            }
+            catch _ {}
+        }
+
+        // Remove image cache.
+        var fetchedImages = [String]()
+        let request = Alamofire.request(.GET, link)
+        request.responseData { [unowned self] response in
+            if response.result.isSuccess {
+                guard let str = response.data?.stringFromGB18030Data() else { errorHandler?() ; return }
+                fetchedImages = self.readImageLinks(str)
+                for imageLink in fetchedImages {
+                    let key = SDWebImageManager.sharedManager().cacheKeyForURL(NSURL(string: imageLink))
+                    SDImageCache.sharedImageCache().removeImageForKey(key)
+                }
+                completionHandler?()
+            }
+            else {
+                errorHandler?()
             }
         }
     }
