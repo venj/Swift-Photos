@@ -544,6 +544,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                 if self.forumID != DaguerreForumID && element["onload"] == nil { continue }
                 guard var imageLink = element["src"] else { continue }
                 imageLink = imageLink.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
+                guard let _ = NSURL(string: imageLink) else { continue }
                 fetchedImages.append(imageLink)
             }
         }
