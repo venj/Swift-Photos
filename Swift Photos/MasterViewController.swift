@@ -732,6 +732,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             let saveAllAction = UIAlertAction(title: localizedString("Save All", comment: "Save All"), style: .Default, handler: { [unowned self] (_) in
                 let hud = showHUD()
                 dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), { [unowned self] in
+                    UIApplication.sharedApplication().idleTimerDisabled = true
                     for post in self.posts {
                         if post.progress == 1.0 && !post.imageCached {
                             self.fetchImageLinks(fromPostLink: post.link, async: false, completionHandler: {
@@ -739,6 +740,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                             })
                         }
                     }
+                    UIApplication.sharedApplication().idleTimerDisabled = false
                     dispatch_async(dispatch_get_main_queue()) {
                         self.tableView.reloadData()
                         hud.hide()
