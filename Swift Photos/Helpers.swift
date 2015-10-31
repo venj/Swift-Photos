@@ -70,9 +70,9 @@ func localImagePath(link:String) -> String {
 }
 
 func localDirectoryForPost(link:String, create:Bool = true) -> String? {
-    // Use only the path part of the URL as cache key make it independent of url change. 
-    let requestPath = NSURL(string:link)!.path
-    let key = SDWebImageManager.sharedManager().cacheKeyForURL(NSURL(string: requestPath!))
+    let host = NSURL(string: link)!.host!
+    let placeHolderLink = link.stringByReplacingOccurrencesOfString(host, withString: "example.com")
+    let key = SDWebImageManager.sharedManager().cacheKeyForURL(NSURL(string: placeHolderLink))
     let hash = SDImageCache.sharedImageCache().cachePathForKey(key, inPath: "")
     let path = userDocumentPath().vc_stringByAppendingPathComponent(hash)
     let fm = NSFileManager.defaultManager()

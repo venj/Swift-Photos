@@ -20,9 +20,9 @@
 		2539A3A51AA1A514004A5619 /* CLLinksTableViewTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2539A3A41AA1A514004A5619 /* CLLinksTableViewTableViewController.swift */; };
 		253BF0EB1994A232007B3702 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253BF0EA1994A232007B3702 /* Helpers.swift */; };
 		254486BC1A40151E00F25634 /* SearchResultController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254486BB1A40151E00F25634 /* SearchResultController.swift */; };
-		254742411BCDFBD2001A6E47 /* FlatColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254742401BCDFBD2001A6E47 /* FlatColors.swift */; settings = {ASSET_TAGS = (); }; };
-		254EE8CB1BC61854003427CC /* UserDefaultsPasscodeRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254EE8C91BC61854003427CC /* UserDefaultsPasscodeRepository.swift */; settings = {ASSET_TAGS = (); }; };
-		254EE8CC1BC61854003427CC /* PasscodeLockConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254EE8CA1BC61854003427CC /* PasscodeLockConfiguration.swift */; settings = {ASSET_TAGS = (); }; };
+		254742411BCDFBD2001A6E47 /* FlatColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254742401BCDFBD2001A6E47 /* FlatColors.swift */; };
+		254EE8CB1BC61854003427CC /* UserDefaultsPasscodeRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254EE8C91BC61854003427CC /* UserDefaultsPasscodeRepository.swift */; };
+		254EE8CC1BC61854003427CC /* PasscodeLockConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254EE8CA1BC61854003427CC /* PasscodeLockConfiguration.swift */; };
 		256EC98F1B4558F100F20F63 /* ProgressTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256EC98E1B4558F100F20F63 /* ProgressTableViewCell.swift */; };
 		258A1F6D199270320080BB60 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 258A1F6F199270320080BB60 /* Localizable.strings */; };
 		258A1F72199270330080BB60 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 258A1F74199270330080BB60 /* InfoPlist.strings */; };
