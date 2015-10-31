@@ -567,7 +567,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "me.venj.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "cb358a3d-2559-4bec-89d1-bc5ee3b63987";
+				PROVISIONING_PROFILE = "344c385e-dd65-4c3d-95f2-d764f07969aa";
 				SWIFT_OBJC_BRIDGING_HEADER = "Swift Photos/Swift Photos-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
