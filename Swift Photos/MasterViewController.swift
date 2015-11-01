@@ -248,7 +248,11 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             for f in files {
                 images.append(basePath.vc_stringByAppendingPathComponent(f as String))
             }
-            self.images = images
+            self.images = images.sort { (a, b) -> Bool in
+                let nameA = Int(a.componentsSeparatedByString("/").last!)
+                let nameB = Int(b.componentsSeparatedByString("/").last!)
+                return nameA < nameB ? true : false
+            }
             let photoBrowser = MWPhotoBrowser(delegate: self)
             self.currentTitle = tableView.cellForRowAtIndexPath(indexPath)!.textLabel!.text!
             photoBrowser.displayActionButton = true
