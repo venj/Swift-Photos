@@ -156,6 +156,10 @@ func getDaguerreLink(forumID:Int) -> String {
     }
 }
 
+func mainThemeColor() -> UIColor {
+    return UIColor(rgba: "#E56C9D")
+}
+
 extension String {
     func rangeFromNSRange(range : NSRange) -> Range<String.Index>? {
         let from16 = utf16.startIndex.advancedBy(range.location, limit: utf16.endIndex)

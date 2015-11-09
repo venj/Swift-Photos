@@ -73,7 +73,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         searchBar.sizeToFit()
         searchBar.placeholder = localizedString("Search loaded posts", comment: "搜索已加载的帖子")
 
-        navigationController?.navigationBar.barTintColor = UIColor(rgba: "#E56C9D")
+        navigationController?.navigationBar.barTintColor = mainThemeColor()
         navigationController?.navigationBar.tintColor = UIColor.whiteColor()
         navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.whiteColor()]
 
@@ -89,7 +89,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
     func parseDaguerreLink() {
         let link = getDaguerreLink(self.forumID)
         let hud = PKHUD.sharedHUD
@@ -437,6 +437,9 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             self.settingsViewController.delegate = self
             self.settingsViewController.showCreditsFooter = false
             let settingsNavigationController = UINavigationController(rootViewController: self.settingsViewController)
+            settingsNavigationController.navigationBar.barTintColor = mainThemeColor()
+            settingsNavigationController.navigationBar.tintColor = UIColor.whiteColor()
+            settingsNavigationController.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.whiteColor()]
             settingsNavigationController.modalPresentationStyle = .FormSheet
             self.presentViewController(settingsNavigationController, animated: true) {}
             hud.hide()
