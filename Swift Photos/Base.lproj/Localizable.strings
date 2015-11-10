@@ -29,7 +29,7 @@
 "Daguerre's Flag" = "Daguerre's Flag";
 
 /* 正在获取達蓋爾的链接... */
-"Parsing Daguerre Link..." = "Parsing Daguerre Link...";
+"Parsing Daguerre Link..." = "Parsing Base Link...";
 
 /* 设置 */
 "Settings" = "Settings";
@@ -54,12 +54,6 @@
 
 /* 网络错误 */
 "Network error" = "Network error";
-
-/* 连接超时。可能是您的网络出现问题，或者链接挂了。如果您的网络正常，请选择科学上网连接。 */
-"Failed to reach 1024 in time. Maybe links are dead. You may use a VPN to access 1024." = "Failed to reach 1024 in time. Maybe links are dead. You may use a VPN to access 1024.";
-
-/* 主站挂了,到设置里修改地址 */
-"1024 down, use a mirror" = "Connection failed, try to change an address.";
 
 /* 请求超时 */
 "Request timeout." = "Request timeout.";

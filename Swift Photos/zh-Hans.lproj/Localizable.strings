@@ -29,7 +29,7 @@
 "Daguerre's Flag" = "達蓋爾的旗幟";
 
 /* 正在获取達蓋爾的链接... */
-"Parsing Daguerre Link..." = "正在获取達蓋爾的链接...";
+"Parsing Daguerre Link..." = "正在获取论坛的链接...";
 
 /* 设置 */
 "Settings" = "设置";
@@ -54,12 +54,6 @@
 
 /* 网络错误 */
 "Network error" = "网络错误";
-
-/* 连接超时。可能是您的网络出现问题，或者链接挂了。如果您的网络正常，请选择科学上网连接。 */
-"Failed to reach 1024 in time. Maybe links are dead. You may use a VPN to access 1024." = "连接超时。可能是您的网络出现问题，或者链接挂了。如果您的网络正常，请选择科学上网连接。";
-
-/* 主站挂了,到设置里修改地址 */
-"1024 down, use a mirror" = "连接失败，换个地址试试。";
 
 /* 请求超时 */
 "Request timeout." = "请求超时";

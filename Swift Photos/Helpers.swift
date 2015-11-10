@@ -21,6 +21,8 @@ let PasscodeLockConfig = "kPasscodeLockConfig"
 let LastViewedSectionTitle = "kLastViewedSectionTitle"
 let CurrentCLLinkKey = "kCurrentCLLinkKey"
 let DaguerreForumID = 16
+// Web request time out.
+let requestTimeOutForWeb = 10.0
 
 func getValue(key:String) -> AnyObject? {
     let defaults = NSUserDefaults.standardUserDefaults()

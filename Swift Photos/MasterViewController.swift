@@ -23,8 +23,13 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     var filteredPosts:[Post] = [Post]()
     var images:[String] = [String]()
     var page = 1
-    var forumID = DaguerreForumID
+    var forumID = DaguerreForumID {
+        didSet {
+            self.resultsController?.forumID = forumID
+        }
+    }
     var daguerreLink:String = ""
+    var mimiLink:String = ""
     var currentTitle:String = ""
     var currentCLLink:String = ""
     var settingsViewController:IASKAppSettingsViewController!
@@ -66,6 +71,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         tableView.separatorInset = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
         // SearchBar
         resultsController = SearchResultController()
+        resultsController.forumID = forumID
         searchController = UISearchController(searchResultsController: resultsController)
         searchController.searchResultsUpdater = resultsController
         let searchBar = searchController.searchBar
@@ -76,10 +82,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         navigationController?.navigationBar.barTintColor = mainThemeColor()
         navigationController?.navigationBar.tintColor = UIColor.whiteColor()
         navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.whiteColor()]
-
-
-        //navigationItem.
-
+        
         if #available(iOS 9, *) {
             tableView.cellLayoutMarginsFollowReadableWidth = false
         }
@@ -88,6 +91,27 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+
+    func parseMimiLink() {
+        let link = "ht" + "tps" + "://" + "ww" + "w" + ".ve" + "n" + "j" + "." + "m" + "e/m" + "m" + ".t" + "xt"
+        let hud = PKHUD.sharedHUD
+        hud.contentView = PKHUDTextView(text: localizedString("Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."))
+        hud.show()
+        let request = Alamofire.request(.GET, link)
+        request.responseString { [unowned self] response in
+            if response.result.isSuccess {
+                guard let str = response.result.value else { return }
+                self.mimiLink = str.strip().split(byCharacterSet: NSCharacterSet.newlineCharacterSet())[0].strip()
+                let link = self.mimiLink + "forumdisplay.php?fid=\(self.forumID)"
+                self.loadPostList(link, forPage: self.page)
+            }
+            else {
+                hud.hide()
+                hud.contentView = PKHUDTextView(text: localizedString("Network error", comment: "Network error happened, typically timeout."))
+                hud.hide(afterDelay: 1)
+            }
+        }
     }
     
     func parseDaguerreLink() {
@@ -114,16 +138,8 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                 self.loadPostList(self.daguerreLink, forPage: 1)
             }
             else {
-                hud.hide()
-                let alert = UIAlertController(title: localizedString("Network error", comment: "Network error happened, typically timeout."), message: localizedString("Failed to reach 1024 in time. Maybe links are dead. You may use a VPN to access 1024.", comment: "1024 link down."), preferredStyle: .Alert)
-                let action = UIAlertAction(title: "OK", style: .Default, handler: { _ in
-                    dispatch_async(dispatch_get_main_queue(), {
-                        hud.contentView = PKHUDTextView(text: localizedString("1024 down, use a mirror", comment: ""))
-                        hud.hide(afterDelay: 2.0)
-                    })
-                })
-                alert.addAction(action)
-                self.presentViewController(alert, animated: true, completion: nil)
+                hud.contentView = PKHUDTextView(text: localizedString("Network error", comment: "Network error happened, typically timeout."))
+                hud.hide(afterDelay: 1)
             }
         }
     }
@@ -198,8 +214,14 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             }
         }
         else {
-            link = baseLink(forumID) + "forumdisplay.php?fid=\(forumID)"
-            loadPostList(link, forPage: page)
+            if mimiLink == "" {
+                self.parseMimiLink()
+            }
+            else {
+                link = mimiLink + "forumdisplay.php?fid=\(forumID)"
+                loadPostList(link, forPage: page)
+            }
+
         }
     }
     

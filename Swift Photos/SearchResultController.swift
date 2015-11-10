@@ -35,13 +35,10 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
     // MARK: - Table view data source
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        // #warning Potentially incomplete method implementation.
-        // Return the number of sections.
         return 1
     }
 
@@ -144,30 +141,50 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
         })
     }
 
-    func fetchImageLinks(fromPostLink postLink:String, completionHandler:(([String]) -> Void)? = nil, errorHandler:(() -> Void)? = nil) {
-        let request = Alamofire.request(.GET, postLink)
-        request.responseData { [unowned self] response in
-            var fetchedImages = [String]()
-            if response.result.isSuccess {
-                guard let str = response.data?.stringFromGB18030Data() else { errorHandler?() ; return }
-                let xpath: String = ( (self.forumID == DaguerreForumID) ? "//input" : "//img" )
-                do {
-                    let document = try HTMLDocument(string: str.htmlEncodingCleanup())
-                    let elements = document.xpath(xpath)
-                    for element in elements {
-                        if self.forumID != DaguerreForumID && element["onload"] == nil { continue }
-                        guard var imageLink = element["src"] else { continue }
-                        imageLink = imageLink.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
-                        fetchedImages.append(imageLink)
-                    }
+    func fetchImageLinks(fromPostLink postLink:String, async: Bool = true, completionHandler:(([String]) -> Void)? = nil, errorHandler:(() -> Void)? = nil) {
+        var fetchedImages = [String]()
+        if !async {
+            guard let url = NSURL(string: postLink) else { return }
+            let request = NSURLRequest(URL: url, cachePolicy: .ReloadIgnoringLocalCacheData, timeoutInterval: requestTimeOutForWeb)
+            do {
+                let data = try NSURLConnection.sendSynchronousRequest(request, returningResponse:nil)
+                guard let str = data.stringFromGB18030Data() else { return }
+                fetchedImages = readImageLinks(str)
+                completionHandler?(fetchedImages)
+            }
+            catch _ {}
+        }
+        else {
+            let request = Alamofire.request(.GET, postLink)
+            request.responseData { [unowned self] response in
+                if response.result.isSuccess {
+                    guard let str = response.data?.stringFromGB18030Data() else { errorHandler?() ; return }
+                    fetchedImages = self.readImageLinks(str)
                     completionHandler?(fetchedImages)
                 }
-                catch _ {}
-            }
-            else {
-                errorHandler?()
+                else {
+                    errorHandler?()
+                }
             }
         }
+    }
+
+    func readImageLinks(str: String) -> [String] {
+        var fetchedImages = [String]()
+        let xpath: String = ( (self.forumID == DaguerreForumID) ? "//input" : "//img" )
+        do {
+            let document = try HTMLDocument(string: str.htmlEncodingCleanup())
+            let elements = document.xpath(xpath)
+            for element in elements {
+                if self.forumID != DaguerreForumID && element["onload"] == nil { continue }
+                guard var imageLink = element["src"] else { continue }
+                imageLink = imageLink.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
+                guard let _ = NSURL(string: imageLink) else { continue }
+                fetchedImages.append(imageLink)
+            }
+        }
+        catch _ {}
+        return fetchedImages
     }
     
     // Don't care if the request is succeeded or not.
