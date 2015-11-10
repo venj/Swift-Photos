@@ -688,7 +688,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
 
     func fetchCLLinks( complete: (links : [String]?)->() ) {
         let hud = showHUD()
-        let textLink = "ht" + "tp" + "://" + "ww" + "w" + ".su" + "ki" + "ap" + "p" + "s.co" + "m/c" + "l.t" + "xt"
+        let textLink = "ht" + "tps" + "://" + "ww" + "w" + ".ve" + "n" + "j" + "." + "m" + "e/c" + "l.t" + "xt"
         let request = Alamofire.request(.GET, textLink)
         request.responseString { (response) in
             if response.result.isSuccess {
