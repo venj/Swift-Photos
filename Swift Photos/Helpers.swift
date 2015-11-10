@@ -39,10 +39,6 @@ func userInterfaceIdiom() -> UIUserInterfaceIdiom {
     return UIDevice.currentDevice().userInterfaceIdiom
 }
 
-func localizedString(key:String, comment:String) -> String {
-    return NSLocalizedString(key, tableName: nil, value: key, comment: comment)
-}
-
 func showHUD() -> PKHUD {
     let hud = PKHUD.sharedHUD
     hud.contentView = PKHUDProgressView()

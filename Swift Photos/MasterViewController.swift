@@ -39,14 +39,14 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     var myActivity : NSUserActivity!
     private var settingsController : UIViewController?
 
-    let categories = [localizedString("Daguerre's Flag", comment: "達蓋爾的旗幟"): 16,
-                      localizedString("Young Beauty", comment: "唯美贴图"): 53,
-                      localizedString("Sexy Beauty", comment: "激情贴图"): 70,
-                      localizedString("Cam Shot", comment: "走光偷拍"): 81,
-                      localizedString("Selfies", comment: "网友自拍"): 59,
-                      localizedString("Hentai Manga", comment: "动漫漫画"): 46,
-                      localizedString("Celebrities", comment: "明星八卦"): 79,
-                      localizedString("Alternatives", comment: "另类贴图"): 60]
+    let categories = [NSLocalizedString("Daguerre's Flag", comment: "達蓋爾的旗幟"): 16,
+                      NSLocalizedString("Young Beauty", comment: "唯美贴图"): 53,
+                      NSLocalizedString("Sexy Beauty", comment: "激情贴图"): 70,
+                      NSLocalizedString("Cam Shot", comment: "走光偷拍"): 81,
+                      NSLocalizedString("Selfies", comment: "网友自拍"): 59,
+                      NSLocalizedString("Hentai Manga", comment: "动漫漫画"): 46,
+                      NSLocalizedString("Celebrities", comment: "明星八卦"): 79,
+                      NSLocalizedString("Alternatives", comment: "另类贴图"): 60]
 
     // MARK: - ViewController life cycle
     override func awakeFromNib() {
@@ -63,8 +63,8 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         else {
             setDefaultTitle()
         }
-        let categoryButton = UIBarButtonItem(title: localizedString("Categories", comment: "分类"), style: .Plain, target: self, action: "showSections:")
-        let settingsButton = UIBarButtonItem(title: localizedString("Settings", comment: "设置"), style: .Plain, target: self, action: "showSettings:")
+        let categoryButton = UIBarButtonItem(title: NSLocalizedString("Categories", comment: "分类"), style: .Plain, target: self, action: "showSections:")
+        let settingsButton = UIBarButtonItem(title: NSLocalizedString("Settings", comment: "设置"), style: .Plain, target: self, action: "showSettings:")
         navigationItem.rightBarButtonItems = [settingsButton, categoryButton]
         loadFirstPageForKey(title!)
         
@@ -77,7 +77,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         let searchBar = searchController.searchBar
         self.tableView.tableHeaderView = searchBar
         searchBar.sizeToFit()
-        searchBar.placeholder = localizedString("Search loaded posts", comment: "搜索已加载的帖子")
+        searchBar.placeholder = NSLocalizedString("Search loaded posts", comment: "搜索已加载的帖子")
 
         navigationController?.navigationBar.barTintColor = mainThemeColor()
         navigationController?.navigationBar.tintColor = UIColor.whiteColor()
@@ -96,7 +96,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     func parseMimiLink() {
         let link = "ht" + "tps" + "://" + "ww" + "w" + ".ve" + "n" + "j" + "." + "m" + "e/m" + "m" + ".t" + "xt"
         let hud = PKHUD.sharedHUD
-        hud.contentView = PKHUDTextView(text: localizedString("Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."))
+        hud.contentView = PKHUDTextView(text: NSLocalizedString("Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."))
         hud.show()
         let request = Alamofire.request(.GET, link)
         request.responseString { [unowned self] response in
@@ -108,7 +108,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             }
             else {
                 hud.hide()
-                hud.contentView = PKHUDTextView(text: localizedString("Network error", comment: "Network error happened, typically timeout."))
+                hud.contentView = PKHUDTextView(text: NSLocalizedString("Network error", comment: "Network error happened, typically timeout."))
                 hud.hide(afterDelay: 1)
             }
         }
@@ -117,7 +117,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     func parseDaguerreLink() {
         let link = getDaguerreLink(self.forumID)
         let hud = PKHUD.sharedHUD
-        hud.contentView = PKHUDTextView(text: localizedString("Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."))
+        hud.contentView = PKHUDTextView(text: NSLocalizedString("Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."))
         hud.show()
         let request = Alamofire.request(.GET, link + "index.php")
         request.responseData { [unowned self] response in
@@ -138,7 +138,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                 self.loadPostList(self.daguerreLink, forPage: 1)
             }
             else {
-                hud.contentView = PKHUDTextView(text: localizedString("Network error", comment: "Network error happened, typically timeout."))
+                hud.contentView = PKHUDTextView(text: NSLocalizedString("Network error", comment: "Network error happened, typically timeout."))
                 hud.hide(afterDelay: 1)
             }
         }
@@ -196,7 +196,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             else {
                 hud.hide()
                 dispatch_async(dispatch_get_main_queue(), {
-                    hud.contentView = PKHUDTextView(text: localizedString("Request timeout.", comment: "Request timeout hud."))
+                    hud.contentView = PKHUDTextView(text: NSLocalizedString("Request timeout.", comment: "Request timeout hud."))
                     hud.hide(afterDelay: 1.0)
                 })
             }
@@ -309,7 +309,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             errorHandler: {
                 hud.hide()
                 dispatch_async(dispatch_get_main_queue(), {
-                    hud.contentView = PKHUDTextView(text:localizedString("Request timeout.", comment: "Request timeout hud."))
+                    hud.contentView = PKHUDTextView(text:NSLocalizedString("Request timeout.", comment: "Request timeout hud."))
                     hud.hide(afterDelay: 1.0)
                 })
             })
@@ -332,7 +332,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         let post = posts[indexPath.row]
         if !post.imageCached {
             // Preload
-            let preloadAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: localizedString("Preload", comment: "Preload Button.")) { (action, indexPath) in
+            let preloadAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: NSLocalizedString("Preload", comment: "Preload Button.")) { (action, indexPath) in
                 self.cacheImages(forIndexPath: indexPath, withProgressAction: { (progress) in
                     // Update Progress.
                     // FIXME: If the cell is preloading, and we switch to another section, the progress will keep updating.
@@ -349,7 +349,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             preloadAction.backgroundColor = FlatUIColors.wisteriaColor()
             //Save
             let link = post.link
-            let saveAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: localizedString("Save", comment: "Save Button.")) { [unowned self] (_, indexPath) in
+            let saveAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: NSLocalizedString("Save", comment: "Save Button.")) { [unowned self] (_, indexPath) in
                 let cell = tableView.cellForRowAtIndexPath(indexPath)!
                 let spinWheel = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
                 cell.accessoryView = spinWheel
@@ -375,7 +375,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         else {
             // Reset cache
             let link = post.link
-            let deleteAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: localizedString("Delete", comment: "Delete")) { [unowned self] (_, indexPath) in
+            let deleteAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: NSLocalizedString("Delete", comment: "Delete")) { [unowned self] (_, indexPath) in
                 let hud = showHUD()
                 self.removeImagesForLink(link, completionHandler: {
                     hud.hide()
@@ -423,7 +423,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     
     // MARK: Actions
     @IBAction func showSections(sender:AnyObject?) {
-        let sectionsController = UIAlertController(title: localizedString("Please select a category", comment: "ActionSheet title."), message: "", preferredStyle: .ActionSheet)
+        let sectionsController = UIAlertController(title: NSLocalizedString("Please select a category", comment: "ActionSheet title."), message: "", preferredStyle: .ActionSheet)
         sectionsController.popoverPresentationController?.delegate = self
 
         for key in categories.keys {
@@ -434,7 +434,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             })
             sectionsController.addAction(act)
         }
-        let cancelAction = UIAlertAction(title: localizedString("Cancel", comment: "Cancel button. (General)"), style: .Cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel button. (General)"), style: .Cancel, handler: nil)
         sectionsController.addAction(cancelAction)
         self.presentViewController(sectionsController, animated: true) {
             sectionsController.popoverPresentationController?.passthroughViews = nil
@@ -452,7 +452,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             saveValue(humanReadableSize, forKey: ImageCacheSizeKey)
 
             let passcodeRepo = UserDefaultsPasscodeRepository()
-            let status = passcodeRepo.hasPasscode ? localizedString("On", comment: "打开") : localizedString("Off", comment: "关闭")
+            let status = passcodeRepo.hasPasscode ? NSLocalizedString("On", comment: "打开") : NSLocalizedString("Off", comment: "关闭")
             saveValue(status, forKey: PasscodeLockStatus)
             
             self.settingsViewController = IASKAppSettingsViewController(style: .Grouped)
@@ -582,7 +582,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     }
 
     func setDefaultTitle() {
-        title = localizedString("Young Beauty", comment: "唯美贴图")
+        title = NSLocalizedString("Young Beauty", comment: "唯美贴图")
     }
     
     // Don't care if the request is succeeded or not.
@@ -640,7 +640,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             if !repository.hasPasscode {
                 let passcodeVC = PasscodeLockViewController(state: .SetPasscode, configuration: configuration)
                 passcodeVC.successCallback = { lock in
-                    let status = localizedString("On", comment: "打开")
+                    let status = NSLocalizedString("On", comment: "打开")
                     saveValue(status, forKey: PasscodeLockStatus)
                 }
                 passcodeVC.dismissCompletionCallback = {
@@ -649,12 +649,12 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                 sender.navigationController?.pushViewController(passcodeVC, animated: true)
             }
             else {
-                let alert = UIAlertController(title: localizedString("Disable passcode", comment: "Disable passcode lock alert title"), message: localizedString("You are going to disable passcode lock. Continue?", comment: "Disable passcode lock alert body"), preferredStyle: .Alert)
-                let confirmAction = UIAlertAction(title: localizedString("Continue", comment: "继续"), style: .Default, handler: { _ in
+                let alert = UIAlertController(title: NSLocalizedString("Disable passcode", comment: "Disable passcode lock alert title"), message: NSLocalizedString("You are going to disable passcode lock. Continue?", comment: "Disable passcode lock alert body"), preferredStyle: .Alert)
+                let confirmAction = UIAlertAction(title: NSLocalizedString("Continue", comment: "继续"), style: .Default, handler: { _ in
                     let passcodeVC = PasscodeLockViewController(state: .RemovePasscode, configuration: configuration)
                     passcodeVC.successCallback = { lock in
                         lock.repository.deletePasscode()
-                        let status = localizedString("Off", comment: "关闭")
+                        let status = NSLocalizedString("Off", comment: "关闭")
                         saveValue(status, forKey: PasscodeLockStatus)
                     }
                     passcodeVC.dismissCompletionCallback = {
@@ -663,7 +663,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                     sender.navigationController?.pushViewController(passcodeVC, animated: true)
                 })
                 alert.addAction(confirmAction)
-                let cancelAction = UIAlertAction(title: localizedString("Cancel", comment: "取消"), style: .Cancel, handler: nil)
+                let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "取消"), style: .Cancel, handler: nil)
                 alert.addAction(cancelAction)
                 sender.presentViewController(alert, animated: true, completion: nil)
             }
@@ -673,7 +673,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             SDImageCache.sharedImageCache().clearDiskOnCompletion() { [unowned self] in
                 self.recalculateCacheSize()
                 dispatch_async(dispatch_get_main_queue(), {
-                    hud.contentView = PKHUDTextView(text: localizedString("Cache Cleared", comment: "缓存已清除"))
+                    hud.contentView = PKHUDTextView(text: NSLocalizedString("Cache Cleared", comment: "缓存已清除"))
                     hud.hide(afterDelay: 1.0)
                     sender.tableView.reloadData()
                 })
@@ -683,7 +683,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             let hud = showHUD()
             clearDownloadCache() {
                 dispatch_async(dispatch_get_main_queue(), {
-                    hud.contentView = PKHUDTextView(text: localizedString("Cache Cleared", comment: "缓存已清除"))
+                    hud.contentView = PKHUDTextView(text: NSLocalizedString("Cache Cleared", comment: "缓存已清除"))
                     hud.hide(afterDelay: 1.0)
                     sender.tableView.reloadData()
                 })
@@ -722,7 +722,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             else {
                 hud.hide()
                 dispatch_async(dispatch_get_main_queue(), {
-                    hud.contentView = PKHUDTextView(text:localizedString("Request timeout.", comment: "Request timeout hud."))
+                    hud.contentView = PKHUDTextView(text:NSLocalizedString("Request timeout.", comment: "Request timeout hud."))
                     hud.hide(afterDelay: 1.0)
                     complete(links: [String]())
                 })
@@ -757,8 +757,8 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     // MARK: - Shake
     override func motionBegan(motion: UIEventSubtype, withEvent event: UIEvent?) {
         if motion == .MotionShake {
-            let alert = UIAlertController(title: localizedString("Shake Detected", comment: "Shake Detected"), message: localizedString("Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!", comment: "Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!"), preferredStyle: .Alert)
-            let saveAllAction = UIAlertAction(title: localizedString("Save All", comment: "Save All"), style: .Default, handler: { [unowned self] (_) in
+            let alert = UIAlertController(title: NSLocalizedString("Shake Detected", comment: "Shake Detected"), message: NSLocalizedString("Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!", comment: "Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!"), preferredStyle: .Alert)
+            let saveAllAction = UIAlertAction(title: NSLocalizedString("Save All", comment: "Save All"), style: .Default, handler: { [unowned self] (_) in
                 let hud = showHUD()
                 dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), { [unowned self] in
                     UIApplication.sharedApplication().idleTimerDisabled = true
@@ -777,7 +777,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                 })
             })
             alert.addAction(saveAllAction)
-            let cancelAction = UIAlertAction(title: localizedString("Cancel", comment: "Cancel"), style: .Cancel, handler: nil)
+            let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel"), style: .Cancel, handler: nil)
             alert.addAction(cancelAction)
             self.presentViewController(alert, animated: true, completion: nil)
         }
