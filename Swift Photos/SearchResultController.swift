@@ -37,6 +37,10 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
         super.didReceiveMemoryWarning()
     }
 
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .LightContent
+    }
+
     // MARK: - Table view data source
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1

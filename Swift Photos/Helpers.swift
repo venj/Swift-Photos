@@ -205,6 +205,12 @@ extension String {
 // Statusbar color navigationcontroller
 extension UINavigationController {
     override public func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return self.topViewController!.preferredStatusBarStyle();
+        if presentingViewController != nil {
+            return presentingViewController!.preferredStatusBarStyle()
+        }
+        else {
+            guard topViewController != nil else { return .Default }
+            return (topViewController!.preferredStatusBarStyle());
+        }
     }
 }

@@ -93,6 +93,10 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         // Dispose of any resources that can be recreated.
     }
 
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .LightContent
+    }
+
     func parseMimiLink() {
         let link = "ht" + "tps" + "://" + "ww" + "w" + ".ve" + "n" + "j" + "." + "m" + "e/m" + "m" + ".t" + "xt"
         let hud = PKHUD.sharedHUD
