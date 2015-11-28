@@ -411,7 +411,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     
     func photoBrowser(photoBrowser: MWPhotoBrowser!, photoAtIndex index: UInt) -> MWPhotoProtocol! {
         let p = MWPhoto(URL: NSURL(string: images[Int(index)]))
-        p.caption = "\(index + 1)/\(images.count)"
+        p.caption = "(\(index + 1)/\(images.count)) " + currentTitle
         return p
     }
     
