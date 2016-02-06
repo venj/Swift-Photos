@@ -13,9 +13,9 @@ PODS:
   - PasscodeLock (1.0.2)
   - PKHUD (2.2.5)
   - Reveal-iOS-SDK (1.5.1)
-  - SDWebImage (3.7.3):
-    - SDWebImage/Core (= 3.7.3)
-  - SDWebImage/Core (3.7.3)
+  - SDWebImage (3.7.5):
+    - SDWebImage/Core (= 3.7.5)
+  - SDWebImage/Core (3.7.5)
   - UIColor_Hex_Swift (1.8)
 
 DEPENDENCIES:
@@ -40,7 +40,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   FlatUIColors:
-    :commit: 432438324267fdf356df8c9665126942e76b0653
+    :commit: fb034058a539795f9c01af26944975a672f4eb26
     :git: https://github.com/brynbellomy/FlatUIColors.git
   MMAppSwitcher:
     :commit: 8907ce78f11307bef19e9752c6a207e153349344
@@ -49,7 +49,7 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   Alamofire: 2457e1b2e6c46bb05c3a598c542b7bfd08893775
   DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
-  FlatUIColors: 99c998119dc370e8e141d498d3a23dbed43c1d1c
+  FlatUIColors: d4a5a0a8c1b61da6383946a1208cc27e440e3922
   Fuzi: 5efa21fb0ba3d7fdfb9baef49a194235f2cde341
   InAppSettingsKit: cc56d3ec45f11352a16d5b210da8a3fa1b9d05ed
   MBProgressHUD: 1569cf7ace17a8bac47aabfbb8580a49690386d1
@@ -58,7 +58,7 @@ SPEC CHECKSUMS:
   PasscodeLock: 4ae42c094224a01de3773fcd69ae33886394d959
   PKHUD: 15d9db01fb008bb9247c6d785c585f587955b113
   Reveal-iOS-SDK: c9c55cad2729c85f6ced415f1b21857c9a2d8ef9
-  SDWebImage: 1d2b1a1efda1ade1b00b6f8498865f8ddedc8a84
+  SDWebImage: 69c6303e3348fba97e03f65d65d4fbc26740f461
   UIColor_Hex_Swift: a66b9d5f6e8fddbd9fe32996504f0b7e9d20d680
 
 PODFILE CHECKSUM: 42624ffbc1d33a7221cf65af8ed9c1d814d517e9
