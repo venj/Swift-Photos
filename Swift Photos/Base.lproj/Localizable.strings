@@ -87,3 +87,18 @@
 
 /* Delete */
 "Delete" = "Delete";
+
+/* More */
+"More" = "More";
+
+/* More actions */
+"More actions" = "More actions";
+
+/* Edit */
+"Edit" = "Edit";
+
+/* Done */
+"Done" = "Done";
+
+/* Batch preload */
+"Batch preload" = "Batch preload";

@@ -3,7 +3,7 @@ PODS:
   - DACircularProgress (2.3.1)
   - FlatUIColors (0.3.0)
   - Fuzi (0.1.1)
-  - InAppSettingsKit (2.6)
+  - InAppSettingsKit (2.6.2)
   - MBProgressHUD (0.9.2)
   - MMAppSwitcher (0.3.0)
   - MWPhotoBrowser (2.1.1):
@@ -12,11 +12,11 @@ PODS:
     - SDWebImage (!= 3.7.2, ~> 3.7)
   - PasscodeLock (1.0.2)
   - PKHUD (2.2.5)
-  - Reveal-iOS-SDK (1.5.1)
+  - Reveal-iOS-SDK (1.6.2)
   - SDWebImage (3.7.5):
     - SDWebImage/Core (= 3.7.5)
   - SDWebImage/Core (3.7.5)
-  - UIColor_Hex_Swift (1.8)
+  - UIColor_Hex_Swift (1.9)
 
 DEPENDENCIES:
   - Alamofire (~> 3.0.0)
@@ -27,7 +27,7 @@ DEPENDENCIES:
   - MWPhotoBrowser (~> 2.1.1)
   - PasscodeLock (~> 1.0.2)
   - PKHUD (~> 2.2.3)
-  - Reveal-iOS-SDK (~> 1.5.1)
+  - Reveal-iOS-SDK (~> 1.6.2)
   - SDWebImage (~> 3.7.2)
   - UIColor_Hex_Swift (~> 1.2)
 
@@ -51,16 +51,16 @@ SPEC CHECKSUMS:
   DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
   FlatUIColors: d4a5a0a8c1b61da6383946a1208cc27e440e3922
   Fuzi: 5efa21fb0ba3d7fdfb9baef49a194235f2cde341
-  InAppSettingsKit: cc56d3ec45f11352a16d5b210da8a3fa1b9d05ed
+  InAppSettingsKit: a384eab9c18d9e8d4256e36f17a61e37f9226285
   MBProgressHUD: 1569cf7ace17a8bac47aabfbb8580a49690386d1
   MMAppSwitcher: 11d6f3c08fc70fe1f1386223f89d4f96f95e8061
   MWPhotoBrowser: ba0d0c09ffda3a7ea10093518738c502c1c7141c
   PasscodeLock: 4ae42c094224a01de3773fcd69ae33886394d959
   PKHUD: 15d9db01fb008bb9247c6d785c585f587955b113
-  Reveal-iOS-SDK: c9c55cad2729c85f6ced415f1b21857c9a2d8ef9
+  Reveal-iOS-SDK: e2250b3c155bcfac53ae223ddc1f76d08f206c33
   SDWebImage: 69c6303e3348fba97e03f65d65d4fbc26740f461
-  UIColor_Hex_Swift: a66b9d5f6e8fddbd9fe32996504f0b7e9d20d680
+  UIColor_Hex_Swift: 2ee747c0fed8b72b2135ef474b80a6921e489daa
 
-PODFILE CHECKSUM: 42624ffbc1d33a7221cf65af8ed9c1d814d517e9
+PODFILE CHECKSUM: 2c24d27cc95b7abfde1710a374e9c1f085722808
 
-COCOAPODS: 1.0.0.beta.2
+COCOAPODS: 1.0.0.beta.3

@@ -77,7 +77,7 @@ class CLLinksTableViewTableViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let count = clLinks.count
-        for var i = 0; i < count; i++ {
+        for i in 0 ..< count {
             //let ip = NSIndexPath(forRow: i, inSection: 0);
             let cell = tableView.cellForRowAtIndexPath(indexPath)
             if indexPath.row == i {

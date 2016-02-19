@@ -87,3 +87,18 @@
 
 /* Delete */
 "Delete" = "删除";
+
+/* More */
+"More" = "更多";
+
+/* More actions */
+"More actions" = "更多操作";
+
+/* Edit */
+"Edit" = "编辑";
+
+/* Done */
+"Done" = "完成";
+
+/* Batch preload */
+"Batch preload" = "批量加载";

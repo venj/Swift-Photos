@@ -37,6 +37,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     var searchController:UISearchController!
     var resultsController:SearchResultController!
     var myActivity : NSUserActivity!
+    private var editButton : UIBarButtonItem?
     private var settingsController : UIViewController?
 
     let categories = [NSLocalizedString("Daguerre's Flag", comment: "達蓋爾的旗幟"): 16,
@@ -63,12 +64,23 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         else {
             setDefaultTitle()
         }
-        let categoryButton = UIBarButtonItem(title: NSLocalizedString("Categories", comment: "分类"), style: .Plain, target: self, action: "showSections:")
-        let settingsButton = UIBarButtonItem(title: NSLocalizedString("Settings", comment: "设置"), style: .Plain, target: self, action: "showSettings:")
-        navigationItem.rightBarButtonItems = [settingsButton, categoryButton]
+
+        editButton = UIBarButtonItem(title: NSLocalizedString("Edit", comment: "编辑"), style: .Plain, target: self, action: "showEdit:")
+        let actionButton = UIBarButtonItem(title: NSLocalizedString("More", comment: "更多"), style: .Plain, target: self, action: "showActions:")
+        navigationItem.rightBarButtonItems = [actionButton, editButton!]
+
+        let flexSpaceToolbarItem = UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: nil)
+        let preloadAction = UIBarButtonItem(title: NSLocalizedString("Batch preload", comment: "Batch preload"), style: .Plain, target: self, action: "batchPreload:")
+        preloadAction.enabled = false
+        preloadAction.tintColor = mainThemeColor()
+        navigationController?.toolbarHidden = true
+        setToolbarItems([flexSpaceToolbarItem, preloadAction], animated: true)
+
         loadFirstPageForKey(title!)
         
         tableView.separatorInset = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
+        tableView.allowsMultipleSelection = true
+        tableView.allowsMultipleSelectionDuringEditing = true
         // SearchBar
         resultsController = SearchResultController()
         resultsController.forumID = forumID
@@ -186,11 +198,12 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                         if title.characters.count < 4 { continue }
                         self.posts.append(Post(title: title, link: getDaguerreLink(self.forumID) + link))
                         // Note the i++ here. It is much of a hack just for save one line.
-                        indexPathes.append(NSIndexPath(forRow:cellCount + (i++), inSection: 0))
+                        indexPathes.append(NSIndexPath(forRow:cellCount + i, inSection: 0))
+                        i += 1
                     }
                     self.resultsController.posts = self.posts // Assignment
                     self.tableView.insertRowsAtIndexPaths(indexPathes, withRowAnimation:.Top)
-                    self.page++
+                    self.page += 1
                     hud.hide()
                 }
                 catch _ {
@@ -225,7 +238,6 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                 link = mimiLink + "forumdisplay.php?fid=\(forumID)"
                 loadPostList(link, forPage: page)
             }
-
         }
     }
     
@@ -254,8 +266,21 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         cell.indentationWidth = -15.0
         return cell
     }
+
+    override func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
+        if tableView.editing {
+            toolbarItems?.forEach { $0.enabled = tableView.indexPathsForSelectedRows?.count > 0 }
+        }
+    }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if tableView.editing {
+            toolbarItems?.forEach { $0.enabled = true }
+            return
+        }
+        else {
+            toolbarItems?.forEach { $0.enabled = false }
+        }
         let link = posts[indexPath.row].link
         self.images = [String]()
         // Continuity for both local and remote data
@@ -336,19 +361,8 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         let post = posts[indexPath.row]
         if !post.imageCached {
             // Preload
-            let preloadAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: NSLocalizedString("Preload", comment: "Preload Button.")) { (action, indexPath) in
-                self.cacheImages(forIndexPath: indexPath, withProgressAction: { (progress) in
-                    // Update Progress.
-                    // FIXME: If the cell is preloading, and we switch to another section, the progress will keep updating.
-                    guard let cell = tableView.cellForRowAtIndexPath(indexPath) as? ProgressTableViewCell else { return }
-                    post.progress = progress
-                    dispatch_async(dispatch_get_main_queue(), {
-                        cell.progress = progress
-                    })
-                })
-                if tableView.editing {
-                    tableView.setEditing(false, animated: true)
-                }
+            let preloadAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: NSLocalizedString("Preload", comment: "Preload Button.")) { [weak self] (_, indexPath) in
+                self?.preloadIndexPath(indexPath)
             }
             preloadAction.backgroundColor = FlatUIColors.wisteriaColor()
             //Save
@@ -403,7 +417,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     }
     
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) { }
-    
+
     // MARK: MWPhotoBrowser Delegate
     func numberOfPhotosInPhotoBrowser(photoBrowser: MWPhotoBrowser!) -> UInt {
         return UInt(images.count)
@@ -426,7 +440,19 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     }
     
     // MARK: Actions
-    @IBAction func showSections(sender:AnyObject?) {
+    func showActions(sender: UIBarButtonItem?) {
+        exitEdit()
+        let sheet = UIAlertController(title: NSLocalizedString("More actions", comment: "更多操作"), message: nil, preferredStyle: .ActionSheet)
+        let categoryAction = UIAlertAction(title: NSLocalizedString("Categories", comment: "分类"), style: .Default, handler: showSections)
+        let settingsAction = UIAlertAction(title: NSLocalizedString("Settings", comment: "设置"), style: .Default, handler: showSettings)
+        let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "取消"), style: .Cancel, handler: nil)
+        var actions = [categoryAction, settingsAction]
+        if UIDevice.currentDevice().userInterfaceIdiom != .Pad { actions.append(cancelAction) }
+        actions.forEach(sheet.addAction)
+        presentViewController(sheet, animated: true, completion: nil)
+    }
+
+    func showSections(action: UIAlertAction) {
         let sectionsController = UIAlertController(title: NSLocalizedString("Please select a category", comment: "ActionSheet title."), message: "", preferredStyle: .ActionSheet)
         sectionsController.popoverPresentationController?.delegate = self
 
@@ -445,7 +471,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         }
     }
     
-    @IBAction func showSettings(sender:AnyObject?) {
+    func showSettings(action: UIAlertAction) {
         if getValue(CurrentCLLinkKey) == nil {
             getDaguerreLink(self.forumID)
         }
@@ -470,6 +496,30 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             self.presentViewController(settingsNavigationController, animated: true) {}
             hud.hide()
         }
+    }
+
+    func showEdit(sender: UIBarButtonItem?) {
+        if !tableView.editing {
+            tableView.setEditing(true, animated: true)
+            toolbarItems?.forEach { $0.enabled = false }
+            editButton?.title = NSLocalizedString("Done", comment: "完成")
+            navigationController?.setToolbarHidden(false, animated: true)
+        }
+        else {
+            exitEdit()
+        }
+    }
+
+    func batchPreload(sender: UIBarButtonItem?) {
+        let indexPaths = tableView.indexPathsForSelectedRows
+        exitEdit()
+        indexPaths?.forEach(preloadIndexPath)
+    }
+
+    func exitEdit() {
+        navigationController?.setToolbarHidden(true, animated: true)
+        tableView.setEditing(false, animated: true)
+        editButton!.title = NSLocalizedString("Edit", comment: "编辑")
     }
 
     @IBAction func refresh(sender:AnyObject?) {
@@ -595,7 +645,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         let totalImagesCount = images.count
         for image in images {
             if SDWebImageManager.sharedManager().cachedImageExistsForURL(NSURL(string: image)) {
-                downloadedImagesCount++
+                downloadedImagesCount += 1
                 let progress = Float(downloadedImagesCount) / Float(totalImagesCount)
                 progressAction?(progress)
                 continue
@@ -628,8 +678,24 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             }
             // prefetch images
             self.fetchImagesToCache(fetchedImages, withProgressAction:progressAction)
-            },
-            errorHandler: nil)
+        },
+        errorHandler: nil)
+    }
+
+    func preloadIndexPath(indexPath: NSIndexPath) {
+        self.cacheImages(forIndexPath: indexPath, withProgressAction: { [weak self] (progress) in
+            // Update Progress.
+            // FIXME: If the cell is preloading, and we switch to another section, the progress will keep updating.
+            guard let cell = self?.tableView.cellForRowAtIndexPath(indexPath) as? ProgressTableViewCell else { return }
+            let post = self?.posts[indexPath.row]
+            post?.progress = progress
+            dispatch_async(dispatch_get_main_queue(), {
+                cell.progress = progress
+            })
+        })
+        if tableView.editing {
+            tableView.setEditing(false, animated: true)
+        }
     }
 
     // MARK: Settings

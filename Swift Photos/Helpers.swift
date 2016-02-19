@@ -103,7 +103,7 @@ func localDirectoryForPost(link:String, create:Bool = true) -> String? {
 
 func saveCachedLinksToHomeDirectory(links:[String], forPostLink postLink:String) {
     let fm = NSFileManager.defaultManager()
-    for var i = 0; i < links.count; i++ {
+    for i in 0 ..< links.count {
         let imagePath = localImagePath(links[i])
         let destDir = localDirectoryForPost(postLink)!
         let destImageName = destDir.vc_stringByAppendingPathComponent("\(i + 1)")
@@ -136,13 +136,13 @@ func getDaguerreLink(forumID:Int) -> String {
     if forumID == DaguerreForumID {
         let link = getValue(CurrentCLLinkKey) as? String
         if let l = link?.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()) {
-            let clearedLink = l.stringByReplacingOccurrencesOfString("(科学上网)", withString: "", options: NSStringCompareOptions.CaseInsensitiveSearch, range: Range(start: l.startIndex, end: l.endIndex))
+            let clearedLink = l.stringByReplacingOccurrencesOfString("(科学上网)", withString: "", options: NSStringCompareOptions.CaseInsensitiveSearch, range: l.startIndex ..< l.endIndex)
             return clearedLink
         }
         else {
             let links = siteLinks(DaguerreForumID)
             var l = links[0].stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
-            l = l.stringByReplacingOccurrencesOfString("(科学上网)", withString: "", options: NSStringCompareOptions.CaseInsensitiveSearch, range: Range(start: l.startIndex, end: l.endIndex))
+            l = l.stringByReplacingOccurrencesOfString("(科学上网)", withString: "", options: NSStringCompareOptions.CaseInsensitiveSearch, range: l.startIndex ..< l.endIndex)
             if link == nil {
                 saveValue(l, forKey: CurrentCLLinkKey)
             }
