@@ -37,6 +37,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     var searchController:UISearchController!
     var resultsController:SearchResultController!
     var myActivity : NSUserActivity!
+    private var preloadItem : UIBarButtonItem?
     private var editButton : UIBarButtonItem?
     private var settingsController : UIViewController?
 
@@ -69,12 +70,16 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         let actionButton = UIBarButtonItem(title: NSLocalizedString("More", comment: "更多"), style: .Plain, target: self, action: "showActions:")
         navigationItem.rightBarButtonItems = [actionButton, editButton!]
 
+        let selectAllItems = UIBarButtonItem(title: NSLocalizedString("Select all", comment: "Select all"), style: .Plain, target: self, action: "selectAllCells:")
+        let deselectAllItems = UIBarButtonItem(title: NSLocalizedString("Deselect all", comment: "Deselect all"), style: .Plain, target: self, action: "deselectAllCells:")
         let flexSpaceToolbarItem = UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: nil)
-        let preloadAction = UIBarButtonItem(title: NSLocalizedString("Batch preload", comment: "Batch preload"), style: .Plain, target: self, action: "batchPreload:")
-        preloadAction.enabled = false
-        preloadAction.tintColor = mainThemeColor()
+        preloadItem = UIBarButtonItem(title: NSLocalizedString("Batch preload", comment: "Batch preload"), style: .Plain, target: self, action: "batchPreload:")
+        preloadItem!.enabled = false
+        preloadItem!.tintColor = mainThemeColor()
+        selectAllItems.tintColor = mainThemeColor()
+        deselectAllItems.tintColor = mainThemeColor()
         navigationController?.toolbarHidden = true
-        setToolbarItems([flexSpaceToolbarItem, preloadAction], animated: true)
+        setToolbarItems([deselectAllItems, selectAllItems, flexSpaceToolbarItem, preloadItem!], animated: true)
 
         loadFirstPageForKey(title!)
         
@@ -269,17 +274,17 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
 
     override func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
         if tableView.editing {
-            toolbarItems?.forEach { $0.enabled = tableView.indexPathsForSelectedRows?.count > 0 }
+            preloadItem?.enabled = tableView.indexPathsForSelectedRows?.count > 0
         }
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if tableView.editing {
-            toolbarItems?.forEach { $0.enabled = true }
+            preloadItem?.enabled = true
             return
         }
         else {
-            toolbarItems?.forEach { $0.enabled = false }
+            preloadItem?.enabled = false
         }
         let link = posts[indexPath.row].link
         self.images = [String]()
@@ -501,7 +506,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     func showEdit(sender: UIBarButtonItem?) {
         if !tableView.editing {
             tableView.setEditing(true, animated: true)
-            toolbarItems?.forEach { $0.enabled = false }
+            preloadItem?.enabled = false
             editButton?.title = NSLocalizedString("Done", comment: "完成")
             navigationController?.setToolbarHidden(false, animated: true)
         }
@@ -514,6 +519,26 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         let indexPaths = tableView.indexPathsForSelectedRows
         exitEdit()
         indexPaths?.forEach(preloadIndexPath)
+    }
+
+    func selectAllCells(sender: UIBarButtonItem?) {
+        if tableView.editing {
+            for i in 0 ..< posts.count {
+                let indexPath = NSIndexPath(forRow: i, inSection: 0)
+                tableView.selectRowAtIndexPath(indexPath, animated: false, scrollPosition: .None)
+            }
+            preloadItem?.enabled = true
+        }
+    }
+
+    func deselectAllCells(sender: UIBarButtonItem?) {
+        if tableView.editing {
+            for i in 0 ..< posts.count {
+                let indexPath = NSIndexPath(forRow: i, inSection: 0)
+                tableView.deselectRowAtIndexPath(indexPath, animated: false)
+            }
+            preloadItem?.enabled = false
+        }
     }
 
     func exitEdit() {

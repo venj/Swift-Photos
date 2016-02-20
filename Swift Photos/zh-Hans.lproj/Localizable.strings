@@ -102,3 +102,9 @@
 
 /* Batch preload */
 "Batch preload" = "批量加载";
+
+/* Select all */
+"Select all" = "全选";
+
+/* Deselect all */
+"Deselect all" = "取消全选";

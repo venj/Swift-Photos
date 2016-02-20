@@ -102,3 +102,9 @@
 
 /* Batch preload */
 "Batch preload" = "Batch preload";
+
+/* Select all */
+"Select all" = "Select all";
+
+/* Deselect all */
+"Deselect all" = "Deselect all";
