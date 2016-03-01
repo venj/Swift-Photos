@@ -11,101 +11,8 @@ index 049d836..02242e7 100644
                                                    progress:^(NSInteger receivedSize, NSInteger expectedSize) {
                                                        if (expectedSize > 0) {
                                                            float progress = receivedSize / (float)expectedSize;
-diff --git a/Pods/MWPhotoBrowser/Pod/Classes/MWTapDetectingImageView.h b/Pods/MWPhotoBrowser/Pod/Classes/MWTapDetectingImageView.h
-index 8445b62..c6567d7 100644
---- a/Pods/MWPhotoBrowser/Pod/Classes/MWTapDetectingImageView.h
-+++ b/Pods/MWPhotoBrowser/Pod/Classes/MWTapDetectingImageView.h
-@@ -21,6 +21,7 @@
- @optional
- 
- - (void)imageView:(UIImageView *)imageView singleTapDetected:(UITouch *)touch;
-+- (void)imageView:(UIImageView *)imageView singleTapDetected:(UITouch *)touch isMultiFinger:(BOOL)isMultiFinger;
- - (void)imageView:(UIImageView *)imageView doubleTapDetected:(UITouch *)touch;
- - (void)imageView:(UIImageView *)imageView tripleTapDetected:(UITouch *)touch;
- 
-diff --git a/Pods/MWPhotoBrowser/Pod/Classes/MWTapDetectingImageView.m b/Pods/MWPhotoBrowser/Pod/Classes/MWTapDetectingImageView.m
-index b0666ba..1e8ec16 100644
---- a/Pods/MWPhotoBrowser/Pod/Classes/MWTapDetectingImageView.m
-+++ b/Pods/MWPhotoBrowser/Pod/Classes/MWTapDetectingImageView.m
-@@ -33,10 +33,16 @@
- 
- - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
- 	UITouch *touch = [touches anyObject];
-+    NSInteger numberOfFingers = [[event allTouches] count];
- 	NSUInteger tapCount = touch.tapCount;
- 	switch (tapCount) {
--		case 1:
--			[self handleSingleTap:touch];
-+        case 1:
-+            if (numberOfFingers == 1) {
-+                [self handleSingleTap:touch];
-+            }
-+            else {
-+                [self handleMultiFingerSingleTap:touch];
-+            }
- 			break;
- 		case 2:
- 			[self handleDoubleTap:touch];
-@@ -54,7 +60,10 @@
- 	if ([_tapDelegate respondsToSelector:@selector(imageView:singleTapDetected:)])
- 		[_tapDelegate imageView:self singleTapDetected:touch];
- }
--
-+- (void)handleMultiFingerSingleTap:(UITouch *)touch {
-+    if ([_tapDelegate respondsToSelector:@selector(imageView:singleTapDetected:isMultiFinger:)])
-+        [_tapDelegate imageView:self singleTapDetected:touch isMultiFinger:YES];
-+}
- - (void)handleDoubleTap:(UITouch *)touch {
- 	if ([_tapDelegate respondsToSelector:@selector(imageView:doubleTapDetected:)])
- 		[_tapDelegate imageView:self doubleTapDetected:touch];
-diff --git a/Pods/MWPhotoBrowser/Pod/Classes/MWTapDetectingView.h b/Pods/MWPhotoBrowser/Pod/Classes/MWTapDetectingView.h
-index d5309e9..69432ef 100644
---- a/Pods/MWPhotoBrowser/Pod/Classes/MWTapDetectingView.h
-+++ b/Pods/MWPhotoBrowser/Pod/Classes/MWTapDetectingView.h
-@@ -21,6 +21,7 @@
- @optional
- 
- - (void)view:(UIView *)view singleTapDetected:(UITouch *)touch;
-+- (void)view:(UIView *)view singleTapDetected:(UITouch *)touch isMultiFinger:(BOOL)isMultiFinger;
- - (void)view:(UIView *)view doubleTapDetected:(UITouch *)touch;
- - (void)view:(UIView *)view tripleTapDetected:(UITouch *)touch;
- 
-diff --git a/Pods/MWPhotoBrowser/Pod/Classes/MWTapDetectingView.m b/Pods/MWPhotoBrowser/Pod/Classes/MWTapDetectingView.m
-index e1796bc..cbe7a0a 100644
---- a/Pods/MWPhotoBrowser/Pod/Classes/MWTapDetectingView.m
-+++ b/Pods/MWPhotoBrowser/Pod/Classes/MWTapDetectingView.m
-@@ -26,10 +26,16 @@
- 
- - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
- 	UITouch *touch = [touches anyObject];
-+    NSInteger numberOfFingers = [[event allTouches] count];
- 	NSUInteger tapCount = touch.tapCount;
- 	switch (tapCount) {
- 		case 1:
--			[self handleSingleTap:touch];
-+            if (numberOfFingers == 1) {
-+                [self handleSingleTap:touch];
-+            }
-+            else {
-+                [self handleMultiFingerSingleTap:touch];
-+            }
- 			break;
- 		case 2:
- 			[self handleDoubleTap:touch];
-@@ -48,6 +54,11 @@
- 		[_tapDelegate view:self singleTapDetected:touch];
- }
- 
-+- (void)handleMultiFingerSingleTap:(UITouch *)touch {
-+    if ([_tapDelegate respondsToSelector:@selector(view:singleTapDetected:isMultiFinger:)])
-+        [_tapDelegate view:self singleTapDetected:touch isMultiFinger:YES];
-+}
-+
- - (void)handleDoubleTap:(UITouch *)touch {
- 	if ([_tapDelegate respondsToSelector:@selector(view:doubleTapDetected:)])
- 		[_tapDelegate view:self doubleTapDetected:touch];
 diff --git a/Pods/MWPhotoBrowser/Pod/Classes/MWZoomingScrollView.m b/Pods/MWPhotoBrowser/Pod/Classes/MWZoomingScrollView.m
-index 86aa735..f9b03ec 100644
+index 86aa735..4bafd79 100644
 --- a/Pods/MWPhotoBrowser/Pod/Classes/MWZoomingScrollView.m
 +++ b/Pods/MWPhotoBrowser/Pod/Classes/MWZoomingScrollView.m
 @@ -267,27 +267,13 @@
@@ -147,26 +54,33 @@ index 86aa735..f9b03ec 100644
  - (void)handleDoubleTap:(CGPoint)touchPoint {
      
      // Dont double tap to zoom if showing a video
-@@ -410,8 +392,11 @@
+@@ -410,8 +392,8 @@
  }
  
  // Image View
 -- (void)imageView:(UIImageView *)imageView singleTapDetected:(UITouch *)touch { 
 -    [self handleSingleTap:[touch locationInView:imageView]];
 +- (void)imageView:(UIImageView *)imageView singleTapDetected:(UITouch *)touch {
-+    [self imageView:imageView singleTapDetected:touch isMultiFinger:NO];
-+}
-+- (void)imageView:(UIImageView *)imageView singleTapDetected:(UITouch *)touch isMultiFinger:(BOOL) isMultiFinger {
-+    [self view:imageView singleTapDetected:touch isMultiFinger:isMultiFinger];
++    [self view:(imageView.superview ? imageView.superview : imageView) singleTapDetected:touch];
  }
  - (void)imageView:(UIImageView *)imageView doubleTapDetected:(UITouch *)touch {
      [self handleDoubleTap:[touch locationInView:imageView]];
-@@ -419,24 +404,39 @@
+@@ -419,24 +401,33 @@
  
  // Background View
  - (void)view:(UIView *)view singleTapDetected:(UITouch *)touch {
 -    // Translate touch location to image view location
-+    [self view:view singleTapDetected:touch isMultiFinger:NO];
++    CGFloat touchX = [touch locationInView:view.window].x;
++    CGFloat width = view.frame.size.width;
++    if (touchX < width * 0.25 && touch.tapCount == 1) {
++        [_photoBrowser showPreviousPhotoAnimated:NO];
++    }
++    else if (touchX > width * 0.75 && touch.tapCount == 1)  { // Now use double tap to hide nav bar
++        [_photoBrowser showNextPhotoAnimated:NO];
++    }
++    else if (touch.tapCount == 1) {
++        [_photoBrowser performSelector:@selector(toggleControls) withObject:nil afterDelay:0.2];
++    }
 +}
 +
 +- (CGPoint)translateLocationOfTouch:(UITouch *)touch inView:(UIView *)view {
@@ -179,22 +93,6 @@ index 86aa735..f9b03ec 100644
 -    [self handleSingleTap:CGPointMake(touchX, touchY)];
 +    return CGPointMake(touchX, touchY);
  }
-+
-+- (void)view:(UIView *)view singleTapDetected:(UITouch *)touch isMultiFinger:(BOOL)isMultiFinger {
-+    if (!isMultiFinger) {
-+        CGFloat touchX = [touch locationInView:view.window].x;
-+        CGFloat width = view.frame.size.width;
-+        if (touchX < width / 2.0) {
-+            [_photoBrowser showPreviousPhotoAnimated:NO];
-+        }
-+        else { // Now use double tap to hide nav bar
-+            [_photoBrowser showNextPhotoAnimated:NO];
-+        }
-+    }
-+    else {
-+        [_photoBrowser performSelector:@selector(toggleControls) withObject:nil afterDelay:0.2];
-+    }
-+}
 +
  - (void)view:(UIView *)view doubleTapDetected:(UITouch *)touch {
      // Translate touch location to image view location
