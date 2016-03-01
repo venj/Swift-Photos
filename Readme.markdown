@@ -1,7 +1,7 @@
 美图赏
 =====
 
-**项目已经兼容Swift 2.0，需要Xcode 7+编译。**
+**项目已经兼容Swift 2.2，需要Xcode 7.2+编译。**
 
 美图欣赏利器。Deployment Target现在最低为iOS 8.1。
 
@@ -10,10 +10,10 @@
 
 你需要安装最新版的Xcode 7+和Cocoa Pods（0.36.2(?)以上版本）。然后执行如下操作：
 
-```
-$ cp Swift\ Photos/Common.swift.skel Swift\ Photos/Common.swift
-(编辑，并填入正确的网址。)
-$ pod install
+``` bash
+cp Swift\ Photos/Common.swift.skel Swift\ Photos/Common.swift #(编辑，并填入正确的网址。)
+pod install
+patch -p1 -i MWPhotoBrowser.patch
 ```
 
 然后打开Swift Photo.xcworkspace，编译安装即可。
