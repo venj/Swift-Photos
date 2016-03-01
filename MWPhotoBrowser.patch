@@ -12,7 +12,7 @@ index 049d836..02242e7 100644
                                                        if (expectedSize > 0) {
                                                            float progress = receivedSize / (float)expectedSize;
 diff --git a/Pods/MWPhotoBrowser/Pod/Classes/MWZoomingScrollView.m b/Pods/MWPhotoBrowser/Pod/Classes/MWZoomingScrollView.m
-index 86aa735..4bafd79 100644
+index 86aa735..f5216b3 100644
 --- a/Pods/MWPhotoBrowser/Pod/Classes/MWZoomingScrollView.m
 +++ b/Pods/MWPhotoBrowser/Pod/Classes/MWZoomingScrollView.m
 @@ -267,27 +267,13 @@
@@ -61,7 +61,7 @@ index 86aa735..4bafd79 100644
 -- (void)imageView:(UIImageView *)imageView singleTapDetected:(UITouch *)touch { 
 -    [self handleSingleTap:[touch locationInView:imageView]];
 +- (void)imageView:(UIImageView *)imageView singleTapDetected:(UITouch *)touch {
-+    [self view:(imageView.superview ? imageView.superview : imageView) singleTapDetected:touch];
++    [self view:imageView.window singleTapDetected:touch];
  }
  - (void)imageView:(UIImageView *)imageView doubleTapDetected:(UITouch *)touch {
      [self handleDoubleTap:[touch locationInView:imageView]];
@@ -70,12 +70,12 @@ index 86aa735..4bafd79 100644
  // Background View
  - (void)view:(UIView *)view singleTapDetected:(UITouch *)touch {
 -    // Translate touch location to image view location
-+    CGFloat touchX = [touch locationInView:view.window].x;
++    CGFloat touchX = [touch locationInView:view].x;
 +    CGFloat width = view.frame.size.width;
 +    if (touchX < width * 0.25 && touch.tapCount == 1) {
 +        [_photoBrowser showPreviousPhotoAnimated:NO];
 +    }
-+    else if (touchX > width * 0.75 && touch.tapCount == 1)  { // Now use double tap to hide nav bar
++    else if (touchX > width * 0.75 && touch.tapCount == 1)  {
 +        [_photoBrowser showNextPhotoAnimated:NO];
 +    }
 +    else if (touch.tapCount == 1) {
