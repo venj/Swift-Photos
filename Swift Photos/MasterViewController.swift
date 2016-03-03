@@ -448,13 +448,17 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     func showActions(sender: UIBarButtonItem?) {
         exitEdit()
         let sheet = UIAlertController(title: NSLocalizedString("More actions", comment: "更多操作"), message: nil, preferredStyle: .ActionSheet)
+        sheet.popoverPresentationController?.delegate = self
+
         let categoryAction = UIAlertAction(title: NSLocalizedString("Categories", comment: "分类"), style: .Default, handler: showSections)
         let settingsAction = UIAlertAction(title: NSLocalizedString("Settings", comment: "设置"), style: .Default, handler: showSettings)
         let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "取消"), style: .Cancel, handler: nil)
         var actions = [categoryAction, settingsAction]
         if UIDevice.currentDevice().userInterfaceIdiom != .Pad { actions.append(cancelAction) }
         actions.forEach(sheet.addAction)
-        presentViewController(sheet, animated: true, completion: nil)
+        presentViewController(sheet, animated: true) {
+            sheet.popoverPresentationController?.passthroughViews = nil
+        }
     }
 
     func showSections(action: UIAlertAction) {
@@ -561,7 +565,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
 
     // MARK: - UIPopoverPresentationControllerDelegate
     func prepareForPopoverPresentation(popoverPresentationController: UIPopoverPresentationController) {
-        popoverPresentationController.barButtonItem = navigationItem.rightBarButtonItems?[1]
+        popoverPresentationController.barButtonItem = navigationItem.rightBarButtonItems?[0]
     }
 
     // MARK: Helper
