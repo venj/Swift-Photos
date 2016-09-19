@@ -10,14 +10,14 @@ import Foundation
 
 extension String {
     func strip() -> String {
-        return self.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+        return trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
     }
 
-    func split(separator: String) -> [String] {
-        return self.componentsSeparatedByString(separator)
+    func split(_ separator: String) -> [String] {
+        return components(separatedBy: separator)
     }
 
-    func split(byCharacterSet set: NSCharacterSet) -> [String] {
-        return self.componentsSeparatedByCharactersInSet(set)
+    func split(byCharacterSet set: CharacterSet) -> [String] {
+        return components(separatedBy: set)
     }
 }

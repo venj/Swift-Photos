@@ -108,3 +108,6 @@
 
 /* Deselect all */
 "Deselect all" = "取消全选";
+
+/* Swift Photos needs your finger print to protect your content. */
+"Swift Photos needs your finger print to protect your content." = "美图赏需要你的指纹来保护应用里的内容不被他人窥视。";

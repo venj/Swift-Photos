@@ -16,7 +16,7 @@ class CLLinksTableViewTableViewController: UITableViewController {
         super.init(coder: aDecoder)!
     }
 
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
     
@@ -24,12 +24,12 @@ class CLLinksTableViewTableViewController: UITableViewController {
         super.init(style: style)
     }
     
-    var clLinks : [String]!
+    var clLinks : [String] = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         title = NSLocalizedString("Choose 1024 Link", comment: "选择草榴网址")
-        tableView.registerClass(NSClassFromString("UITableViewCell"), forCellReuseIdentifier: CLLinksCellIdentifier)
+        tableView.register(NSClassFromString("UITableViewCell"), forCellReuseIdentifier: CLLinksCellIdentifier)
 
         if #available(iOS 9, *) {
             tableView.cellLayoutMarginsFollowReadableWidth = false
@@ -41,53 +41,53 @@ class CLLinksTableViewTableViewController: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
 
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent
+    override var preferredStatusBarStyle : UIStatusBarStyle {
+        return .lightContent
     }
 
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return clLinks.count
     }
 
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(CLLinksCellIdentifier, forIndexPath: indexPath) 
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: CLLinksCellIdentifier, for: indexPath) 
         
-        let clLink = clLinks[indexPath.row]
+        let clLink = clLinks[(indexPath as NSIndexPath).row]
         cell.textLabel!.text = clLink
         let currentCLLink = getValue(CurrentCLLinkKey) as! NSString?
         
         if let l = currentCLLink {
-            if l.isEqualToString(clLink) {
-                cell.accessoryType = .Checkmark
+            if l.isEqual(to: clLink) {
+                cell.accessoryType = .checkmark
             }
             else {
-                cell.accessoryType = .None
+                cell.accessoryType = .none
             }
         }
         
         return cell
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let count = clLinks.count
         for i in 0 ..< count {
             //let ip = NSIndexPath(forRow: i, inSection: 0);
-            let cell = tableView.cellForRowAtIndexPath(indexPath)
-            if indexPath.row == i {
-                cell?.accessoryType = .Checkmark
+            let cell = tableView.cellForRow(at: indexPath)
+            if (indexPath as NSIndexPath).row == i {
+                cell?.accessoryType = .checkmark
             }
             else {
-                cell?.accessoryType = .None
+                cell?.accessoryType = .none
             }
         }
         tableView.reloadData()
-        saveValue(clLinks[indexPath.row], forKey: CurrentCLLinkKey)
+        saveValue(clLinks[(indexPath as NSIndexPath).row], forKey: CurrentCLLinkKey)
     }
 }

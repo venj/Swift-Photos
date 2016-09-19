@@ -16,6 +16,26 @@ import SDWebImage
 import PasscodeLock
 import FlatUIColors
 import Fuzi
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 
 class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhotoBrowserDelegate, UISearchControllerDelegate, UIPopoverPresentationControllerDelegate {
     
@@ -33,13 +53,12 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     var currentTitle:String = ""
     var currentCLLink:String = ""
     var settingsViewController:IASKAppSettingsViewController!
-    var sheet:UIActionSheet!
     var searchController:UISearchController!
     var resultsController:SearchResultController!
     var myActivity : NSUserActivity!
-    private var preloadItem : UIBarButtonItem?
-    private var editButton : UIBarButtonItem?
-    private var settingsController : UIViewController?
+    fileprivate var preloadItem : UIBarButtonItem?
+    fileprivate var editButton : UIBarButtonItem?
+    fileprivate var settingsController : UIViewController?
 
     let categories = [NSLocalizedString("Daguerre's Flag", comment: "達蓋爾的旗幟"): 16,
                       NSLocalizedString("Young Beauty", comment: "唯美贴图"): 53,
@@ -66,19 +85,19 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             setDefaultTitle()
         }
 
-        editButton = UIBarButtonItem(title: NSLocalizedString("Edit", comment: "编辑"), style: .Plain, target: self, action: "showEdit:")
-        let actionButton = UIBarButtonItem(title: NSLocalizedString("More", comment: "更多"), style: .Plain, target: self, action: "showActions:")
+        editButton = UIBarButtonItem(title: NSLocalizedString("Edit", comment: "编辑"), style: .plain, target: self, action: #selector(MasterViewController.showEdit(_:)))
+        let actionButton = UIBarButtonItem(title: NSLocalizedString("More", comment: "更多"), style: .plain, target: self, action: #selector(MasterViewController.showActions(_:)))
         navigationItem.rightBarButtonItems = [actionButton, editButton!]
 
-        let selectAllItems = UIBarButtonItem(title: NSLocalizedString("Select all", comment: "Select all"), style: .Plain, target: self, action: "selectAllCells:")
-        let deselectAllItems = UIBarButtonItem(title: NSLocalizedString("Deselect all", comment: "Deselect all"), style: .Plain, target: self, action: "deselectAllCells:")
-        let flexSpaceToolbarItem = UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: nil)
-        preloadItem = UIBarButtonItem(title: NSLocalizedString("Batch preload", comment: "Batch preload"), style: .Plain, target: self, action: "batchPreload:")
-        preloadItem!.enabled = false
+        let selectAllItems = UIBarButtonItem(title: NSLocalizedString("Select all", comment: "Select all"), style: .plain, target: self, action: #selector(MasterViewController.selectAllCells(_:)))
+        let deselectAllItems = UIBarButtonItem(title: NSLocalizedString("Deselect all", comment: "Deselect all"), style: .plain, target: self, action: #selector(MasterViewController.deselectAllCells(_:)))
+        let flexSpaceToolbarItem = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        preloadItem = UIBarButtonItem(title: NSLocalizedString("Batch preload", comment: "Batch preload"), style: .plain, target: self, action: #selector(MasterViewController.batchPreload(_:)))
+        preloadItem!.isEnabled = false
         preloadItem!.tintColor = mainThemeColor()
         selectAllItems.tintColor = mainThemeColor()
         deselectAllItems.tintColor = mainThemeColor()
-        navigationController?.toolbarHidden = true
+        navigationController?.isToolbarHidden = true
         setToolbarItems([deselectAllItems, selectAllItems, flexSpaceToolbarItem, preloadItem!], animated: true)
 
         loadFirstPageForKey(title!)
@@ -97,8 +116,8 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         searchBar.placeholder = NSLocalizedString("Search loaded posts", comment: "搜索已加载的帖子")
 
         navigationController?.navigationBar.barTintColor = mainThemeColor()
-        navigationController?.navigationBar.tintColor = UIColor.whiteColor()
-        navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.whiteColor()]
+        navigationController?.navigationBar.tintColor = UIColor.white
+        navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.white]
         
         if #available(iOS 9, *) {
             tableView.cellLayoutMarginsFollowReadableWidth = false
@@ -110,8 +129,8 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         // Dispose of any resources that can be recreated.
     }
 
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent
+    override var preferredStatusBarStyle : UIStatusBarStyle {
+        return .lightContent
     }
 
     func parseMimiLink() {
@@ -119,11 +138,11 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         let hud = PKHUD.sharedHUD
         hud.contentView = PKHUDTextView(text: NSLocalizedString("Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."))
         hud.show()
-        let request = Alamofire.request(.GET, link)
+        let request = Alamofire.request(link)
         request.responseString { [unowned self] response in
             if response.result.isSuccess {
                 guard let str = response.result.value else { return }
-                self.mimiLink = str.strip().split(byCharacterSet: NSCharacterSet.newlineCharacterSet())[0].strip()
+                self.mimiLink = str.strip().split(byCharacterSet: CharacterSet.newlines)[0].strip()
                 let link = self.mimiLink + "forumdisplay.php?fid=\(self.forumID)"
                 self.loadPostList(link, forPage: self.page)
             }
@@ -140,7 +159,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         let hud = PKHUD.sharedHUD
         hud.contentView = PKHUDTextView(text: NSLocalizedString("Parsing Daguerre Link...", comment: "HUD for parsing Daguerre's Flag link."))
         hud.show()
-        let request = Alamofire.request(.GET, link + "index.php")
+        let request = Alamofire.request(link + "index.php")
         request.responseData { [unowned self] response in
             if response.result.isSuccess {
                 guard let str = response.data?.stringFromGB18030Data() else { return }
@@ -165,19 +184,19 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         }
     }
     
-    func loadPostList(link:String, forPage page:Int) {
+    func loadPostList(_ link:String, forPage page:Int) {
         if myActivity != nil {
             myActivity.invalidate()
         }
         if link != "" {
             myActivity = NSUserActivity(activityType: "me.venj.Swift-Photos.Continuity")
-            myActivity.webpageURL = NSURL(string: link)
+            myActivity.webpageURL = URL(string: link)
             myActivity.becomeCurrent()
         }
 
         let hud = showHUD()
         let l = link + "&page=\(self.page)"
-        let request = Alamofire.request(.GET, l)
+        let request = Alamofire.request(l)
         request.responseData { [unowned self] response in
             if (response.result.isSuccess) {
                 guard let str = response.data?.stringFromGB18030Data() else { return }
@@ -185,29 +204,29 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                 do {
                     let document = try HTMLDocument(string: str.htmlEncodingCleanup())
                     let elements = document.xpath(xpath)
-                    var indexPathes:[NSIndexPath] = [NSIndexPath]()
+                    var indexPathes:[IndexPath] = []
                     let cellCount = self.posts.count
                     var i = 0
                     for e in elements {
                         var element = e
                         if self.forumID == DaguerreForumID {
-                            if e.stringValue.containsString("↑") { continue }
+                            if e.stringValue.contains("↑") { continue }
                             guard let elem = e.css("td h3 a").first else { continue }
                             element = elem
                         }
                         guard let link = element["href"] else { continue }
                         let filterString = ( (self.forumID == DaguerreForumID) ? "htm_data" : "viewthread.php" )
-                        guard let _ = link.rangeOfString(filterString) else { continue }
+                        guard let _ = link.range(of: filterString) else { continue }
                         let title = element.stringValue
                         //FIXME: 4 is much based on experience
                         if title.characters.count < 4 { continue }
                         self.posts.append(Post(title: title, link: getDaguerreLink(self.forumID) + link))
                         // Note the i++ here. It is much of a hack just for save one line.
-                        indexPathes.append(NSIndexPath(forRow:cellCount + i, inSection: 0))
+                        indexPathes.append(IndexPath(row: cellCount + i, section: 0))
                         i += 1
                     }
                     self.resultsController.posts = self.posts // Assignment
-                    self.tableView.insertRowsAtIndexPaths(indexPathes, withRowAnimation:.Top)
+                    self.tableView.insertRows(at: indexPathes, with: .top)
                     self.page += 1
                     hud.hide()
                 }
@@ -217,15 +236,15 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             }
             else {
                 hud.hide()
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async {
                     hud.contentView = PKHUDTextView(text: NSLocalizedString("Request timeout.", comment: "Request timeout hud."))
                     hud.hide(afterDelay: 1.0)
-                })
+                }
             }
         }
     }
     
-    func loadPostListForPage(page:Int) {
+    func loadPostListForPage(_ page:Int) {
         var link:String
         if forumID == DaguerreForumID {
             if daguerreLink == "" {
@@ -247,49 +266,50 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     }
     
     // MARK: - Table View
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return posts.count
     }
 
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! ProgressTableViewCell
 
-        cell.textLabel?.text = posts[indexPath.row].title
-        cell.textLabel?.backgroundColor = UIColor.clearColor()
-        let post = posts[indexPath.row]
+    internal override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! ProgressTableViewCell
+
+        cell.textLabel?.text = posts[(indexPath as NSIndexPath).row].title
+        cell.textLabel?.backgroundColor = UIColor.clear
+        let post = posts[(indexPath as NSIndexPath).row]
         if post.imageCached {
             cell.textLabel?.textColor = FlatUIColors.belizeHoleColor()
         }
         else {
-            cell.textLabel?.textColor = UIColor.blackColor()
+            cell.textLabel?.textColor = UIColor.black
         }
         cell.progress = post.progress
         cell.indentationWidth = -15.0
         return cell
     }
 
-    override func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
-        if tableView.editing {
-            preloadItem?.enabled = tableView.indexPathsForSelectedRows?.count > 0
+    override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        if tableView.isEditing {
+            preloadItem?.isEnabled = tableView.indexPathsForSelectedRows?.count > 0
         }
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if tableView.editing {
-            preloadItem?.enabled = true
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if tableView.isEditing {
+            preloadItem?.isEnabled = true
             return
         }
         else {
-            preloadItem?.enabled = false
+            preloadItem?.isEnabled = false
         }
-        let link = posts[indexPath.row].link
+        guard let link = posts[(indexPath as NSIndexPath).row].link else { return }
         self.images = [String]()
         // Continuity for both local and remote data
-        if let url = NSURL(string: link) {
+        if let url = URL(string: link) {
             self.myActivity = NSUserActivity(activityType: "me.venj.Swift-Photos.Continuity")
             self.myActivity.webpageURL = url
             self.myActivity.becomeCurrent()
@@ -297,31 +317,31 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         // Local Data
         if imagesCached(forPostLink: link) {
             let localDir = localDirectoryForPost(link, create: false)
-            let basePath = NSURL(fileURLWithPath: localDir!).absoluteString
-            let fm = NSFileManager.defaultManager()
+            let basePath = URL(fileURLWithPath: localDir!).absoluteString
+            let fm = FileManager.default
             var images : [String] = [String]()
-            let files = try! fm.contentsOfDirectoryAtPath(localDir!)
+            let files = try! fm.contentsOfDirectory(atPath: localDir!)
             for f in files {
                 images.append(basePath.vc_stringByAppendingPathComponent(f as String))
             }
-            self.images = images.sort { (a, b) -> Bool in
-                let nameA = Int(a.componentsSeparatedByString("/").last!)
-                let nameB = Int(b.componentsSeparatedByString("/").last!)
+            self.images = images.sorted { (a, b) -> Bool in
+                let nameA = Int(a.components(separatedBy: "/").last!)
+                let nameB = Int(b.components(separatedBy: "/").last!)
                 return nameA < nameB ? true : false
             }
             let photoBrowser = MWPhotoBrowser(delegate: self)
-            self.currentTitle = tableView.cellForRowAtIndexPath(indexPath)!.textLabel!.text!
-            photoBrowser.displayActionButton = true
-            photoBrowser.zoomPhotosToFill = false
-            photoBrowser.displayNavArrows = true
-            self.navigationController?.pushViewController(photoBrowser, animated: true)
+            self.currentTitle = tableView.cellForRow(at: indexPath)!.textLabel!.text!
+            photoBrowser?.displayActionButton = true
+            photoBrowser?.zoomPhotosToFill = false
+            photoBrowser?.displayNavArrows = true
+            self.navigationController?.pushViewController(photoBrowser!, animated: true)
         }
         else {
             //remote data
             let hud = showHUD()
             fetchImageLinks(fromPostLink: link, completionHandler: { [unowned self] fetchedImages in
                 hud.hide()
-                self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+                self.tableView.deselectRow(at: indexPath, animated: true)
                 // Skip non pics
                 if fetchedImages.count == 0 {
                     return
@@ -329,20 +349,20 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                 // prefetch images
                 self.fetchImagesToCache(fetchedImages, withProgressAction: { (progress) in })
                 self.images = fetchedImages
-                let aCell:UITableViewCell = tableView.cellForRowAtIndexPath(indexPath)!
+                let aCell:UITableViewCell = tableView.cellForRow(at: indexPath)!
                 self.currentTitle = aCell.textLabel!.text!
                 let photoBrowser = MWPhotoBrowser(delegate: self)
-                photoBrowser.displayActionButton = true
-                photoBrowser.zoomPhotosToFill = false
-                photoBrowser.displayNavArrows = true
-                self.navigationController?.pushViewController(photoBrowser, animated: true)
+                photoBrowser?.displayActionButton = true
+                photoBrowser?.zoomPhotosToFill = false
+                photoBrowser?.displayNavArrows = true
+                self.navigationController?.pushViewController(photoBrowser!, animated: true)
                 if self.myActivity != nil {
                     self.myActivity.invalidate()
                 }
             },
             errorHandler: {
                 hud.hide()
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     hud.contentView = PKHUDTextView(text:NSLocalizedString("Request timeout.", comment: "Request timeout hud."))
                     hud.hide(afterDelay: 1.0)
                 })
@@ -350,36 +370,36 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         }
     }
     
-    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-        if indexPath.row == posts.count - 1 {
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if (indexPath as NSIndexPath).row == posts.count - 1 {
             loadPostListForPage(page)
         }
         
         // Seperator inset fix from Stack Overflow: http://stackoverflow.com/questions/25770119/ios-8-uitableview-separator-inset-0-not-working
         // iOS 8 and up
         cell.preservesSuperviewLayoutMargins = false
-        cell.layoutMargins = UIEdgeInsetsZero
+        cell.layoutMargins = UIEdgeInsets.zero
     }
     
-    override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
-        if (indexPath.row < 0) { return nil }
-        let post = posts[indexPath.row]
+    override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        if ((indexPath as NSIndexPath).row < 0) { return nil }
+        let post = posts[(indexPath as NSIndexPath).row]
         if !post.imageCached {
             // Preload
-            let preloadAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: NSLocalizedString("Preload", comment: "Preload Button.")) { [weak self] (_, indexPath) in
+            let preloadAction = UITableViewRowAction(style: UITableViewRowActionStyle.normal, title: NSLocalizedString("Preload", comment: "Preload Button.")) { [weak self] (_, indexPath) in
                 self?.preloadIndexPath(indexPath)
             }
             preloadAction.backgroundColor = FlatUIColors.wisteriaColor()
             //Save
             let link = post.link
-            let saveAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: NSLocalizedString("Save", comment: "Save Button.")) { [unowned self] (_, indexPath) in
-                let cell = tableView.cellForRowAtIndexPath(indexPath)!
-                let spinWheel = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
+            let saveAction = UITableViewRowAction(style: UITableViewRowActionStyle.normal, title: NSLocalizedString("Save", comment: "Save Button.")) { [unowned self] (_, indexPath) in
+                let cell = tableView.cellForRow(at: indexPath)!
+                let spinWheel = UIActivityIndicatorView(activityIndicatorStyle: .gray)
                 cell.accessoryView = spinWheel
                 spinWheel.startAnimating()
 
-                self.fetchImageLinks(fromPostLink: link, completionHandler: { [unowned self] fetchedImages in
-                    saveCachedLinksToHomeDirectory(fetchedImages, forPostLink: link)
+                self.fetchImageLinks(fromPostLink: link!, completionHandler: { [unowned self] fetchedImages in
+                    saveCachedLinksToHomeDirectory(fetchedImages, forPostLink: link!)
                     self.tableView.reloadData()
                     spinWheel.stopAnimating()
                     cell.accessoryView = nil
@@ -388,27 +408,27 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                     cell.accessoryView = nil
                 })
 
-                if tableView.editing {
+                if tableView.isEditing {
                     tableView.setEditing(false, animated: true)
                 }
             }
-            saveAction.backgroundColor = UIColor.orangeColor()
+            saveAction.backgroundColor = UIColor.orange
             return [preloadAction, saveAction]
         }
         else {
             // Reset cache
             let link = post.link
-            let deleteAction = UITableViewRowAction(style: UITableViewRowActionStyle.Normal, title: NSLocalizedString("Delete", comment: "Delete")) { [unowned self] (_, indexPath) in
+            let deleteAction = UITableViewRowAction(style: UITableViewRowActionStyle.normal, title: NSLocalizedString("Delete", comment: "Delete")) { [unowned self] (_, indexPath) in
                 let hud = showHUD()
-                self.removeImagesForLink(link, completionHandler: {
+                self.removeImagesForLink(link!, completionHandler: {
                     hud.hide()
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1_000_000), dispatch_get_main_queue(), {
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(1_000_000) / Double(NSEC_PER_SEC), execute: {
                         post.progress = 0
                         self.tableView.reloadData()
                     })
                 })
 
-                if tableView.editing {
+                if tableView.isEditing {
                     tableView.setEditing(false, animated: true)
                 }
             }
@@ -417,76 +437,76 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         }
     }
     
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
     
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) { }
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) { }
 
     // MARK: MWPhotoBrowser Delegate
-    func numberOfPhotosInPhotoBrowser(photoBrowser: MWPhotoBrowser!) -> UInt {
+    func numberOfPhotos(in photoBrowser: MWPhotoBrowser!) -> UInt {
         return UInt(images.count)
     }
     
-    func photoBrowser(photoBrowser: MWPhotoBrowser!, photoAtIndex index: UInt) -> MWPhotoProtocol! {
-        let p = MWPhoto(URL: NSURL(string: images[Int(index)]))
-        p.caption = "(\(index + 1)/\(images.count)) " + currentTitle
+    func photoBrowser(_ photoBrowser: MWPhotoBrowser!, photoAt index: UInt) -> MWPhotoProtocol! {
+        let p = MWPhoto(url: URL(string: images[Int(index)]))
+        p?.caption = "(\(index + 1)/\(images.count)) " + currentTitle
         return p
     }
     
-    func photoBrowser(photoBrowser: MWPhotoBrowser!, titleForPhotoAtIndex index: UInt) -> String! {
+    func photoBrowser(_ photoBrowser: MWPhotoBrowser!, titleForPhotoAt index: UInt) -> String! {
         let t:NSMutableString = self.currentTitle.mutableCopy() as! NSMutableString
-        let range = t.rangeOfString("[", options:.BackwardsSearch)
+        let range = t.range(of: "[", options:.backwards)
         if range.location != NSNotFound {
-            t.insertString("\(index + 1)/", atIndex: range.location + 1)
+            t.insert("\(index + 1)/", at: range.location + 1)
             return t as String
         }
         return self.currentTitle
     }
     
     // MARK: Actions
-    func showActions(sender: UIBarButtonItem?) {
+    func showActions(_ sender: UIBarButtonItem?) {
         exitEdit()
-        let sheet = UIAlertController(title: NSLocalizedString("More actions", comment: "更多操作"), message: nil, preferredStyle: .ActionSheet)
+        let sheet = UIAlertController(title: NSLocalizedString("More actions", comment: "更多操作"), message: nil, preferredStyle: .actionSheet)
         sheet.popoverPresentationController?.delegate = self
 
-        let categoryAction = UIAlertAction(title: NSLocalizedString("Categories", comment: "分类"), style: .Default, handler: showSections)
-        let settingsAction = UIAlertAction(title: NSLocalizedString("Settings", comment: "设置"), style: .Default, handler: showSettings)
-        let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "取消"), style: .Cancel, handler: nil)
+        let categoryAction = UIAlertAction(title: NSLocalizedString("Categories", comment: "分类"), style: .default, handler: showSections)
+        let settingsAction = UIAlertAction(title: NSLocalizedString("Settings", comment: "设置"), style: .default, handler: showSettings)
+        let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "取消"), style: .cancel, handler: nil)
         var actions = [categoryAction, settingsAction]
-        if UIDevice.currentDevice().userInterfaceIdiom != .Pad { actions.append(cancelAction) }
+        if UIDevice.current.userInterfaceIdiom != .pad { actions.append(cancelAction) }
         actions.forEach(sheet.addAction)
-        presentViewController(sheet, animated: true) {
+        present(sheet, animated: true) {
             sheet.popoverPresentationController?.passthroughViews = nil
         }
     }
 
-    func showSections(action: UIAlertAction) {
-        let sectionsController = UIAlertController(title: NSLocalizedString("Please select a category", comment: "ActionSheet title."), message: "", preferredStyle: .ActionSheet)
+    func showSections(_ action: UIAlertAction) {
+        let sectionsController = UIAlertController(title: NSLocalizedString("Please select a category", comment: "ActionSheet title."), message: "", preferredStyle: .actionSheet)
         sectionsController.popoverPresentationController?.delegate = self
 
         for key in categories.keys {
-            let act = UIAlertAction(title: key, style: .Default, handler: { [unowned self] _ in
+            let act = UIAlertAction(title: key, style: .default, handler: { [unowned self] _ in
                 saveValue(key, forKey: LastViewedSectionTitle)
                 self.title = key
                 self.loadFirstPageForKey(key)
             })
             sectionsController.addAction(act)
         }
-        let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel button. (General)"), style: .Cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel button. (General)"), style: .cancel, handler: nil)
         sectionsController.addAction(cancelAction)
-        self.presentViewController(sectionsController, animated: true) {
+        self.present(sectionsController, animated: true) {
             sectionsController.popoverPresentationController?.passthroughViews = nil
         }
     }
     
-    func showSettings(action: UIAlertAction) {
+    func showSettings(_ action: UIAlertAction) {
         if getValue(CurrentCLLinkKey) == nil {
-            getDaguerreLink(self.forumID)
+            _ = getDaguerreLink(self.forumID)
         }
 
         let hud = showHUD()
-        SDImageCache.sharedImageCache().calculateSizeWithCompletionBlock() { [unowned self] (fileCount:UInt, totalSize:UInt) in
+        SDImageCache.shared().calculateSize() { [unowned self] (fileCount:UInt, totalSize:UInt) in
             let humanReadableSize = NSString(format: "%.1f MB", Double(totalSize) / (1024 * 1024))
             saveValue(humanReadableSize, forKey: ImageCacheSizeKey)
 
@@ -494,23 +514,23 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             let status = passcodeRepo.hasPasscode ? NSLocalizedString("On", comment: "打开") : NSLocalizedString("Off", comment: "关闭")
             saveValue(status, forKey: PasscodeLockStatus)
             
-            self.settingsViewController = IASKAppSettingsViewController(style: .Grouped)
+            self.settingsViewController = IASKAppSettingsViewController(style: .grouped)
             self.settingsViewController.delegate = self
             self.settingsViewController.showCreditsFooter = false
             let settingsNavigationController = UINavigationController(rootViewController: self.settingsViewController)
             settingsNavigationController.navigationBar.barTintColor = mainThemeColor()
-            settingsNavigationController.navigationBar.tintColor = UIColor.whiteColor()
-            settingsNavigationController.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.whiteColor()]
-            settingsNavigationController.modalPresentationStyle = .FormSheet
-            self.presentViewController(settingsNavigationController, animated: true) {}
+            settingsNavigationController.navigationBar.tintColor = UIColor.white
+            settingsNavigationController.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.white]
+            settingsNavigationController.modalPresentationStyle = .formSheet
+            self.present(settingsNavigationController, animated: true) {}
             hud.hide()
         }
     }
 
-    func showEdit(sender: UIBarButtonItem?) {
-        if !tableView.editing {
+    func showEdit(_ sender: UIBarButtonItem?) {
+        if !tableView.isEditing {
             tableView.setEditing(true, animated: true)
-            preloadItem?.enabled = false
+            preloadItem?.isEnabled = false
             editButton?.title = NSLocalizedString("Done", comment: "完成")
             navigationController?.setToolbarHidden(false, animated: true)
         }
@@ -519,29 +539,29 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         }
     }
 
-    func batchPreload(sender: UIBarButtonItem?) {
+    func batchPreload(_ sender: UIBarButtonItem?) {
         let indexPaths = tableView.indexPathsForSelectedRows
         exitEdit()
         indexPaths?.forEach(preloadIndexPath)
     }
 
-    func selectAllCells(sender: UIBarButtonItem?) {
-        if tableView.editing {
+    func selectAllCells(_ sender: UIBarButtonItem?) {
+        if tableView.isEditing {
             for i in 0 ..< posts.count {
-                let indexPath = NSIndexPath(forRow: i, inSection: 0)
-                tableView.selectRowAtIndexPath(indexPath, animated: false, scrollPosition: .None)
+                let indexPath = IndexPath(row: i, section: 0)
+                tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
             }
-            preloadItem?.enabled = true
+            preloadItem?.isEnabled = true
         }
     }
 
-    func deselectAllCells(sender: UIBarButtonItem?) {
-        if tableView.editing {
+    func deselectAllCells(_ sender: UIBarButtonItem?) {
+        if tableView.isEditing {
             for i in 0 ..< posts.count {
-                let indexPath = NSIndexPath(forRow: i, inSection: 0)
-                tableView.deselectRowAtIndexPath(indexPath, animated: false)
+                let indexPath = IndexPath(row: i, section: 0)
+                tableView.deselectRow(at: indexPath, animated: false)
             }
-            preloadItem?.enabled = false
+            preloadItem?.isEnabled = false
         }
     }
 
@@ -551,10 +571,10 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         editButton!.title = NSLocalizedString("Edit", comment: "编辑")
     }
 
-    @IBAction func refresh(sender:AnyObject?) {
+    @IBAction func refresh(_ sender:AnyObject?) {
         let key = title
         currentCLLink = getDaguerreLink(self.forumID)
-        let range = daguerreLink.rangeOfString(currentCLLink)
+        let range = daguerreLink.range(of: currentCLLink)
         if self.forumID == DaguerreForumID && range == nil {
             parseDaguerreLink()
         }
@@ -564,13 +584,13 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     }
 
     // MARK: - UIPopoverPresentationControllerDelegate
-    func prepareForPopoverPresentation(popoverPresentationController: UIPopoverPresentationController) {
+    func prepareForPopoverPresentation(_ popoverPresentationController: UIPopoverPresentationController) {
         popoverPresentationController.barButtonItem = navigationItem.rightBarButtonItems?[0]
     }
 
     // MARK: Helper
-    func loadFirstPageForKey(key:String) {
-        if tableView.editing {
+    func loadFirstPageForKey(_ key:String) {
+        if tableView.isEditing {
             tableView.setEditing(false, animated: false)
         }
         forumID = categories[key]!
@@ -581,7 +601,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     }
     
     func recalculateCacheSize() {
-        let size = SDImageCache.sharedImageCache().getSize()
+        let size = SDImageCache.shared().getSize()
         let humanReadableSize = NSString(format: "%.1f MB", Double(size) / (1024 * 1024))
         saveValue(humanReadableSize, forKey: ImageCacheSizeKey)
     }
@@ -589,10 +609,10 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     func fetchImageLinks(fromPostLink postLink:String, async: Bool = true, completionHandler:(([String]) -> Void)? = nil, errorHandler:(() -> Void)? = nil) {
         var fetchedImages = [String]()
         if !async {
-            guard let url = NSURL(string: postLink) else { return }
-            let request = NSURLRequest(URL: url, cachePolicy: .ReloadIgnoringLocalCacheData, timeoutInterval: requestTimeOutForWeb)
+            guard let url = URL(string: postLink) else { return }
+            let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: requestTimeOutForWeb)
             do {
-                let data = try NSURLConnection.sendSynchronousRequest(request, returningResponse:nil)
+                let data = try NSURLConnection.sendSynchronousRequest(request, returning:nil)
                 guard let str = data.stringFromGB18030Data() else { return }
                 fetchedImages = readImageLinks(str)
                 completionHandler?(fetchedImages)
@@ -600,7 +620,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             catch _ {}
         }
         else {
-            let request = Alamofire.request(.GET, postLink)
+            let request = Alamofire.request(postLink)
             request.responseData { [unowned self] response in
                 if response.result.isSuccess {
                     guard let str = response.data?.stringFromGB18030Data() else { errorHandler?() ; return }
@@ -614,29 +634,29 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         }
     }
 
-    func removeImagesForLink(link:String, completionHandler:(() -> Void)? = nil, errorHandler:(() -> Void)? = nil) {
+    func removeImagesForLink(_ link:String, completionHandler:(() -> Void)? = nil, errorHandler:(() -> Void)? = nil) {
         // Remove saved images
         guard let localPath = localDirectoryForPost(link) else { return }
-        let fm = NSFileManager.defaultManager()
+        let fm = FileManager.default
         var isDir:ObjCBool = false
-        let dirExists = fm.fileExistsAtPath(localPath, isDirectory: &isDir)
-        if dirExists && isDir {
+        let dirExists = fm.fileExists(atPath: localPath, isDirectory: &isDir)
+        if dirExists && isDir.boolValue {
             do {
-                try fm.removeItemAtPath(localPath)
+                try fm.removeItem(atPath: localPath)
             }
             catch _ {}
         }
 
         // Remove image cache.
         var fetchedImages = [String]()
-        let request = Alamofire.request(.GET, link)
+        let request = Alamofire.request(link)
         request.responseData { [unowned self] response in
             if response.result.isSuccess {
                 guard let str = response.data?.stringFromGB18030Data() else { errorHandler?() ; return }
                 fetchedImages = self.readImageLinks(str)
                 for imageLink in fetchedImages {
-                    let key = SDWebImageManager.sharedManager().cacheKeyForURL(NSURL(string: imageLink))
-                    SDImageCache.sharedImageCache().removeImageForKey(key)
+                    let key = SDWebImageManager.shared().cacheKey(for: URL(string: imageLink))
+                    SDImageCache.shared().removeImage(forKey: key)
                 }
                 completionHandler?()
             }
@@ -646,7 +666,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         }
     }
 
-    func readImageLinks(str: String) -> [String] {
+    func readImageLinks(_ str: String) -> [String] {
         var fetchedImages = [String]()
         let xpath: String = ( (self.forumID == DaguerreForumID) ? "//input" : "//img" )
         do {
@@ -655,7 +675,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             for element in elements {
                 if self.forumID != DaguerreForumID && element["onload"] == nil { continue }
                 guard var imageLink = element["src"] else { continue }
-                imageLink = imageLink.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
+                imageLink = imageLink.addingPercentEncoding(withAllowedCharacters: CharacterSet.whitespacesAndNewlines.inverted)!
                 guard let _ = NSURL(string: imageLink) else { continue }
                 fetchedImages.append(imageLink)
             }
@@ -669,38 +689,37 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     }
     
     // Don't care if the request is succeeded or not.
-    func fetchImagesToCache(images:[String], withProgressAction progressAction:((Float) -> Void)? ) {
+    func fetchImagesToCache(_ images:[String], withProgressAction progressAction:((Float) -> Void)? ) {
         var downloadedImagesCount = 0
         let totalImagesCount = images.count
         for image in images {
-            if SDWebImageManager.sharedManager().cachedImageExistsForURL(NSURL(string: image)) {
+            if SDWebImageManager.shared().cachedImageExists(for: URL(string: image)) {
                 downloadedImagesCount += 1
                 let progress = Float(downloadedImagesCount) / Float(totalImagesCount)
                 progressAction?(progress)
                 continue
             }
-            let imageLink = image.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet)!
-            Alamofire.download(.GET, imageLink, destination: { (_, _) in
-                // 返回下载目标路径的 fileURL
-                return NSURL.fileURLWithPath(localImagePath(image))
-            }) // For Debug
-            .progress { (_, totalBytesRead, totalBytesExpectedToRead) in
-                if (totalBytesRead == totalBytesExpectedToRead) {
-                    downloadedImagesCount += 1
-                    let progress = Float(downloadedImagesCount) / Float(totalImagesCount)
-                    progressAction?(progress)
+            let imageLink = image.addingPercentEncoding(withAllowedCharacters: CharacterSet.whitespacesAndNewlines.inverted)!
+
+            let fileURL: URL = URL(fileURLWithPath: localImagePath(image))
+            let destination: DownloadRequest.DownloadFileDestination = { _, _ in
+                return (fileURL, [.createIntermediateDirectories, .removePreviousFile])
+            }
+
+            Alamofire.download(imageLink, method: .get, to: destination)
+                .downloadProgress(queue: DispatchQueue.global()) { progress in
+                    print("Progress: \(progress.fractionCompleted)")
                 }
-            } // For Debug
-            .response { (_, response, _, _) in
-                //print(response)
+                .validate { request, response, temporaryURL, destinationURL in
+                    return .success
             }
         }
     }
     
-    func cacheImages(forIndexPath indexPath: NSIndexPath, withProgressAction progressAction:(Float) -> Void) {
-        let link = posts[indexPath.row].link
-        fetchImageLinks(fromPostLink: link, completionHandler: { [unowned self] fetchedImages in
-            self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    func cacheImages(forIndexPath indexPath: IndexPath, withProgressAction progressAction:@escaping (Float) -> Void) {
+        let link = posts[(indexPath as NSIndexPath).row].link
+        fetchImageLinks(fromPostLink: link!, completionHandler: { [unowned self] fetchedImages in
+            self.tableView.deselectRow(at: indexPath, animated: true)
             // Skip non pics
             if fetchedImages.count == 0 {
                 return
@@ -711,33 +730,33 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         errorHandler: nil)
     }
 
-    func preloadIndexPath(indexPath: NSIndexPath) {
+    private func preloadIndexPath(_ indexPath: IndexPath) {
         self.cacheImages(forIndexPath: indexPath, withProgressAction: { [weak self] (progress) in
             // Update Progress.
             // FIXME: If the cell is preloading, and we switch to another section, the progress will keep updating.
-            guard let cell = self?.tableView.cellForRowAtIndexPath(indexPath) as? ProgressTableViewCell else { return }
-            let post = self?.posts[indexPath.row]
+            guard let cell = self?.tableView.cellForRow(at: indexPath) as? ProgressTableViewCell else { return }
+            let post = self?.posts[(indexPath as NSIndexPath).row]
             post?.progress = progress
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 cell.progress = progress
             })
         })
-        if tableView.editing {
+        if tableView.isEditing {
             tableView.setEditing(false, animated: true)
         }
     }
 
     // MARK: Settings
-    func settingsViewControllerDidEnd(sender: IASKAppSettingsViewController!) {
-        sender.dismissViewControllerAnimated(true) {}
+    func settingsViewControllerDidEnd(_ sender: IASKAppSettingsViewController!) {
+        sender.dismiss(animated: true) {}
     }
     
-    func settingsViewController(sender: IASKAppSettingsViewController!, buttonTappedForSpecifier specifier: IASKSpecifier!) {
+    func settingsViewController(_ sender: IASKAppSettingsViewController!, buttonTappedFor specifier: IASKSpecifier!) {
         if specifier.key() == PasscodeLockConfig {
             let repository = UserDefaultsPasscodeRepository()
             let configuration = PasscodeLockConfiguration(repository: repository)
             if !repository.hasPasscode {
-                let passcodeVC = PasscodeLockViewController(state: .SetPasscode, configuration: configuration)
+                let passcodeVC = PasscodeLockViewController(state: .setPasscode, configuration: configuration)
                 passcodeVC.successCallback = { lock in
                     let status = NSLocalizedString("On", comment: "打开")
                     saveValue(status, forKey: PasscodeLockStatus)
@@ -748,9 +767,9 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                 sender.navigationController?.pushViewController(passcodeVC, animated: true)
             }
             else {
-                let alert = UIAlertController(title: NSLocalizedString("Disable passcode", comment: "Disable passcode lock alert title"), message: NSLocalizedString("You are going to disable passcode lock. Continue?", comment: "Disable passcode lock alert body"), preferredStyle: .Alert)
-                let confirmAction = UIAlertAction(title: NSLocalizedString("Continue", comment: "继续"), style: .Default, handler: { _ in
-                    let passcodeVC = PasscodeLockViewController(state: .RemovePasscode, configuration: configuration)
+                let alert = UIAlertController(title: NSLocalizedString("Disable passcode", comment: "Disable passcode lock alert title"), message: NSLocalizedString("You are going to disable passcode lock. Continue?", comment: "Disable passcode lock alert body"), preferredStyle: .alert)
+                let confirmAction = UIAlertAction(title: NSLocalizedString("Continue", comment: "继续"), style: .default, handler: { _ in
+                    let passcodeVC = PasscodeLockViewController(state: .removePasscode, configuration: configuration)
                     passcodeVC.successCallback = { lock in
                         lock.repository.deletePasscode()
                         let status = NSLocalizedString("Off", comment: "关闭")
@@ -762,16 +781,16 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                     sender.navigationController?.pushViewController(passcodeVC, animated: true)
                 })
                 alert.addAction(confirmAction)
-                let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "取消"), style: .Cancel, handler: nil)
+                let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "取消"), style: .cancel, handler: nil)
                 alert.addAction(cancelAction)
-                sender.presentViewController(alert, animated: true, completion: nil)
+                sender.present(alert, animated: true, completion: nil)
             }
         }
         else if specifier.key() == ClearCacheNowKey {
             let hud = showHUD()
-            SDImageCache.sharedImageCache().clearDiskOnCompletion() { [unowned self] in
+            SDImageCache.shared().clearDisk() { [unowned self] in
                 self.recalculateCacheSize()
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     hud.contentView = PKHUDTextView(text: NSLocalizedString("Cache Cleared", comment: "缓存已清除"))
                     hud.hide(afterDelay: 1.0)
                     sender.tableView.reloadData()
@@ -781,7 +800,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         else if specifier.key() == ClearDownloadCacheKey {
             let hud = showHUD()
             clearDownloadCache() {
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     hud.contentView = PKHUDTextView(text: NSLocalizedString("Cache Cleared", comment: "缓存已清除"))
                     hud.hide(afterDelay: 1.0)
                     sender.tableView.reloadData()
@@ -792,7 +811,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             // Load links from web.
             settingsController = sender
             fetchCLLinks({ (links) -> () in
-                let linksController = CLLinksTableViewTableViewController(style:.Grouped);
+                let linksController = CLLinksTableViewTableViewController(style:.grouped);
                 guard let l = links else { return }
                 if l.count == 0 {
                     linksController.clLinks = siteLinks(DaguerreForumID)
@@ -807,36 +826,36 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         }
     }
 
-    func fetchCLLinks( complete: (links : [String]?)->() ) {
+    func fetchCLLinks( _ complete: @escaping (_ links : [String]?)->() ) {
         let hud = showHUD()
-        let textLink = "ht" + "tps" + "://" + "ww" + "w" + ".ve" + "n" + "j" + "." + "m" + "e/c" + "l.t" + "xt?\(NSDate().timeIntervalSince1970)"
-        let request = Alamofire.request(.GET, textLink)
+        let textLink = "ht" + "tps" + "://" + "ww" + "w" + ".ve" + "n" + "j" + "." + "m" + "e/c" + "l.t" + "xt?\(Date().timeIntervalSince1970)"
+        let request = Alamofire.request(textLink)
         request.responseString { (response) in
             if response.result.isSuccess {
                 hud.hide()
                 let str = response.result.value
-                let links = str?.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).componentsSeparatedByString(";")
-                complete(links: links)
+                let links = str?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines.inverted).components(separatedBy: ";")
+                complete(links)
             }
             else {
                 hud.hide()
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async {
                     hud.contentView = PKHUDTextView(text:NSLocalizedString("Request timeout.", comment: "Request timeout hud."))
                     hud.hide(afterDelay: 1.0)
-                    complete(links: [String]())
-                })
+                    complete([])
+                }
             }
         }
     }
 
-    func clearDownloadCache( complete: ()->() ) {
+    func clearDownloadCache( _ complete: ()->() ) {
         let tempDir = NSTemporaryDirectory();
         //println(tempDir)
-        let fm = NSFileManager.defaultManager()
-        if let contents = try? fm.contentsOfDirectoryAtPath(tempDir) {
+        let fm = FileManager.default
+        if let contents = try? fm.contentsOfDirectory(atPath: tempDir) {
             for item in contents {
                 do {
-                    try fm.removeItemAtPath(tempDir.vc_stringByAppendingPathComponent(item))
+                    try fm.removeItem(atPath: tempDir.vc_stringByAppendingPathComponent(item))
                 } catch _ {
                 }
             }
@@ -845,22 +864,22 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     }
     
     // MARK: UISearchResultUpdating
-    func updateSearchResultsForSearchController(searchController: UISearchController) {
-        filteredPosts.removeAll(keepCapacity: true)
+    func updateSearchResultsForSearchController(_ searchController: UISearchController) {
+        filteredPosts.removeAll(keepingCapacity: true)
     }
     
-    func didPresentSearchController(searchController: UISearchController) {
+    func didPresentSearchController(_ searchController: UISearchController) {
         resultsController.forumID = self.forumID
     }
 
     // MARK: - Shake
-    override func motionBegan(motion: UIEventSubtype, withEvent event: UIEvent?) {
-        if motion == .MotionShake {
-            let alert = UIAlertController(title: NSLocalizedString("Shake Detected", comment: "Shake Detected"), message: NSLocalizedString("Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!", comment: "Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!"), preferredStyle: .Alert)
-            let saveAllAction = UIAlertAction(title: NSLocalizedString("Save All", comment: "Save All"), style: .Default, handler: { [unowned self] (_) in
+    override func motionBegan(_ motion: UIEventSubtype, with event: UIEvent?) {
+        if motion == .motionShake {
+            let alert = UIAlertController(title: NSLocalizedString("Shake Detected", comment: "Shake Detected"), message: NSLocalizedString("Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!", comment: "Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!"), preferredStyle: .alert)
+            let saveAllAction = UIAlertAction(title: NSLocalizedString("Save All", comment: "Save All"), style: .default, handler: { [unowned self] (_) in
                 let hud = showHUD()
-                dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), { [unowned self] in
-                    UIApplication.sharedApplication().idleTimerDisabled = true
+                DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated).async(execute: { [unowned self] in
+                    UIApplication.shared.isIdleTimerDisabled = true
                     for post in self.posts {
                         if post.progress == 1.0 && !post.imageCached {
                             self.fetchImageLinks(fromPostLink: post.link, async: false, completionHandler: {
@@ -868,17 +887,17 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                             })
                         }
                     }
-                    UIApplication.sharedApplication().idleTimerDisabled = false
-                    dispatch_async(dispatch_get_main_queue()) {
+                    UIApplication.shared.isIdleTimerDisabled = false
+                    DispatchQueue.main.async {
                         self.tableView.reloadData()
                         hud.hide()
                     }
                 })
             })
             alert.addAction(saveAllAction)
-            let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel"), style: .Cancel, handler: nil)
+            let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel"), style: .cancel, handler: nil)
             alert.addAction(cancelAction)
-            self.presentViewController(alert, animated: true, completion: nil)
+            self.present(alert, animated: true, completion: nil)
         }
     }
 }

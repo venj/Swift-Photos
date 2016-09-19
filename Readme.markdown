@@ -1,14 +1,16 @@
 美图赏
 =====
 
-**项目已经兼容Swift 2.2，需要Xcode 7.2+编译。**
+**项目已经兼容Swift 3.0，需要Xcode 8.0+编译。**
 
-美图欣赏利器。Deployment Target现在最低为iOS 8.1。
+美图欣赏利器。Deployment Target现在最低为iOS 9.0。
+
+** 代码已更新至兼容Swift 3.0。大部分均为Xcode向导处理的更新。暂未对代码进行优化。可能引入退行Bug。 **
 
 编译
 ----
 
-你需要安装最新版的Xcode 7+和Cocoa Pods（0.36.2(?)以上版本）。然后执行如下操作：
+你需要安装最新版的Xcode 3+和Cocoa Pods（1.11+?）。然后执行如下操作：
 
 ``` bash
 cp Swift\ Photos/Common.swift.skel Swift\ Photos/Common.swift #(编辑，并填入正确的网址。)

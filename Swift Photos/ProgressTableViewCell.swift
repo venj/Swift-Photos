@@ -12,18 +12,18 @@ class ProgressTableViewCell: UITableViewCell {
     var progress:Float = 0 {
         didSet {
             if progress > 0.0 {
-                self.progressView.alpha = 1.0
+                progressView.alpha = 1.0
             }
             else {
-                self.progressView.alpha = 0.0
+                progressView.alpha = 0.0
             }
             if progress >= 1.0 {
-                self.progressView.tintColor = UIColor.flatGreenColor()
+                progressView.tintColor = UIColor.flatGreenColor()
             }
             else {
-                self.progressView.tintColor = UIColor.flatDarkBlueColor()
+                progressView.tintColor = UIColor.flatDarkBlueColor()
             }
-            self.progressView.progress = progress
+            progressView.progress = progress
         }
     }
     
@@ -32,21 +32,21 @@ class ProgressTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        if self.progress <= 0.0 {
-            self.progressView.alpha = 0.0;
+        if progress <= 0.0 {
+            progressView.alpha = 0.0;
         }
         else {
-            self.progressView.alpha = 1.0;
+            progressView.alpha = 1.0;
         }
     }
 
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
     }
     
     override func prepareForReuse() {
-        self.progress = 0.0;
+        progress = 0.0;
     }
 }
