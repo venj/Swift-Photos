@@ -306,6 +306,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         else {
             preloadItem?.isEnabled = false
         }
+        tableView.deselectRow(at: indexPath, animated: true)
         guard let link = posts[(indexPath as NSIndexPath).row].link else { return }
         self.images = [String]()
         // Continuity for both local and remote data
@@ -386,8 +387,8 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         let post = posts[(indexPath as NSIndexPath).row]
         if !post.imageCached {
             // Preload
-            let preloadAction = UITableViewRowAction(style: UITableViewRowActionStyle.normal, title: NSLocalizedString("Preload", comment: "Preload Button.")) { [weak self] (_, indexPath) in
-                self?.preloadIndexPath(indexPath)
+            let preloadAction = UITableViewRowAction(style: UITableViewRowActionStyle.normal, title: NSLocalizedString("Preload", comment: "Preload Button.")) { [unowned self] (_, indexPath) in
+                self.preloadIndexPath(indexPath)
             }
             preloadAction.backgroundColor = FlatUIColors.wisteriaColor()
             //Save
@@ -610,14 +611,10 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         var fetchedImages = [String]()
         if !async {
             guard let url = URL(string: postLink) else { return }
-            let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: requestTimeOutForWeb)
-            do {
-                let data = try NSURLConnection.sendSynchronousRequest(request, returning:nil)
-                guard let str = data.stringFromGB18030Data() else { return }
-                fetchedImages = readImageLinks(str)
-                completionHandler?(fetchedImages)
-            }
-            catch _ {}
+            let data = try? Data(contentsOf: url)
+            guard let str = data?.stringFromGB18030Data() else { return }
+            fetchedImages = readImageLinks(str)
+            completionHandler?(fetchedImages)
         }
         else {
             let request = Alamofire.request(postLink)
@@ -708,7 +705,12 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
 
             Alamofire.download(imageLink, method: .get, to: destination)
                 .downloadProgress(queue: DispatchQueue.global()) { progress in
-                    print("Progress: \(progress.fractionCompleted)")
+                    //print("Progress: \(progress.fractionCompleted)")
+                    if (progress.fractionCompleted == 1.0) {
+                        downloadedImagesCount += 1
+                        let progress = Float(downloadedImagesCount) / Float(totalImagesCount)
+                        progressAction?(progress)
+                    }
                 }
                 .validate { request, response, temporaryURL, destinationURL in
                     return .success
@@ -731,12 +733,12 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     }
 
     private func preloadIndexPath(_ indexPath: IndexPath) {
-        self.cacheImages(forIndexPath: indexPath, withProgressAction: { [weak self] (progress) in
+        cacheImages(forIndexPath: indexPath, withProgressAction: { [unowned self] (progress) in
             // Update Progress.
             // FIXME: If the cell is preloading, and we switch to another section, the progress will keep updating.
-            guard let cell = self?.tableView.cellForRow(at: indexPath) as? ProgressTableViewCell else { return }
-            let post = self?.posts[(indexPath as NSIndexPath).row]
-            post?.progress = progress
+            guard let cell = self.tableView.cellForRow(at: indexPath) as? ProgressTableViewCell else { return }
+            let post = self.posts[(indexPath as NSIndexPath).row]
+            post.progress = progress
             DispatchQueue.main.async(execute: {
                 cell.progress = progress
             })

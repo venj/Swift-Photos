@@ -498,11 +498,13 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: WEN JIE ZHU (T2S97GVK69)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: WEN JIE ZHU (T2S97GVK69)";
+				DEVELOPMENT_TEAM = 32Y52676KN;
 				INFOPLIST_FILE = "Swift Photos/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "me.venj.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "b7621b5a-408b-4e9b-992f-ea0eaa7b2cdb";
+				PROVISIONING_PROFILE = "df4eaa9a-8411-4218-b184-229428144661";
+				PROVISIONING_PROFILE_SPECIFIER = "XC: me.venj.Swift-Photos";
 				SWIFT_OBJC_BRIDGING_HEADER = "Swift Photos/Swift Photos-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;

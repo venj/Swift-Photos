@@ -27,10 +27,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: sectionTableIdentifier)
         automaticallyAdjustsScrollViewInsets = false
         tableView.contentInset = UIEdgeInsetsMake(66.0, 0.0, 0.0, 0.0)
-
-        if #available(iOS 9, *) {
-            tableView.cellLayoutMarginsFollowReadableWidth = false
-        }
+        tableView.cellLayoutMarginsFollowReadableWidth = false
     }
 
     override func didReceiveMemoryWarning() {
@@ -150,14 +147,10 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
         var fetchedImages = [String]()
         if !async {
             guard let url = URL(string: postLink) else { return }
-            let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: requestTimeOutForWeb)
-            do {
-                let data = try NSURLConnection.sendSynchronousRequest(request, returning:nil)
-                guard let str = data.stringFromGB18030Data() else { return }
-                fetchedImages = readImageLinks(str)
-                completionHandler?(fetchedImages)
-            }
-            catch _ {}
+            let data = try? Data(contentsOf: url)
+            guard let str = data?.stringFromGB18030Data() else { return }
+            fetchedImages = readImageLinks(str)
+            completionHandler?(fetchedImages)
         }
         else {
             let request = Alamofire.request(postLink)
@@ -212,7 +205,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
 
             Alamofire.download(imageLink, method: .get, to: destination)
                 .downloadProgress(queue: DispatchQueue.global()) { progress in
-                    print("Progress: \(progress.fractionCompleted)")
+                    //print("Progress: \(progress.fractionCompleted)")
                 }
                 .validate { request, response, temporaryURL, destinationURL in
                     return .success
