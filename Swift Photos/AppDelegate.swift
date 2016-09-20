@@ -39,17 +39,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MMAppSwitcherDataSource {
         if !repository.hasPasscode {
             MMAppSwitcher.sharedInstance().setNeedsUpdate()
         }
-        
-        if (UserDefaults.standard.object(forKey: ClearCacheOnExitKey) as AnyObject).boolValue == true {
-            let app = UIApplication.shared
-            var bgTask:UIBackgroundTaskIdentifier = app.beginBackgroundTask(expirationHandler: {})
-            bgTask = app.beginBackgroundTask(expirationHandler: {
-                app.endBackgroundTask(bgTask)
-                bgTask = UIBackgroundTaskInvalid
-            })
-            SDImageCache.shared().clearDisk() {
-                app.endBackgroundTask(bgTask)
-                bgTask = UIBackgroundTaskInvalid
+
+        if let clearCache = UserDefaults.standard.object(forKey: ClearCacheOnExitKey) {
+            if (clearCache as AnyObject).boolValue == true {
+                let app = UIApplication.shared
+                var bgTask:UIBackgroundTaskIdentifier = app.beginBackgroundTask(expirationHandler: {})
+                bgTask = app.beginBackgroundTask(expirationHandler: {
+                    app.endBackgroundTask(bgTask)
+                    bgTask = UIBackgroundTaskInvalid
+                })
+                SDImageCache.shared().clearDisk() {
+                    app.endBackgroundTask(bgTask)
+                    bgTask = UIBackgroundTaskInvalid
+                }
             }
         }
     }

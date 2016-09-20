@@ -836,7 +836,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             if response.result.isSuccess {
                 hud.hide()
                 let str = response.result.value
-                let links = str?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines.inverted).components(separatedBy: ";")
+                let links = str?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).components(separatedBy: ";")
                 complete(links)
             }
             else {
