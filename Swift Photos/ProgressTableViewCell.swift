@@ -47,6 +47,7 @@ class ProgressTableViewCell: UITableViewCell {
     }
     
     override func prepareForReuse() {
+        super.prepareForReuse()
         progress = 0.0;
     }
 }

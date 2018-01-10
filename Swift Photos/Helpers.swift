@@ -39,7 +39,7 @@ func userInterfaceIdiom() -> UIUserInterfaceIdiom {
 func showHUD() -> PKHUD {
     let hud = PKHUD.sharedHUD
     hud.contentView = PKHUDProgressView()
-    hud.show()
+    hud.show(onView: AppDelegate.shared.window)
     return hud
 }
 
