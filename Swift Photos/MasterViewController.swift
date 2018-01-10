@@ -14,8 +14,8 @@ import PKHUD
 import InAppSettingsKit
 import SDWebImage
 import PasscodeLock
-import FlatUIColors
 import Fuzi
+
 fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
   switch (lhs, rhs) {
   case let (l?, r?):
@@ -117,7 +117,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
 
         navigationController?.navigationBar.barTintColor = mainThemeColor()
         navigationController?.navigationBar.tintColor = UIColor.white
-        navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.white]
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor : UIColor.white]
         
         if #available(iOS 9, *) {
             tableView.cellLayoutMarginsFollowReadableWidth = false
@@ -219,7 +219,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                         guard let _ = link.range(of: filterString) else { continue }
                         let title = element.stringValue
                         //FIXME: 4 is much based on experience
-                        if title.characters.count < 4 { continue }
+                        if title.count < 4 { continue }
                         self.posts.append(Post(title: title, link: getDaguerreLink(self.forumID) + link))
                         // Note the i++ here. It is much of a hack just for save one line.
                         indexPathes.append(IndexPath(row: cellCount + i, section: 0))
@@ -282,7 +282,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         cell.textLabel?.backgroundColor = UIColor.clear
         let post = posts[(indexPath as NSIndexPath).row]
         if post.imageCached {
-            cell.textLabel?.textColor = FlatUIColors.belizeHoleColor()
+            cell.textLabel?.textColor = UIColor.blue
         }
         else {
             cell.textLabel?.textColor = UIColor.black
@@ -390,7 +390,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             let preloadAction = UITableViewRowAction(style: UITableViewRowActionStyle.normal, title: NSLocalizedString("Preload", comment: "Preload Button.")) { [unowned self] (_, indexPath) in
                 self.preloadIndexPath(indexPath)
             }
-            preloadAction.backgroundColor = FlatUIColors.wisteriaColor()
+            preloadAction.backgroundColor = UIColor.magenta
             //Save
             let link = post.link
             let saveAction = UITableViewRowAction(style: UITableViewRowActionStyle.normal, title: NSLocalizedString("Save", comment: "Save Button.")) { [unowned self] (_, indexPath) in
@@ -433,7 +433,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                     tableView.setEditing(false, animated: true)
                 }
             }
-            deleteAction.backgroundColor = FlatUIColors.alizarinColor()
+            deleteAction.backgroundColor = UIColor.red
             return [deleteAction]
         }
     }
@@ -466,7 +466,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     }
     
     // MARK: Actions
-    func showActions(_ sender: UIBarButtonItem?) {
+    @objc func showActions(_ sender: UIBarButtonItem?) {
         exitEdit()
         let sheet = UIAlertController(title: NSLocalizedString("More actions", comment: "更多操作"), message: nil, preferredStyle: .actionSheet)
         sheet.popoverPresentationController?.delegate = self
@@ -521,14 +521,14 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             let settingsNavigationController = UINavigationController(rootViewController: self.settingsViewController)
             settingsNavigationController.navigationBar.barTintColor = mainThemeColor()
             settingsNavigationController.navigationBar.tintColor = UIColor.white
-            settingsNavigationController.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.white]
+            settingsNavigationController.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor : UIColor.white]
             settingsNavigationController.modalPresentationStyle = .formSheet
             self.present(settingsNavigationController, animated: true) {}
             hud.hide()
         }
     }
 
-    func showEdit(_ sender: UIBarButtonItem?) {
+    @objc func showEdit(_ sender: UIBarButtonItem?) {
         if !tableView.isEditing {
             tableView.setEditing(true, animated: true)
             preloadItem?.isEnabled = false
@@ -540,13 +540,13 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         }
     }
 
-    func batchPreload(_ sender: UIBarButtonItem?) {
+    @objc func batchPreload(_ sender: UIBarButtonItem?) {
         let indexPaths = tableView.indexPathsForSelectedRows
         exitEdit()
         indexPaths?.forEach(preloadIndexPath)
     }
 
-    func selectAllCells(_ sender: UIBarButtonItem?) {
+    @objc func selectAllCells(_ sender: UIBarButtonItem?) {
         if tableView.isEditing {
             for i in 0 ..< posts.count {
                 let indexPath = IndexPath(row: i, section: 0)
@@ -556,7 +556,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         }
     }
 
-    func deselectAllCells(_ sender: UIBarButtonItem?) {
+    @objc func deselectAllCells(_ sender: UIBarButtonItem?) {
         if tableView.isEditing {
             for i in 0 ..< posts.count {
                 let indexPath = IndexPath(row: i, section: 0)
@@ -690,31 +690,34 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         var downloadedImagesCount = 0
         let totalImagesCount = images.count
         for image in images {
-            if SDWebImageManager.shared().cachedImageExists(for: URL(string: image)) {
-                downloadedImagesCount += 1
-                let progress = Float(downloadedImagesCount) / Float(totalImagesCount)
-                progressAction?(progress)
-                continue
-            }
-            let imageLink = image.addingPercentEncoding(withAllowedCharacters: CharacterSet.whitespacesAndNewlines.inverted)!
+            SDWebImageManager.shared().cachedImageExists(for: URL(string: image), completion: { (result) in
+                if result {
+                    downloadedImagesCount += 1
+                    let progress = Float(downloadedImagesCount) / Float(totalImagesCount)
+                    progressAction?(progress)
+                }
+                else {
+                    let imageLink = image.addingPercentEncoding(withAllowedCharacters: CharacterSet.whitespacesAndNewlines.inverted)!
 
-            let fileURL: URL = URL(fileURLWithPath: localImagePath(image))
-            let destination: DownloadRequest.DownloadFileDestination = { _, _ in
-                return (fileURL, [.createIntermediateDirectories, .removePreviousFile])
-            }
+                    let fileURL: URL = URL(fileURLWithPath: localImagePath(image))
+                    let destination: DownloadRequest.DownloadFileDestination = { _, _ in
+                        return (fileURL, [.createIntermediateDirectories, .removePreviousFile])
+                    }
 
-            Alamofire.download(imageLink, method: .get, to: destination)
-                .downloadProgress(queue: DispatchQueue.global()) { progress in
-                    //print("Progress: \(progress.fractionCompleted)")
-                    if (progress.fractionCompleted == 1.0) {
-                        downloadedImagesCount += 1
-                        let progress = Float(downloadedImagesCount) / Float(totalImagesCount)
-                        progressAction?(progress)
+                    Alamofire.download(imageLink, method: .get, to: destination)
+                        .downloadProgress(queue: DispatchQueue.global()) { progress in
+                            //print("Progress: \(progress.fractionCompleted)")
+                            if (progress.fractionCompleted == 1.0) {
+                                downloadedImagesCount += 1
+                                let progress = Float(downloadedImagesCount) / Float(totalImagesCount)
+                                progressAction?(progress)
+                            }
+                        }
+                        .validate { request, response, temporaryURL, destinationURL in
+                            return .success
                     }
                 }
-                .validate { request, response, temporaryURL, destinationURL in
-                    return .success
-            }
+            })
         }
     }
     

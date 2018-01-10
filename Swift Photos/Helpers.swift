@@ -21,8 +21,6 @@ let PasscodeLockConfig = "kPasscodeLockConfig"
 let LastViewedSectionTitle = "kLastViewedSectionTitle"
 let CurrentCLLinkKey = "kCurrentCLLinkKey"
 let DaguerreForumID = 16
-// Web request time out.
-let requestTimeOutForWeb = 10.0
 
 func getValue(_ key:String) -> Any? {
     let defaults = UserDefaults.standard
@@ -62,7 +60,7 @@ func userDocumentPath() -> String {
 func localImagePath(_ link:String) -> String {
     let imageCache = SDImageCache.shared()
     let key = SDWebImageManager.shared().cacheKey(for: URL(string:link))
-    let path = imageCache?.defaultCachePath(forKey: key)
+    let path = imageCache.defaultCachePath(forKey: key)
     
     return path!
 }
@@ -156,21 +154,8 @@ func getDaguerreLink(_ forumID:Int) -> String {
 }
 
 func mainThemeColor() -> UIColor {
-    return UIColor(rgba: "#E56C9D")
+    return #colorLiteral(red: 0.9259296656, green: 0.5184776783, blue: 0.6779794693, alpha: 1)
 }
-
-extension String {
-    func rangeFromNSRange(_ range : NSRange) -> Range<String.Index>? {
-        let from16 = utf16.startIndex.advanced(by: range.location)
-        let to16 = from16.advanced(by: range.length)
-        if let from = String.Index(from16, within: self),
-            let to = String.Index(to16, within: self) {
-                return from ..< to
-        }
-        return nil
-    }
-}
-
 
 extension Data {
     func stringFromGB18030Data() -> String? {

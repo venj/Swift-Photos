@@ -10,7 +10,6 @@ import UIKit
 import Alamofire
 import MWPhotoBrowser
 import SDWebImage
-import FlatUIColors
 import Fuzi
 
 class SearchResultController: UITableViewController, UISearchResultsUpdating, MWPhotoBrowserDelegate {
@@ -55,7 +54,7 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
         
         let link = posts[(indexPath as NSIndexPath).row].link
         if imagesCached(forPostLink: link!) {
-            cell.textLabel?.textColor = FlatUIColors.belizeHoleColor()
+            cell.textLabel?.textColor = UIColor.blue
         }
         else {
             cell.textLabel?.textColor = UIColor.black
@@ -192,24 +191,27 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
                 // Skip the first pic.
                 continue
             }
-            if SDWebImageManager.shared().cachedImageExists(for: URL(string: image)) {
-                //println("Cached")
-                continue
-            }
-            let imageLink = image.addingPercentEncoding(withAllowedCharacters: CharacterSet.whitespacesAndNewlines.inverted)!
-
-            let fileURL: URL = URL(fileURLWithPath: localImagePath(image))
-            let destination: DownloadRequest.DownloadFileDestination = { _, _ in
-                return (fileURL, [.createIntermediateDirectories, .removePreviousFile])
-            }
-
-            Alamofire.download(imageLink, method: .get, to: destination)
-                .downloadProgress(queue: DispatchQueue.global()) { progress in
-                    //print("Progress: \(progress.fractionCompleted)")
+            SDWebImageManager.shared().cachedImageExists(for: URL(string: image), completion: { (result) in
+                if result  {
+                    //println("Cached")
+                    return
                 }
-                .validate { request, response, temporaryURL, destinationURL in
-                    return .success
+                else {
+                    let imageLink = image.addingPercentEncoding(withAllowedCharacters: CharacterSet.whitespacesAndNewlines.inverted)!
+                    
+                    let fileURL: URL = URL(fileURLWithPath: localImagePath(image))
+                    let destination: DownloadRequest.DownloadFileDestination = { _, _ in
+                        return (fileURL, [.createIntermediateDirectories, .removePreviousFile])
+                    }
+                    Alamofire.download(imageLink, method: .get, to: destination)
+                        .downloadProgress(queue: DispatchQueue.global()) { progress in
+                            //print("Progress: \(progress.fractionCompleted)")
+                        }
+                        .validate { request, response, temporaryURL, destinationURL in
+                            return .success
+                    }
                 }
+            })
         }
     }
     

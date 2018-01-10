@@ -18,10 +18,10 @@ class ProgressTableViewCell: UITableViewCell {
                 progressView.alpha = 0.0
             }
             if progress >= 1.0 {
-                progressView.tintColor = UIColor.flatGreenColor()
+                progressView.tintColor = UIColor.green
             }
             else {
-                progressView.tintColor = UIColor.flatDarkBlueColor()
+                progressView.tintColor = UIColor.blue
             }
             progressView.progress = progress
         }
