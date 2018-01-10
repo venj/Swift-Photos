@@ -8,7 +8,6 @@
 
 import UIKit
 import Alamofire
-import MMAppSwitcher
 import MWPhotoBrowser
 import PKHUD
 import InAppSettingsKit

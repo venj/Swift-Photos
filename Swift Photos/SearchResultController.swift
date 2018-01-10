@@ -26,7 +26,6 @@ class SearchResultController: UITableViewController, UISearchResultsUpdating, MW
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: sectionTableIdentifier)
         automaticallyAdjustsScrollViewInsets = false
         tableView.contentInset = UIEdgeInsetsMake(66.0, 0.0, 0.0, 0.0)
-        tableView.cellLayoutMarginsFollowReadableWidth = false
     }
 
     override func didReceiveMemoryWarning() {

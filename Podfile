@@ -9,7 +9,6 @@ target "Swift Photos" do
   pod 'PasscodeLock', :git => 'https://github.com/venj/SwiftPasscodeLock.git'
   pod 'Fuzi'
   # Objective-C
-  pod 'MMAppSwitcher', :git => 'https://github.com/venj/MMAppSwitcher.git', :branch => 'master'
   pod 'InAppSettingsKit'
   pod 'MWPhotoBrowser', :git => 'https://github.com/venj/MWPhotoBrowser.git'
 end

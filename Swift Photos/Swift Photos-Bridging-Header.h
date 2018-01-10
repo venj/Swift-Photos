@@ -3,7 +3,6 @@
 //
 
 #import <MBProgressHUD/MBProgressHUD.h>
-#import <MMAppSwitcher/MMAppSwitcher.h>
 #import <InAppSettingsKit/IASKAppSettingsViewController.h>
 #import <InAppSettingsKit/IASKSettingsReader.h>
 #import <SDWebImage/SDImageCache.h>

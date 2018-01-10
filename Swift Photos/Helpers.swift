@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import MMAppSwitcher
 import SDWebImage
 import PKHUD
 
