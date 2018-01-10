@@ -464,7 +464,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         return self.currentTitle
     }
     
-    // MARK: Actions
+    // MARK: - Actions
     @objc func showActions(_ sender: UIBarButtonItem?) {
         exitEdit()
         let sheet = UIAlertController(title: NSLocalizedString("More actions", comment: "更多操作"), message: nil, preferredStyle: .actionSheet)
@@ -750,7 +750,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         }
     }
 
-    // MARK: Settings
+    // MARK: - Settings
     func settingsViewControllerDidEnd(_ sender: IASKAppSettingsViewController!) {
         sender.dismiss(animated: true) {}
     }
