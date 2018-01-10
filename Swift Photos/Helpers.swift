@@ -136,7 +136,7 @@ func getDaguerreLink(_ forumID:Int) -> String {
         let link = getValue(CurrentCLLinkKey) as? String
         if let l = link?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) {
             let clearedLink = l.replacingOccurrences(of: "(科学上网)", with: "", options: NSString.CompareOptions.caseInsensitive, range: l.range(of: l))
-            return clearedLink
+            return clearedLink.last != "/" ? clearedLink + "/" : clearedLink
         }
         else {
             let links = siteLinks(DaguerreForumID)
