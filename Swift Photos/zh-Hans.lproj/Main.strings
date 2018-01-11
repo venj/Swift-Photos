@@ -1,12 +1,15 @@
+/* Class = "UIBarButtonItem"; title = "Edit"; ObjectID = "OVd-kn-8cB"; */
+"OVd-kn-8cB.title" = "编辑";
 
-/* Class = "IBUILabel"; text = "Title"; ObjectID = "2pz-XF-uhl"; */
-"2pz-XF-uhl.text" = "Title";
+/* Class = "UIBarButtonItem"; title = "Settings"; ObjectID = "cKG-fM-Ods"; */
+"cKG-fM-Ods.title" = "设置";
 
-/* Class = "IBUITableViewController"; title = "Master"; ObjectID = "pGg-6v-bdr"; */
+/* Class = "UITableViewController"; title = "Master"; ObjectID = "pGg-6v-bdr"; */
 "pGg-6v-bdr.title" = "Master";
 
-/* Class = "IBUINavigationController"; title = "Master"; ObjectID = "rS3-R9-Ivy"; */
+/* Class = "UINavigationController"; title = "Master"; ObjectID = "rS3-R9-Ivy"; */
 "rS3-R9-Ivy.title" = "Master";
 
-/* Class = "IBUINavigationItem"; title = "Master"; ObjectID = "tQt-TN-PWz"; */
+/* Class = "UINavigationItem"; title = "Master"; ObjectID = "tQt-TN-PWz"; */
 "tQt-TN-PWz.title" = "Master";
+

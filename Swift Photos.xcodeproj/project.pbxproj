@@ -63,6 +63,7 @@
 		25142ABD199208F200CB4C93 /* Swift Photos-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Swift Photos-Bridging-Header.h"; sourceTree = "<group>"; };
 		251B99E31999B13B00F8A67A /* InAppSettings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = InAppSettings.bundle; sourceTree = "<group>"; };
 		2539A3A41AA1A514004A5619 /* CLLinksTableViewTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLLinksTableViewTableViewController.swift; sourceTree = "<group>"; };
+		2539C9C92007200A004D7EFC /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Launch Screen.strings"; sourceTree = "<group>"; };
 		253BF0EA1994A232007B3702 /* Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		254486BB1A40151E00F25634 /* SearchResultController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchResultController.swift; sourceTree = "<group>"; };
 		254EE8C91BC61854003427CC /* UserDefaultsPasscodeRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaultsPasscodeRepository.swift; sourceTree = "<group>"; };
@@ -377,6 +378,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				250416441BCA279E001D7A32 /* Base */,
+				2539C9C92007200A004D7EFC /* zh-Hans */,
 			);
 			name = "Launch Screen.storyboard";
 			sourceTree = "<group>";

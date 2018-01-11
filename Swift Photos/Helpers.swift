@@ -36,6 +36,13 @@ func userInterfaceIdiom() -> UIUserInterfaceIdiom {
     return UIDevice.current.userInterfaceIdiom
 }
 
+func showHudWithMessage(_ message: String, onView view: UIView? = nil, hideAfterDelay delay: Double = 1.0) {
+    let hud = PKHUD.sharedHUD
+    hud.contentView = PKHUDTextView(text: message)
+    hud.show(onView: view ?? AppDelegate.shared.window)
+    hud.hide(afterDelay: delay)
+}
+
 func showHUD() -> PKHUD {
     let hud = PKHUD.sharedHUD
     hud.contentView = PKHUDProgressView()

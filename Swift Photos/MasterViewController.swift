@@ -56,7 +56,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     var resultsController:SearchResultController!
     var myActivity : NSUserActivity!
     fileprivate var preloadItem : UIBarButtonItem?
-    fileprivate var editButton : UIBarButtonItem?
+    @IBOutlet weak var editButton : UIBarButtonItem?
     fileprivate var settingsController : UIViewController?
 
     let categories = [NSLocalizedString("Daguerre's Flag", comment: "達蓋爾的旗幟"): 16,
@@ -83,10 +83,6 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         else {
             setDefaultTitle()
         }
-
-        editButton = UIBarButtonItem(title: NSLocalizedString("Edit", comment: "编辑"), style: .plain, target: self, action: #selector(MasterViewController.showEdit(_:)))
-        let actionButton = UIBarButtonItem(title: NSLocalizedString("More", comment: "更多"), style: .plain, target: self, action: #selector(MasterViewController.showActions(_:)))
-        navigationItem.rightBarButtonItems = [actionButton, editButton!]
 
         let selectAllItems = UIBarButtonItem(title: NSLocalizedString("Select all", comment: "Select all"), style: .plain, target: self, action: #selector(MasterViewController.selectAllCells(_:)))
         let deselectAllItems = UIBarButtonItem(title: NSLocalizedString("Deselect all", comment: "Deselect all"), style: .plain, target: self, action: #selector(MasterViewController.deselectAllCells(_:)))
@@ -121,11 +117,21 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         if #available(iOS 9, *) {
             tableView.cellLayoutMarginsFollowReadableWidth = false
         }
+
+        refreshControl = UIRefreshControl()
+        refreshControl?.tintColor = mainThemeColor()
+        refreshControl?.addTarget(self, action: #selector(refresh(_:)), for: [.valueChanged])
+
+        NotificationCenter.default.addObserver(self, selector: #selector(showNoMorePhotosHUD(_:)), name: NSNotification.Name(rawValue: MWPHOTO_NO_MORE_PHOTOS_NOTIFICATION), object: nil)
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: MWPHOTO_NO_MORE_PHOTOS_NOTIFICATION), object: nil)
     }
 
     override var preferredStatusBarStyle : UIStatusBarStyle {
@@ -179,6 +185,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
             else {
                 hud.contentView = PKHUDTextView(text: NSLocalizedString("Network error", comment: "Network error happened, typically timeout."))
                 hud.hide(afterDelay: 1)
+                self.refreshControl?.endRefreshing()
             }
         }
     }
@@ -232,12 +239,15 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
                 catch _ {
                     hud.hide() // If any exception, hide the hud
                 }
+
+                self.refreshControl?.endRefreshing()
             }
             else {
                 hud.hide()
                 DispatchQueue.main.async {
                     hud.contentView = PKHUDTextView(text: NSLocalizedString("Request timeout.", comment: "Request timeout hud."))
                     hud.hide(afterDelay: 1.0)
+                    self.refreshControl?.endRefreshing()
                 }
             }
         }
@@ -465,23 +475,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     }
     
     // MARK: - Actions
-    @objc func showActions(_ sender: UIBarButtonItem?) {
-        exitEdit()
-        let sheet = UIAlertController(title: NSLocalizedString("More actions", comment: "更多操作"), message: nil, preferredStyle: .actionSheet)
-        sheet.popoverPresentationController?.delegate = self
-
-        let categoryAction = UIAlertAction(title: NSLocalizedString("Categories", comment: "分类"), style: .default, handler: showSections)
-        let settingsAction = UIAlertAction(title: NSLocalizedString("Settings", comment: "设置"), style: .default, handler: showSettings)
-        let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "取消"), style: .cancel, handler: nil)
-        var actions = [categoryAction, settingsAction]
-        if UIDevice.current.userInterfaceIdiom != .pad { actions.append(cancelAction) }
-        actions.forEach(sheet.addAction)
-        present(sheet, animated: true) {
-            sheet.popoverPresentationController?.passthroughViews = nil
-        }
-    }
-
-    func showSections(_ action: UIAlertAction) {
+    @IBAction func showSections(_ sender: Any?) {
         let sectionsController = UIAlertController(title: NSLocalizedString("Please select a category", comment: "ActionSheet title."), message: "", preferredStyle: .actionSheet)
         sectionsController.popoverPresentationController?.delegate = self
 
@@ -500,7 +494,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         }
     }
     
-    func showSettings(_ action: UIAlertAction) {
+    @IBAction func showSettings(_ action: UIAlertAction) {
         if getValue(CurrentCLLinkKey) == nil {
             _ = getDaguerreLink(self.forumID)
         }
@@ -527,7 +521,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         }
     }
 
-    @objc func showEdit(_ sender: UIBarButtonItem?) {
+    @IBAction func showEdit(_ sender: Any?) {
         if !tableView.isEditing {
             tableView.setEditing(true, animated: true)
             preloadItem?.isEnabled = false
@@ -568,10 +562,14 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     func exitEdit() {
         navigationController?.setToolbarHidden(true, animated: true)
         tableView.setEditing(false, animated: true)
-        editButton!.title = NSLocalizedString("Edit", comment: "编辑")
+        editButton?.title = NSLocalizedString("Edit", comment: "编辑")
     }
 
-    @IBAction func refresh(_ sender:AnyObject?) {
+    @objc func showNoMorePhotosHUD(_ notification: Notification) {
+        showHudWithMessage(NSLocalizedString("No more photos.", comment: "No more photos."));
+    }
+
+    @objc func refresh(_ sender:AnyObject?) {
         let key = title
         currentCLLink = getDaguerreLink(self.forumID)
         let range = daguerreLink.range(of: currentCLLink)
@@ -585,7 +583,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
 
     // MARK: - UIPopoverPresentationControllerDelegate
     func prepareForPopoverPresentation(_ popoverPresentationController: UIPopoverPresentationController) {
-        popoverPresentationController.barButtonItem = navigationItem.rightBarButtonItems?[0]
+        popoverPresentationController.barButtonItem = navigationItem.rightBarButtonItem
     }
 
     // MARK: Helper

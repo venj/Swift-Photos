@@ -1,20 +1,85 @@
 /* 另类贴图 */
 "Alternatives" = "另类贴图";
 
+/* Batch preload */
+"Batch preload" = "批量加载";
+
+/* 缓存已清除 */
+"Cache Cleared" = "缓存已清除";
+
 /* 走光偷拍 */
 "Cam Shot" = "走光偷拍";
 
-/* Cancel button. (General) */
+/* Cancel
+   Cancel button. (General)
+   取消 */
 "Cancel" = "取消";
 
 /* 明星八卦 */
 "Celebrities" = "明星八卦";
 
+/* 选择草榴网址 */
+"Choose 1024 Link" = "选择草榴地址";
+
+/* 继续 */
+"Continue" = "继续";
+
+/* 達蓋爾的旗幟 */
+"Daguerre's Flag" = "達蓋爾的旗幟";
+
+/* Delete */
+"Delete" = "删除";
+
+/* Deselect all */
+"Deselect all" = "取消全选";
+
+/* Disable passcode lock alert title */
+"Disable passcode" = "关闭密码";
+
+/* Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!! */
+"Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!" = "你确定要保存所有预加载的图片吗？\n这有时会需要很长时间才能完成！！！";
+
+/* 完成 */
+"Done" = "完成";
+
+/* 编辑 */
+"Edit" = "编辑";
+
 /* 动漫漫画 */
 "Hentai Manga" = "动漫漫画";
 
+/* Network error happened, typically timeout. */
+"Network error" = "网络错误";
+
+/* 关闭 */
+"Off" = "已关闭";
+
+/* 打开 */
+"On" = "已打开";
+
+/* HUD for parsing Daguerre's Flag link. */
+"Parsing Daguerre Link..." = "正在获取论坛的链接...";
+
 /* ActionSheet title. */
 "Please select a category" = "请选择一个分类";
+
+/* Preload Button. */
+"Preload" = "预加载";
+
+/* Request timeout hud. */
+"Request timeout." = "请求超时";
+
+/* Save Button. */
+"Save" = "保存";
+
+/* Save All */
+"Save All" = "全部保存";
+
+/* 搜索已加载的帖子 */
+"Search loaded posts" = "搜索已加载的帖子";
+
+/* Select all */
+"Select all" = "全选";
 
 /* 网友自拍 */
 "Selfies" = "网友自拍";
@@ -22,92 +87,15 @@
 /* 激情贴图 */
 "Sexy Beauty" = "激情贴图";
 
-/* 唯美贴图 */
-"Young Beauty" = "唯美贴图";
+/* Shake Detected */
+"Shake Detected" = "检测到设备摇动";
 
-/* 達蓋爾的旗幟 */
-"Daguerre's Flag" = "達蓋爾的旗幟";
-
-/* 正在获取達蓋爾的链接... */
-"Parsing Daguerre Link..." = "正在获取论坛的链接...";
-
-/* 设置 */
-"Settings" = "设置";
-
-/* 分类 */
-"Categories" = "分类";
-
-/* 已打开 */
-"On" = "已打开";
-
-/* 已关闭 */
-"Off" = "已关闭";
-
-/* 缓存已清除 */
-"Cache Cleared" = "缓存已清除";
-
-/* 搜索已加载的帖子 */
-"Search loaded posts" = "搜索已加载的帖子";
-
-/* 草榴地址 */
-"Choose 1024 Link" = "选择草榴地址";
-
-/* 网络错误 */
-"Network error" = "网络错误";
-
-/* 请求超时 */
-"Request timeout." = "请求超时";
-
-/* 预加载 */
-"Preload" = "预加载";
-
-/* 保存 */
-"Save" = "保存";
-
-/* 继续 */
-"Continue" = "继续";
-
-/* 取消 */
-"Cancel" = "取消";
-
-/* Disable passcode lock alert title */
-"Disable passcode" = "关闭密码";
+/* Swift Photos needs your finger print to protect your content. */
+"Swift Photos needs your finger print to protect your content." = "美图赏需要你的指纹来保护应用里的内容不被他人窥视。";
 
 /* Disable passcode lock alert body */
 "You are going to disable passcode lock. Continue?" = "您即将关闭密码。是否继续？";
 
-/* Shake Detected */
-"Shake Detected" = "检测到设备摇动";
+/* 唯美贴图 */
+"Young Beauty" = "唯美贴图";
 
-/* Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!! */
-"Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!" = "你确定要保存所有预加载的图片吗？\n这有时会需要很长时间才能完成！！！";
-
-/* Save All */
-"Save All" = "全部保存";
-
-/* Delete */
-"Delete" = "删除";
-
-/* More */
-"More" = "更多";
-
-/* More actions */
-"More actions" = "更多操作";
-
-/* Edit */
-"Edit" = "编辑";
-
-/* Done */
-"Done" = "完成";
-
-/* Batch preload */
-"Batch preload" = "批量加载";
-
-/* Select all */
-"Select all" = "全选";
-
-/* Deselect all */
-"Deselect all" = "取消全选";
-
-/* Swift Photos needs your finger print to protect your content. */
-"Swift Photos needs your finger print to protect your content." = "美图赏需要你的指纹来保护应用里的内容不被他人窥视。";
