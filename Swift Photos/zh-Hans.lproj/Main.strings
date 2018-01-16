@@ -1,9 +1,6 @@
 /* Class = "UIBarButtonItem"; title = "Edit"; ObjectID = "OVd-kn-8cB"; */
 "OVd-kn-8cB.title" = "编辑";
 
-/* Class = "UIBarButtonItem"; title = "Settings"; ObjectID = "cKG-fM-Ods"; */
-"cKG-fM-Ods.title" = "设置";
-
 /* Class = "UITableViewController"; title = "Master"; ObjectID = "pGg-6v-bdr"; */
 "pGg-6v-bdr.title" = "Master";
 

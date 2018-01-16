@@ -736,10 +736,10 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         cacheImages(forIndexPath: indexPath, withProgressAction: { [unowned self] (progress) in
             // Update Progress.
             // FIXME: If the cell is preloading, and we switch to another section, the progress will keep updating.
-            guard let cell = self.tableView.cellForRow(at: indexPath) as? ProgressTableViewCell else { return }
-            let post = self.posts[(indexPath as NSIndexPath).row]
-            post.progress = progress
             DispatchQueue.main.async(execute: {
+                guard let cell = self.tableView.cellForRow(at: indexPath) as? ProgressTableViewCell else { return }
+                let post = self.posts[(indexPath as NSIndexPath).row]
+                post.progress = progress
                 cell.progress = progress
             })
         })
@@ -875,7 +875,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     }
 
     // MARK: - Shake
-    override func motionBegan(_ motion: UIEventSubtype, with event: UIEvent?) {
+    override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
         if motion == .motionShake {
             let alert = UIAlertController(title: NSLocalizedString("Shake Detected", comment: "Shake Detected"), message: NSLocalizedString("Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!", comment: "Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!"), preferredStyle: .alert)
             let saveAllAction = UIAlertAction(title: NSLocalizedString("Save All", comment: "Save All"), style: .default, handler: { [unowned self] (_) in
@@ -904,3 +904,18 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     }
 }
 
+extension MasterViewController {
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        resignFirstResponder()
+    }
+
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+}
