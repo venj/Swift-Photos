@@ -56,6 +56,7 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     var resultsController:SearchResultController!
     var myActivity : NSUserActivity!
     fileprivate var preloadItem : UIBarButtonItem?
+    fileprivate var saveAllItem : UIBarButtonItem?
     @IBOutlet weak var editButton : UIBarButtonItem?
     fileprivate var settingsController : UIViewController?
 
@@ -92,8 +93,13 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
         preloadItem!.tintColor = mainThemeColor()
         selectAllItems.tintColor = mainThemeColor()
         deselectAllItems.tintColor = mainThemeColor()
+
+
+        saveAllItem = UIBarButtonItem(title: NSLocalizedString("Save", comment: "Save"), style: .plain, target: self, action: #selector(MasterViewController.saveAll(_:)))
+        saveAllItem!.tintColor = mainThemeColor()
+
         navigationController?.isToolbarHidden = true
-        setToolbarItems([deselectAllItems, selectAllItems, flexSpaceToolbarItem, preloadItem!], animated: true)
+        setToolbarItems([deselectAllItems, selectAllItems, flexSpaceToolbarItem, saveAllItem!, preloadItem!], animated: true)
 
         loadFirstPageForKey(title!)
         
@@ -875,47 +881,32 @@ class MasterViewController: UITableViewController, IASKSettingsDelegate, MWPhoto
     }
 
     // MARK: - Shake
-    override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
-        if motion == .motionShake {
-            let alert = UIAlertController(title: NSLocalizedString("Shake Detected", comment: "Shake Detected"), message: NSLocalizedString("Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!", comment: "Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!"), preferredStyle: .alert)
-            let saveAllAction = UIAlertAction(title: NSLocalizedString("Save All", comment: "Save All"), style: .default, handler: { [unowned self] (_) in
-                let hud = showHUD()
-                DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated).async(execute: { [unowned self] in
+    @objc func saveAll(_ sender: Any?) {
+        tableView.isEditing = false
+        let alert = UIAlertController(title: NSLocalizedString("Shake Detected", comment: "Shake Detected"), message: NSLocalizedString("Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!", comment: "Do you want to save all the preloaded posts' pictures? \nThis sometimes may take a long time!!!"), preferredStyle: .alert)
+        let saveAllAction = UIAlertAction(title: NSLocalizedString("Save All", comment: "Save All"), style: .default, handler: { [unowned self] (_) in
+            let hud = showHUD()
+            DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated).async(execute: { [unowned self] in
+                DispatchQueue.main.async {
                     UIApplication.shared.isIdleTimerDisabled = true
-                    for post in self.posts {
-                        if post.progress == 1.0 && !post.imageCached {
-                            self.fetchImageLinks(fromPostLink: post.link, async: false, completionHandler: {
-                                saveCachedLinksToHomeDirectory($0, forPostLink: post.link)
-                            })
-                        }
+                }
+                for post in self.posts {
+                    if post.progress == 1.0 && !post.imageCached {
+                        self.fetchImageLinks(fromPostLink: post.link, async: false, completionHandler: {
+                            saveCachedLinksToHomeDirectory($0, forPostLink: post.link)
+                        })
                     }
+                }
+                DispatchQueue.main.async {
                     UIApplication.shared.isIdleTimerDisabled = false
-                    DispatchQueue.main.async {
-                        self.tableView.reloadData()
-                        hud.hide()
-                    }
-                })
+                    self.tableView.reloadData()
+                    hud.hide()
+                }
             })
-            alert.addAction(saveAllAction)
-            let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel"), style: .cancel, handler: nil)
-            alert.addAction(cancelAction)
-            self.present(alert, animated: true, completion: nil)
-        }
-    }
-}
-
-extension MasterViewController {
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        resignFirstResponder()
-    }
-
-    override var canBecomeFirstResponder: Bool {
-        return true
+        })
+        alert.addAction(saveAllAction)
+        let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel"), style: .cancel, handler: nil)
+        alert.addAction(cancelAction)
+        self.present(alert, animated: true, completion: nil)
     }
 }
